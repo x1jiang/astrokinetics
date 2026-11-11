@@ -1,0 +1,50 @@
+{
+  "voice": "lumen",
+  "durations": {
+    "n1_problem": 3.08,
+    "n2_gather": 6.549,
+    "n3_evaluate": 8.916,
+    "n4_act": 4.766,
+    "n5_earth": 2.06
+  },
+  "total_speech_sec": 25.371,
+  "script": [
+    {
+      "id": "n1_problem",
+      "text": "On the way to Mars, help from Earth is forty-four minutes away.",
+      "cues": [
+        "On the way to Mars, help from Earth is 44 minutes away."
+      ]
+    },
+    {
+      "id": "n2_gather",
+      "text": "AstroKinetics watches through one cabin camera and a smartwatch: pulse, posture, and tremor, fully offline.",
+      "cues": [
+        "AstroKinetics watches through one cabin camera and a smartwatch:",
+        "pulse, posture and tremor — fully offline."
+      ]
+    },
+    {
+      "id": "n3_evaluate",
+      "text": "It compares each astronaut with their own pre-flight baseline, and tells cabin C O 2, muscle strain, and radiation apart, using real NASA crew data.",
+      "cues": [
+        "It compares each astronaut with their own pre-flight baseline,",
+        "and tells cabin CO₂, muscle strain and radiation apart — using real NASA crew data."
+      ]
+    },
+    {
+      "id": "n4_act",
+      "text": "Then it gives one clear action: a countermeasure, therapy audio, and a cue on the wrist.",
+      "cues": [
+        "Then it gives one clear action: a countermeasure, therapy audio and a wrist cue."
+      ]
+    },
+    {
+      "id": "n5_earth",
+      "text": "From Mars, to rural clinics on Earth.",
+      "cues": [
+        "From Mars to rural clinics on Earth."
+      ]
+    }
+  ]
+}

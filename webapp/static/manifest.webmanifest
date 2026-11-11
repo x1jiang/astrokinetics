@@ -1,0 +1,9 @@
+{
+  "name": "AstroKinetics v2.0 — Autonomous Astronaut Motion, rPPG & OSDR Health Suite",
+  "short_name": "AstroKinetics",
+  "description": "Offline-first 3D markerless biomechanics, contactless POS-rPPG vitals, Rhythmic Auditory Stimulation, and NASA OSDR multivariate triage.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090e1a",
+  "theme_color": "#0b57d0"
+}

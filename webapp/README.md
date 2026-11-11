@@ -1,0 +1,41 @@
+# AstroKinetics v3.2 — Autonomous Crew Health, 3D Musculoskeletal Digital Twin, Neuro-Acoustic Therapy & Wearable Edge API
+
+**2026 NASA International Space Apps Challenge (Houston Local Event)**  
+**Challenge:** *Create Health Monitoring Software for Astronauts on Space Missions*  
+**Live Google Cloud Run Deployment:** https://astrokinetics-space-health-765428358644.us-central1.run.app  
+**License:** MIT (OSI-Approved Open Source)
+
+## Key Capabilities in v3.2
+
+1. **Interactive 3D Volumetric Musculoskeletal, Force-Plate & 21-Joint Hand Digital Twin (`static/biomech3d.js`):**
+   - Pinhole 3D perspective camera with interactive pointer-drag 360-degree orbit and one-click presets (`3D Iso`, `Frontal`, `Sagittal`, `360° Orbit`), inspired by **Stanford OpenCap**, **OpenSim**, and **DARI Motion**.
+   - Dual piezoelectric ARED force plates (`R-PLATE` / `L-PLATE`) with 3D Ground Reaction Force (`GRF`) vectors (`N` and `%` load share), Center-of-Mass plumb laser, and postural sway Center-of-Pressure trace.
+   - Z-sorted specular-lit 3D anatomical segments (thighs, shanks, feet, pelvis, articulated 8-vertebra spine, 3D thoracic ribcage, arms, and visor helmet) with real-time inverse-kinematic muscle activation (`%MVC`) thermal heatmaps (`Quad R/L`, `Glute R/L`, `Lumbar`, `Deltoid`, `Biceps`), 3D spatial joint goniometer rings, 3D motion-trail ribbons, and an always-live articulated 3D 21-joint hand & tremor micro-scanner.
+2. **Metric 3D World-Landmark Kinematics, 1-Euro Filtering & Contactless POS-rPPG (`static/dsp.js`):**
+   - Browser WebGPU/WASM `@mediapipe/tasks-vision` `PoseLandmarker` (`worldLandmarks` in 3D meters filtered through 33 adaptive **1-Euro Low-Pass Filters**, Casiez et al., CHI 2012) + 21-joint `HandLandmarker` (finger-tap Hz and 4–12 Hz postural hand tremor RMS in mm) + hysteresis repetition segmenter and CSV export.
+   - **Wang et al. (IEEE TBME 2017) Plane-Orthogonal-to-Skin (POS)** contactless camera rPPG extracting forehead skin ROI RGB chrominance signals, bandpass filtering (0.7–3.2 Hz), Hann-windowed DFT power spectrum (46–176 BPM), spectral SNR (dB), and refractory inter-beat interval RMSSD HRV.
+   - Supports de-identified 62-frame (`30 fps`) reference 3D motion playback (`data/reference_3d_keypoints.json`), live webcam inference, 100% on-device local `.mp4`/`.webm` video analysis, and slider-coupled 3D digital-twin perturbation.
+3. **8-DOF Multivariate Mahalanobis Distance ($D_M$) & $\chi^2$ Anomaly Triage (`app.py` + `static/dsp.js`):**
+   - Evaluates an 8-channel physiological/kinematic vector against an individualized pre-flight covariance matrix $\Sigma$, symmetric inverse-square-root whitening $\Sigma^{-1/2}$ for orthogonal feature variance attribution (`%` of $D_M^2$), and `scipy.stats.chi2.sf` tail $p$-values (mirrored offline in `dsp.js` via Wilson–Hilferty $\chi^2$ survival).
+4. **Closed-Loop Neuro-Acoustic Music Therapy, 3D Sonification & Vocal Stress DSP (`static/audio_engine.js`):**
+   - Polyphonic generative WebAudio synthesizer grounded in Thaut Rhythmic Auditory Stimulation (RAS) and Lehrer 0.10 Hz HRV baroreflex resonance (`16 Hz Beta Motor Cadence RAS`, `10 Hz Alpha HRV`, `40 Hz Gamma Vigilance`, `2.5 Hz Delta + Paul Kellet 7-pole 1/f Pink-Noise Shelter`), with 3D joint-ROM-to-filter cutoff ($f_c \in [360, 3100]\text{ Hz}$) and trunk-tilt spatial panning.
+   - Broadcast voice enhancement chain (`85 Hz` cabin rumble HPF + `+4.5 dB @ 3.2 kHz` presence EQ + `4:1` compressor + `-10 dB` automatic sidechain music ducking), Boersma (1993) autocorrelation vocal biomarker extraction ($F_0$ Hz, Glottal Jitter `%`, HNR dB), spoken AI Flight Surgeon briefings, and hands-free `SpeechRecognition` commands.
+5. **Connected Crew Edge Mesh: Apple Watch + Mobile Kinematics App + Live REST API (`POST /api/ingest/edge-telemetry`):**
+   - Dedicated WAI-ARIA workspace view (`/?tab=api`) serving live HTTP telemetry fusion from **Apple Watch Ultra** (`HealthKit` vitals + 100 Hz `CMMotionManager` wrist tremor), **Mobile Kinematics Apps** (3D joint ROM, symmetry, trunk lean), and **Habitat ECLSS** (`ppCO2`, radiation dosimetry), returning closed-loop `WKHapticType` wrist haptic directives with copy-ready **Swift**, **cURL**, and **Python** SDK snippets.
+6. **Empirical NASA OSDR `OSD-571` (`GLDS-563`) Inspiration4 Cohort Explorer & Offline PWA (`static/sw.js`):**
+   - Bundles downloaded longitudinal human astronaut plasma proteomics from NASA OSDR (`OSD-571` / `GLDS-563`, 1,443 proteins screened across SpaceX Inspiration4 crew `C001–C004` and 6 flight timepoints `L-92, L-44, L-3, R+1, R+45, R+82`), highlighting spaceflight hemolysis (`HBA1 4.36x`) and oxidative/radiation response (`CAT 5.24x`, `PRDX2 5.09x`), cached locally for 100% Earth-independent blackout autonomy.
+
+## Run Locally
+```bash
+pip install -r requirements.txt
+uvicorn app:app --reload --port 8080
+```
+
+## Deploy to Google Cloud Run
+```bash
+gcloud run deploy astrokinetics-space-health \
+  --source . \
+  --project="${GCP_PROJECT_ID:-your-gcp-project-id}" \
+  --region=us-central1 \
+  --allow-unauthenticated
+```

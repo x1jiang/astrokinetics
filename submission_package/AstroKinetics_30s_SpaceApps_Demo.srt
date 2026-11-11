@@ -1,0 +1,28 @@
+1
+00:00:00,350 --> 00:00:03,610
+On the way to Mars, help from Earth is 44 minutes away.
+
+2
+00:00:03,710 --> 00:00:07,664
+AstroKinetics watches through one cabin camera and a smartwatch:
+
+3
+00:00:07,664 --> 00:00:10,439
+pulse, posture and tremor — fully offline.
+
+4
+00:00:10,539 --> 00:00:14,351
+It compares each astronaut with their own pre-flight baseline,
+
+5
+00:00:14,351 --> 00:00:19,635
+and tells cabin CO₂, muscle strain and radiation apart — using real NASA crew data.
+
+6
+00:00:19,735 --> 00:00:24,681
+Then it gives one clear action: a countermeasure, therapy audio and a wrist cue.
+
+7
+00:00:24,781 --> 00:00:27,021
+From Mars to rural clinics on Earth.
+

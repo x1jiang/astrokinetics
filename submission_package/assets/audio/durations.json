@@ -1,0 +1,10 @@
+{
+  "voice": "lumen",
+  "durations": {
+    "s1_problem": 4.354,
+    "s2_gather": 6.04,
+    "s3_evaluate": 7.186,
+    "s4_act": 5.077
+  },
+  "total_speech_sec": 22.657
+}

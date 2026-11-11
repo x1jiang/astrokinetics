@@ -1,0 +1,1057 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    try {
+      document.querySelector('meta[name="color-scheme"]').content = localStorage.getItem("color-scheme") ?? "light dark";
+    } catch {}
+  </script>
+  <title>AstroKinetics — Autonomous Crew Health, 3D Biomechanics &amp; Neuro-Acoustic Workstation</title>
+  <meta name="description" content="Autonomous astronaut health monitoring platform: 1-Euro 3D MediaPipe biomechanics, 21-joint hand dexterity, POS chrominance rPPG, closed-loop neuro-acoustic music therapy, vocal biomarker DSP, Apple Watch + mobile telemetry API, and NASA OSDR OSD-571 proteomics.">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css?v=3.4.0">
+</head>
+<body>
+  <!-- Single-Row Executive Mission Header -->
+  <header class="topbar">
+    <div class="brand-cluster">
+      <div class="brand-emblem" aria-hidden="true">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="18" r="14" stroke-opacity="0.32" />
+          <path d="M5 18h6l2.5-6 4.5 12 3-8 2 2h8" />
+          <circle cx="28" cy="9" r="2.2" fill="currentColor" stroke="none" />
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <h1>AstroKinetics</h1>
+        <span class="brand-subtitle">Autonomous Crew Health</span>
+      </div>
+    </div>
+
+    <!-- Centered 3-View WAI-ARIA Tab Switcher -->
+    <div class="workspace-tablist" role="tablist" aria-label="Workstation views">
+      <button
+        type="button"
+        role="tab"
+        class="workspace-tab"
+        id="tabMissionConsole"
+        aria-selected="true"
+        aria-controls="panelMissionConsole"
+      >
+        <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M4.5 9.5h2l1.3-3 1.7 5 1.3-2h1.7"/></svg>
+        <span>Mission Console</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="workspace-tab"
+        id="tabNeuroLab"
+        aria-selected="false"
+        aria-controls="panelNeuroLab"
+        tabindex="-1"
+      >
+        <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.5h2l1.6-4.5 2.4 8.5 2.2-6.5 1.8 2.5H14"/></svg>
+        <span>Neuro-Acoustic &amp; Voice</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="workspace-tab"
+        id="tabEdgeApi"
+        aria-selected="false"
+        aria-controls="panelEdgeApi"
+        tabindex="-1"
+      >
+        <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="6" height="9" rx="1.8"/><path d="M6.5 1.8h3M6.5 14.2h3M2 8h1.8M12.2 8H14"/></svg>
+        <span>Watch &amp; Mobile API</span>
+        <span class="tab-count-pill mono" id="edgeTabPacketBadge">Live</span>
+      </button>
+    </div>
+
+    <div class="topbar-actions">
+      <div class="comm-pill" id="commStatusBanner" role="status" aria-live="polite" title="Deep-space communication link state">
+        <span class="led led-ok" aria-hidden="true"></span>
+        <span class="mono" id="missionClockVal">Sol 142</span>
+        <span class="sep-dot" aria-hidden="true">·</span>
+        <span id="commStatusText">Mars Transit</span>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="quickThemeToggleBtn" aria-label="Switch color theme" title="Toggle Light / Dark workstation theme">
+        <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3.3"/><path d="M8 1.6v1.6M8 12.8v1.6M1.6 8h1.6M12.8 8h1.6M3.5 3.5l1.1 1.1M11.4 11.4l1.1 1.1M12.5 3.5l-1.1 1.1M4.6 11.4l-1.1 1.1"/></svg>
+        <span id="quickThemeLabel">Theme</span>
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm" id="openPacketBtn" aria-haspopup="dialog">
+        <span>Downlink</span>
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm" id="openSettingsBtn" aria-haspopup="dialog">
+        <span>Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <!-- Slim 1-Row Connected Sensor Telemetry & Docked Audio Bar -->
+    <div class="command-ribbon" aria-label="Connected crew sensors and quick audio controls">
+      <div class="connected-devices-strip">
+        <div class="sensor-readout" id="meshWatchChip">
+          <span class="led led-ok" aria-hidden="true"></span>
+          <span class="sensor-name">Apple Watch Ultra</span>
+          <span class="mono sensor-metrics" id="meshWatchText">72 bpm · HRV 47 ms</span>
+        </div>
+        <span class="ribbon-divider" aria-hidden="true"></span>
+        <div class="sensor-readout" id="meshMobileChip">
+          <span class="led led-ok" aria-hidden="true"></span>
+          <span class="sensor-name">Mobile Kinematics</span>
+          <span class="mono sensor-metrics" id="meshMobileText">ROM 94° · Sym 81.5%</span>
+        </div>
+        <button type="button" class="btn btn-ghost btn-xs" id="quickMeshSyncBtn">
+          <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 2v2.8h-2.8"/></svg>
+          <span>Sync Burst</span>
+        </button>
+      </div>
+
+      <div class="quick-audio-strip">
+        <span class="rx-inline-tag" id="quickRxSummary">Rx: 16 Hz Motor RAS</span>
+        <button type="button" class="btn btn-tonal btn-xs" id="quickNeuroPlayBtn" aria-pressed="false">
+          <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M4.2 2.8 13 8l-8.8 5.2V2.8Z"/></svg>
+          <span id="quickNeuroPlayLabel">Play Therapy</span>
+        </button>
+        <button type="button" class="btn btn-ghost btn-xs" id="topbarVoiceBriefBtn" aria-pressed="false">
+          <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2h2.6L8.8 3v10L5.1 9.8H2.5v-3.6Z"/><path d="M11.2 5.4a3.8 3.8 0 0 1 0 5.2"/></svg>
+          <span>Voice Briefing</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         TAB PANEL 1: MISSION CONSOLE (3D Biomechanics + Readiness Above Fold)
+         ====================================================================== -->
+    <div id="panelMissionConsole" role="tabpanel" aria-labelledby="tabMissionConsole" class="tab-panel">
+      <!-- Compact 4-Column Subgrid Scenario Selector -->
+      <section class="scenario-strip" aria-label="Mission scenarios">
+        <div class="scenario-grid" id="scenarioGrid" role="radiogroup" aria-label="Select mission scenario">
+          <label class="choice-card" data-tone="nominal">
+            <input type="radio" name="missionScenario" value="nominal_lunar">
+            <div class="choice-meta">
+              <span class="status-pill status-nominal">Nominal</span>
+              <span class="sol-tag">Sol 014</span>
+            </div>
+            <strong class="choice-title">Artemis Lunar Orbit</strong>
+            <p class="choice-desc">95% baseline covariance · 10 Hz Alpha HRV</p>
+          </label>
+
+          <label class="choice-card" data-tone="watch">
+            <input type="radio" name="missionScenario" value="hypercapnia_drift">
+            <div class="choice-meta">
+              <span class="status-pill status-watch">Env + Cog</span>
+              <span class="sol-tag">Sol 088</span>
+            </div>
+            <strong class="choice-title">Cabin CO₂ Drift</strong>
+            <p class="choice-desc">ppCO₂ 2.85 mmHg · PVT 322 ms · 40 Hz Gamma</p>
+          </label>
+
+          <label class="choice-card" data-tone="alert">
+            <input type="radio" name="missionScenario" value="musculoskeletal_asymmetry" checked>
+            <div class="choice-meta">
+              <span class="status-pill status-alert">Kinematic</span>
+              <span class="sol-tag">Sol 142</span>
+            </div>
+            <strong class="choice-title">0g Squat Compensation</strong>
+            <p class="choice-desc">ROM 94°/118° · 81.5% symmetry · 16 Hz RAS</p>
+          </label>
+
+          <label class="choice-card" data-tone="alert">
+            <input type="radio" name="missionScenario" value="spe_blackout">
+            <div class="choice-meta">
+              <span class="status-pill status-alert">SPE Blackout</span>
+              <span class="sol-tag">Sol 210</span>
+            </div>
+            <strong class="choice-title">Solar Particle Event</strong>
+            <p class="choice-desc">3.45 mSv/d surge · Tremor 2.45 mm · Zero link</p>
+          </label>
+        </div>
+      </section>
+
+      <!-- Main 2-Column Hero Grid (Visible Above the Fold on 1440x900) -->
+      <div class="main-grid">
+        <!-- LEFT COLUMN: 3D Biomechanics Studio, Clinical Assays & Segmented Rep Log -->
+        <section class="studio-column" aria-labelledby="motionStudioHeading">
+          <article class="card studio-card">
+            <header class="card-header-flex">
+              <div>
+                <h2 id="motionStudioHeading">3D Biomechanics, Hand Tremor &amp; Contactless rPPG</h2>
+                <p class="muted-sub">1-Euro 3D world pose · 21-joint hand dexterity · Wang POS chrominance rPPG</p>
+              </div>
+              <div class="studio-mode-badge" id="visionSourceBadge" role="status">
+                <span class="provenance-dot" aria-hidden="true"></span>
+                <span>Reference 3D Motion (62f)</span>
+              </div>
+            </header>
+
+            <div class="studio-body">
+              <div class="segmented-controls-grid">
+                <fieldset class="seg-group">
+                  <legend class="micro-label">Input Source</legend>
+                  <div class="seg-track">
+                    <label class="seg-pill" title="Recorded 62-frame empirical motion-capture keypoint replay (30 FPS)">
+                      <input type="radio" name="sourceModeRadio" value="reference_mocap" checked>
+                      <span>Mocap Clip</span>
+                    </label>
+                    <label class="seg-pill" title="Adaptive Live Camera AI: auto-detects Face/Ocular rPPG, Upper-Body + Hands, or Full-Body 3D">
+                      <input type="radio" name="sourceModeRadio" value="live_webcam">
+                      <span>Live Camera</span>
+                    </label>
+                    <label class="seg-pill" title="Analyze a local .mp4/.webm clip 100% on-device with adaptive Face/Upper/Full-Body detection">
+                      <input type="radio" name="sourceModeRadio" value="local_video">
+                      <span>Video File</span>
+                    </label>
+                    <label class="seg-pill" title="Interactive What-If 3D Digital Twin comparing active crew perturbations against the cyan Pre-Flight 1g Baseline Ghost">
+                      <input type="radio" name="sourceModeRadio" value="parametric_twin">
+                      <span>What-If Twin</span>
+                    </label>
+                  </div>
+                </fieldset>
+
+                <fieldset class="seg-group">
+                  <legend class="micro-label">Exercise Protocol</legend>
+                  <div class="seg-track">
+                    <label class="seg-pill">
+                      <input type="radio" name="protocolRadio" value="ared_squat" checked>
+                      <span>ARED Squat</span>
+                    </label>
+                    <label class="seg-pill">
+                      <input type="radio" name="protocolRadio" value="eva_upper_reach">
+                      <span>EVA Reach</span>
+                    </label>
+                    <label class="seg-pill">
+                      <input type="radio" name="protocolRadio" value="fine_motor_hand">
+                      <span>Hand Tremor</span>
+                    </label>
+                    <label class="seg-pill">
+                      <input type="radio" name="protocolRadio" value="vestibular_sway">
+                      <span>Romberg</span>
+                    </label>
+                  </div>
+                </fieldset>
+              </div>
+
+              <!-- Clean 3D Camera, Muscle EMG & Action Bar -->
+              <div class="control-toolbar">
+                <div class="cam-pill-bar" id="cam3dPillBar" role="group" aria-label="3D camera views and muscle load layer">
+                  <button type="button" class="btn btn-ghost btn-xs" id="camIsoBtn" aria-pressed="true" title="3/4 Isometric 3D Perspective (or drag canvas to orbit)">3D Iso</button>
+                  <button type="button" class="btn btn-ghost btn-xs" id="camFrontBtn" aria-pressed="false" title="Frontal Coronal Plane">Frontal</button>
+                  <button type="button" class="btn btn-ghost btn-xs" id="camSideBtn" aria-pressed="false" title="Sagittal Lateral Plane">Sagittal</button>
+                  <button type="button" class="btn btn-ghost btn-xs" id="camOrbitBtn" aria-pressed="false" title="Continuous 360-degree 3D camera turntable">360° Orbit</button>
+                  <button type="button" class="btn btn-ghost btn-xs" id="toggleMuscleEmgBtn" aria-pressed="true" title="Toggle OpenCap/OpenSim muscle-activation (%MVC) heatmap">EMG Heatmap</button>
+                  <button type="button" class="btn btn-ghost btn-xs" id="toggleGhostBtn" aria-pressed="true" title="Toggle holographic cyan Pre-Flight 1g Baseline Ghost in What-If Twin mode">1g Ghost</button>
+                </div>
+
+                <div class="toolbar-buttons">
+                  <label class="btn btn-secondary btn-xs" for="videoFileInput">
+                    <span id="videoFileBtnLabel">Load Video</span>
+                  </label>
+                  <input type="file" id="videoFileInput" class="sr-only" accept="video/mp4,video/webm,video/quicktime,video/*">
+                  <button type="button" class="btn btn-ghost btn-xs" id="pauseMotionBtn" aria-pressed="false">
+                    <span id="pauseMotionLabel">Freeze</span>
+                  </button>
+                  <button type="button" class="btn btn-ghost btn-xs btn-accent" id="toggleRasBtn" aria-pressed="false">
+                    <span id="rasBtnLabel">RAS Pacer</span>
+                  </button>
+                  <button type="button" class="btn btn-ghost btn-xs" id="exportCsvBtn">
+                    <span>CSV</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Contextual Bar A: Adaptive Camera Body-Zone & Face Recognition Selector (Shown in Live Camera / Video File) -->
+              <div class="context-mode-bar" id="cameraZoneBar" hidden>
+                <div class="zone-status-cluster">
+                  <span class="zone-live-dot" aria-hidden="true"></span>
+                  <span class="mono zone-badge-text" id="detectedZoneBadge">AUTO-DETECT: SCANNING FRAME</span>
+                </div>
+                <div class="zone-pill-group" role="radiogroup" aria-label="Camera recognition zone">
+                  <label class="zone-pill" title="Automatically detect Face/Ocular, Upper-Body + Hands, or Full-Body 3D framing">
+                    <input type="radio" name="cameraZoneRadio" value="auto" checked>
+                    <span>Auto-Detect</span>
+                  </label>
+                  <label class="zone-pill" title="478-point 3D Face Mesh, Ocular PERCLOS/EAR fatigue, 3D head pose &amp; 3-zone POS-rPPG">
+                    <input type="radio" name="cameraZoneRadio" value="face">
+                    <span>Face &amp; rPPG</span>
+                  </label>
+                  <label class="zone-pill" title="Upper-body shoulders, elbows, trunk tilt + 21-joint hand tremor (suppresses off-screen legs)">
+                    <input type="radio" name="cameraZoneRadio" value="upper">
+                    <span>Upper Body + Hands</span>
+                  </label>
+                  <label class="zone-pill" title="Full-body 3D squat, hip/knee goniometry &amp; postural sway (requires legs in frame)">
+                    <input type="radio" name="cameraZoneRadio" value="full">
+                    <span>Full Body 3D</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Contextual Bar B: What-If Digital Twin Inline Perturbation Strip (Shown in What-If Twin mode) -->
+              <div class="context-mode-bar twin-perturb-bar" id="twinPerturbBar" hidden>
+                <span class="twin-ghost-legend mono" title="Cyan wireframe = pre-flight 1g baseline ghost">CYAN = 1G GHOST</span>
+                <label class="mini-slider-inline" for="quickTwinRom">
+                  <span>ROM</span>
+                  <input type="range" id="quickTwinRom" min="45" max="170" step="1" value="94">
+                  <output class="mono" id="quickTwinRomOut">94°</output>
+                </label>
+                <label class="mini-slider-inline" for="quickTwinSym">
+                  <span>Sym</span>
+                  <input type="range" id="quickTwinSym" min="55" max="100" step="0.5" value="81.5">
+                  <output class="mono" id="quickTwinSymOut">81.5%</output>
+                </label>
+                <label class="mini-slider-inline" for="quickTwinLean">
+                  <span>Lean</span>
+                  <input type="range" id="quickTwinLean" min="0" max="28" step="0.5" value="14.6">
+                  <output class="mono" id="quickTwinLeanOut">14.6°</output>
+                </label>
+                <button type="button" class="btn btn-secondary btn-xs" id="resetTwinBaselineBtn" title="Snap active twin back to 1g pre-flight baseline">Match 1g</button>
+              </div>
+
+              <!-- High-DPI Retina 3D Biomechanical Goniometer Viewport -->
+              <div class="viewport-shell">
+                <video id="webcamVideo" playsinline muted loop hidden></video>
+                <canvas id="kinematicCanvas" width="840" height="525" aria-label="High-DPI 3D biomechanical goniometer skeleton, 21-joint hand inset, and scrolling joint-angle + POS-rPPG waveform"></canvas>
+              </div>
+
+              <!-- 5 Clean Soft-Surface Telemetry Tiles -->
+              <div class="live-kinematic-strip" aria-live="off">
+                <div class="k-metric">
+                  <span class="k-label">3D Joint ROM <span class="k-tag">1&euro;</span></span>
+                  <strong class="k-val mono" id="liveRomVal">94.0° <small>/ 118°</small></strong>
+                </div>
+                <div class="k-metric">
+                  <span class="k-label">L/R Symmetry</span>
+                  <strong class="k-val mono" id="liveSymVal">81.5%</strong>
+                </div>
+                <div class="k-metric">
+                  <span class="k-label">Trunk Tilt · Sway</span>
+                  <strong class="k-val mono" id="liveTrunkVal">14.6° · 16.4 <small>mm/s</small></strong>
+                </div>
+                <div class="k-metric">
+                  <span class="k-label">Tap · Tremor</span>
+                  <strong class="k-val mono" id="liveHandVal">4.1 <small>Hz</small> · 0.65 <small>mm</small></strong>
+                </div>
+                <div class="k-metric">
+                  <span class="k-label" id="liveRppgLabel">Cardio Vitals</span>
+                  <strong class="k-val mono" id="liveRppgVal">72 <small>bpm · 47ms</small></strong>
+                </div>
+              </div>
+            </div>
+
+            <footer class="card-footer-row">
+              <span class="footnote">100% on-device WebGPU/WASM inference — zero video leaves the habitat tablet.</span>
+              <button type="button" class="btn btn-primary btn-sm" id="logSessionBtn">
+                <span>Log Sol Check-In</span>
+              </button>
+            </footer>
+          </article>
+
+          <!-- 2-Up Clinical Assay & Telemetry Perturbation Sliders -->
+          <div class="sub-grid">
+            <article class="card">
+              <header class="card-header-flex">
+                <div>
+                  <h3>Psychomotor Vigilance (PVT)</h3>
+                  <p class="muted-sub">3-trial millisecond reflex check</p>
+                </div>
+                <span class="status-pill status-neutral mono" id="pvtBadge">274 ms</span>
+              </header>
+              <div class="pvt-box">
+                <p class="pvt-instructions" id="pvtStatusText">Start 3-trial reflex check; wait for the green signal, then tap immediately.</p>
+                <button type="button" class="pvt-pad" id="pvtPadBtn">
+                  <span class="pvt-pad-title" id="pvtPadLabel">Start 3-Trial PVT Assay</span>
+                  <span class="pvt-pad-sub">Touchscreen Latency Calibrated</span>
+                </button>
+              </div>
+              <footer class="card-footer-row">
+                <span class="footnote">Nominal &lt;300 ms · Watch 310–354 ms · Alert &ge;355 ms</span>
+              </footer>
+            </article>
+
+            <article class="card">
+              <header>
+                <h3>Telemetry Perturbation</h3>
+                <p class="muted-sub">Test live 8-DOF Mahalanobis D<sub>M</sub> &amp; sonification</p>
+              </header>
+              <div class="sliders-stack">
+                <div class="slider-row">
+                  <label for="inRom" class="slider-meta"><span>Joint ROM</span><span><output class="mono" id="outRom">94</output><small>°</small></span></label>
+                  <input type="range" id="inRom" min="40" max="175" step="1" value="94" aria-valuetext="94 degrees">
+                </div>
+                <div class="slider-row">
+                  <label for="inSym" class="slider-meta"><span>L/R Symmetry</span><span><output class="mono" id="outSym">81.5</output><small>%</small></span></label>
+                  <input type="range" id="inSym" min="55" max="100" step="0.5" value="81.5" aria-valuetext="81.5 percent">
+                </div>
+                <div class="slider-row">
+                  <label for="inTrunk" class="slider-meta"><span>3D Trunk Lean</span><span><output class="mono" id="outTrunk">14.6</output><small>°</small></span></label>
+                  <input type="range" id="inTrunk" min="0" max="30" step="0.2" value="14.6" aria-valuetext="14.6 degrees">
+                </div>
+                <div class="slider-row">
+                  <label for="inTremor" class="slider-meta"><span>Hand Tremor</span><span><output class="mono" id="outTremor">0.65</output><small>mm</small></span></label>
+                  <input type="range" id="inTremor" min="0.1" max="5.0" step="0.05" value="0.65" aria-valuetext="0.65 millimeters">
+                </div>
+                <div class="slider-row">
+                  <label for="inCo2" class="slider-meta"><span>Cabin ppCO₂</span><span><output class="mono" id="outCo2">1.9</output><small>mmHg</small></span></label>
+                  <input type="range" id="inCo2" min="0.5" max="6.0" step="0.1" value="1.9" aria-valuetext="1.9 millimeters mercury">
+                </div>
+                <div class="slider-row">
+                  <label for="inRad" class="slider-meta"><span>Radiation</span><span><output class="mono" id="outRad">0.58</output><small>mSv/d</small></span></label>
+                  <input type="range" id="inRad" min="0.2" max="6.0" step="0.05" value="0.58" aria-valuetext="0.58 millisieverts per day">
+                </div>
+                <div class="slider-row">
+                  <label for="inHr" class="slider-meta"><span>HR / Est. HRV</span><span><output class="mono" id="outHr">72</output><small>bpm</small> · <output class="mono" id="outHrv">47</output><small>ms</small></span></label>
+                  <input type="range" id="inHr" min="48" max="130" step="1" value="72" aria-valuetext="72 beats per minute">
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Segmented Repetition Table -->
+          <article class="card">
+            <header class="card-header-flex">
+              <div>
+                <h3 id="repTableHeading">Segmented Repetition Goniometry Log</h3>
+                <p class="muted-sub">Automatic hysteresis cycle segmentation with harmonic chimes &amp; voice coaching</p>
+              </div>
+              <button type="button" class="btn btn-secondary btn-xs" id="resetRepsBtn">Reset Cycles</button>
+            </header>
+            <div tabindex="0" role="region" aria-labelledby="repTableHeading" class="table-wrapper">
+              <table class="data-table rep-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Cycle</th>
+                    <th scope="col">Source</th>
+                    <th scope="col">Peak ROM</th>
+                    <th scope="col">L / R Peak</th>
+                    <th scope="col">Symmetry</th>
+                    <th scope="col">Max Tilt</th>
+                    <th scope="col">Duration</th>
+                  </tr>
+                </thead>
+                <tbody id="repTableBody">
+                  <tr>
+                    <th scope="row">Awaiting</th>
+                    <td>Reference 3D Motion</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td>—</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <!-- RIGHT COLUMN: Readiness Gauge, 8-DOF Mahalanobis Triage, Findings & NASA OSDR -->
+        <section class="triage-column" aria-labelledby="triageHeading">
+          <article class="card readiness-hero" id="readinessHeroCard" data-severity="alert">
+            <header class="readiness-header">
+              <div class="readiness-copy">
+                <span class="eyebrow" id="crewHeaderLabel">FE-2 Jordan Vance (OSDR C003) · Sol 142</span>
+                <h2 id="triageHeading">Crew Readiness &amp; 8-DOF Mahalanobis Triage</h2>
+                <p class="trajectory-line" id="trajectoryText">Evaluating 8-DOF covariance ellipsoid...</p>
+                <div class="hero-status-row">
+                  <span class="badge badge-alert" id="overallStatusBadge"><span aria-hidden="true">◆</span> Action Required</span>
+                  <span class="stat-chip mono" id="mahalanobisMetaText">D<sub>M</sub> = — · p = —</span>
+                </div>
+              </div>
+
+              <!-- 270-Degree Radial Readiness Gauge -->
+              <div class="radial-gauge" aria-label="Crew readiness index out of 100">
+                <svg viewBox="0 0 120 120" class="gauge-svg" aria-hidden="true">
+                  <circle class="gauge-track" cx="60" cy="60" r="46" stroke-dasharray="216.8 289" stroke-dashoffset="0" transform="rotate(135 60 60)" />
+                  <circle class="gauge-fill" id="readinessArcFill" cx="60" cy="60" r="46" stroke-dasharray="216.8 289" stroke-dashoffset="110" transform="rotate(135 60 60)" />
+                </svg>
+                <div class="gauge-center">
+                  <span class="gauge-label">Readiness</span>
+                  <strong class="gauge-val mono" id="readinessScoreVal">44.7</strong>
+                  <small class="gauge-unit">/ 100</small>
+                </div>
+              </div>
+            </header>
+
+            <!-- Split Diagnostic Visualization: 8-Axis Covariance Radar + Whitened Attribution -->
+            <div class="diagnostics-split">
+              <div class="radar-panel">
+                <div class="panel-mini-head">
+                  <strong>8-DOF Covariance Envelope</strong>
+                  <span class="legend-inline"><i class="dot-nom"></i>95% Baseline <i class="dot-cur"></i>Active</span>
+                </div>
+                <canvas id="covarianceRadarCanvas" width="270" height="215" class="radar-canvas" aria-label="8-axis polar radar comparing live crew telemetry against the 95% pre-flight nominal covariance boundary"></canvas>
+              </div>
+
+              <div class="attribution-panel">
+                <div class="panel-mini-head">
+                  <strong>Variance Drivers (% of D<sub>M</sub>&sup2;)</strong>
+                  <span class="micro-tag mono">&Sigma;<sup>&minus;1/2</sup></span>
+                </div>
+                <div class="attr-bars" id="attributionBars"></div>
+              </div>
+            </div>
+
+            <div class="domain-cards-list" id="domainCardsList"></div>
+
+            <!-- Above-the-Fold Prescribed Autonomous Countermeasure Directive -->
+            <div class="hero-directive-banner" id="heroDirectiveBanner" role="status" aria-live="polite">
+              <span class="badge badge-alert" id="heroDirectivePriority">◆ HIGH</span>
+              <div class="hero-directive-copy">
+                <strong id="heroDirectiveTitle">Recalibrate Unilateral ARED Load &amp; Closed-Loop RAS Cueing</strong>
+                <span id="heroDirectiveAction">Reduce unilateral ARED load by 15% and engage 16 Hz Motor RAS entrainment.</span>
+              </div>
+            </div>
+
+            <footer class="card-footer-row">
+              <span class="footnote" id="privacyFooterNote">Active View: <strong>Astronaut Private Tablet</strong> (Full personal metrics, mood &amp; journal unlocked locally).</span>
+            </footer>
+          </article>
+
+          <!-- Clinical Findings & Autonomous Countermeasures -->
+          <article class="card">
+            <header class="card-header-flex">
+              <div>
+                <h3>Clinical Findings &amp; Autonomous Countermeasures</h3>
+                <p class="muted-sub">Covariant root-cause attribution grounded in NASA HRP &amp; NASA-STD-3001</p>
+              </div>
+            </header>
+            <ul class="findings-list" id="findingsList" role="list"></ul>
+            <div class="countermeasures-list" id="countermeasuresList"></div>
+          </article>
+
+          <!-- Empirical NASA OSDR OSD-571 Longitudinal Cohort Explorer -->
+          <article class="card">
+            <header class="card-header-flex">
+              <div>
+                <h3 id="osdrTableHeading">Empirical NASA OSDR OSD-571 Cohort Explorer</h3>
+                <p class="muted-sub">SpaceX Inspiration4 astronaut plasma proteomics (GLDS-563, N=4 crew &times; 6 timepoints)</p>
+              </div>
+              <div class="action-row">
+                <label class="inline-field" for="osdrCrewSelect">
+                  <span class="sr-only">Select OSDR astronaut cohort</span>
+                  <select id="osdrCrewSelect" name="osdrCrewSelect">
+                    <option value="MEAN" selected>Mean (C001–C004)</option>
+                    <option value="C001">Astronaut C001</option>
+                    <option value="C002">Astronaut C002</option>
+                    <option value="C003">Astronaut C003</option>
+                    <option value="C004">Astronaut C004</option>
+                  </select>
+                </label>
+                <button type="button" class="btn btn-secondary btn-xs" id="verifyOsdrBtn">
+                  <span>Verify NASA API</span>
+                </button>
+              </div>
+            </header>
+
+            <div class="osdr-status-box" id="osdrApiResult" hidden></div>
+
+            <div class="chart-stage">
+              <div class="chart-readout mono" id="osdrHoverReadout">Hover timepoints (L-92 &rarr; R+82) to inspect empirical &Delta;log10 fold shifts</div>
+              <canvas id="osdrChartCanvas" width="680" height="225" class="osdr-canvas" aria-label="Longitudinal log10 protein abundance trajectories across L-92, L-44, L-3, Immediate Return R+1, R+45, and R+82"></canvas>
+            </div>
+
+            <div tabindex="0" role="region" aria-labelledby="osdrTableHeading" class="table-wrapper">
+              <table class="data-table osdr-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Protein</th>
+                    <th scope="col">Clinical Hazard Signature</th>
+                    <th scope="col">Pre (log<sub>10</sub>)</th>
+                    <th scope="col">R+1 (log<sub>10</sub>)</th>
+                    <th scope="col">Fold Shift</th>
+                  </tr>
+                </thead>
+                <tbody id="osdrTableBody"></tbody>
+              </table>
+            </div>
+
+            <footer class="card-footer-row">
+              <span class="footnote">Source: <a href="https://osdr.nasa.gov/bio/repo/data/studies/OSD-571" target="_blank" rel="noopener noreferrer">NASA OSDR OSD-571 / GLDS-563</a> · Spaceflight hemolysis (HBA1 4.36x) &amp; oxidative surge (CAT 5.24x, PRDX2 5.09x).</span>
+            </footer>
+          </article>
+
+          <!-- Searchable Native <details> Disclosure for Logged Sol Check-Ins (search-hidden-content guide) -->
+          <details class="card disclosure-card">
+            <summary class="disclosure-summary">
+              <div>
+                <h3 id="historyHeading">Logged Sol Check-In History</h3>
+                <p class="muted-sub">Timestamped SQLite &amp; offline PWA check-ins with Mahalanobis D<sub>M</sub> and &chi;&sup2; probabilities</p>
+              </div>
+              <span class="disclosure-chevron" aria-hidden="true">▾</span>
+            </summary>
+            <div tabindex="0" role="region" aria-labelledby="historyHeading" class="table-wrapper" id="sessionHistoryBox">
+              <p class="muted-sub empty-pad">Click "Log Sol Check-In" to record a timestamped multivariate assessment.</p>
+            </div>
+          </details>
+        </section>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         TAB PANEL 2: NEURO-ACOUSTIC MUSIC THERAPY, 3D SONIFICATION & VOICE DSP
+         ====================================================================== -->
+    <div id="panelNeuroLab" role="tabpanel" aria-labelledby="tabNeuroLab" class="tab-panel" hidden>
+      <div class="neuro-studio-grid">
+        <!-- Left Studio Column: High-DPI Log-FFT Spectrum + 3D Kinematic Filter + Lissajous Vectorscope -->
+        <article class="card neuro-analyzer-card">
+          <header class="card-header-flex">
+            <div>
+              <h2>Closed-Loop Neuro-Acoustic Synthesizer &amp; 3D Sonification</h2>
+              <p class="muted-sub">Dichotic binaural entrainment · 3D joint-ROM low-pass filter &amp; trunk-tilt spatial panning</p>
+            </div>
+            <div class="neuro-rx-cluster">
+              <span class="studio-mode-badge" id="neuroRxBadge" role="status">
+                <span class="provenance-dot" aria-hidden="true"></span>
+                <span id="neuroRxText">Auto-Rx: Motor Cadence RAS (16 Hz · 64 BPM)</span>
+              </span>
+              <button type="button" class="btn btn-primary btn-sm" id="toggleNeuroPlayBtn" aria-pressed="false">
+                <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M4.2 2.8 13 8l-8.8 5.2V2.8Z"/></svg>
+                <span id="neuroPlayBtnLabel">Engage Audio Engine</span>
+              </button>
+            </div>
+          </header>
+
+          <div class="panel-mini-head">
+            <strong>64-Band Log-FFT Spectrum, 3D ROM Filter |H(f)| &amp; Stereo Lissajous Phase</strong>
+            <span class="micro-tag mono" id="acousticScopeStatusTag">PRE-ARMED · 3D ROM COUPLED</span>
+          </div>
+
+          <canvas id="acousticSpectrumCanvas" width="640" height="232" class="acoustic-canvas" aria-label="Dual acoustic analyzer displaying 64-band log-frequency FFT spectrum, 3D joint-ROM resonant filter cutoff curve, 0.10 Hz Mayer breathing guide, and L/R stereo Lissajous binaural phase vectorscope"></canvas>
+
+          <div class="acoustic-metrics-strip">
+            <div class="k-metric">
+              <span class="k-label">Binaural L / R</span>
+              <strong class="k-val mono" id="acCarrierVal">220.0 / 236.0 <small>Hz</small></strong>
+            </div>
+            <div class="k-metric">
+              <span class="k-label">3D ROM Filter f<sub>c</sub></span>
+              <strong class="k-val mono" id="acCutoffVal">1,480 <small>Hz</small></strong>
+            </div>
+            <div class="k-metric">
+              <span class="k-label">Spatial Tilt Pan</span>
+              <strong class="k-val mono" id="acPanVal">+0.31 <small>R</small></strong>
+            </div>
+            <div class="k-metric">
+              <span class="k-label">0.10 Hz Breath</span>
+              <strong class="k-val mono" id="acBreathVal">INHALE <small>4.0s</small></strong>
+            </div>
+          </div>
+
+          <!-- Accessible Verbatim Caption & Acoustic Event Transcript -->
+          <div class="transcript-box" id="acousticTranscriptBox" role="status" aria-live="polite">
+            <span class="transcript-tag mono">CAPTION //</span>
+            <span id="acousticTranscriptText">Neuro-acoustic DSP armed: 3D joint angles coupled to low-pass resonance filter (f_c) &amp; spatial tilt balance. Engage audio, trigger Flight Surgeon Voice, or run Formant Vocal Test.</span>
+          </div>
+        </article>
+
+        <!-- Right Studio Column: Protocols Mixer + AI Voice Flight Surgeon & Vocal Biomarker DSP -->
+        <div class="studio-column">
+          <article class="card">
+            <header>
+              <h3>Therapeutic Music Protocols &amp; Spatial Mixer</h3>
+              <p class="muted-sub">Rhythmic auditory stimulation, vagal HRV pacing &amp; 1/f pink-noise recovery</p>
+            </header>
+
+            <fieldset class="seg-group">
+              <legend class="sr-only">Neurologic music therapy protocol</legend>
+              <div class="seg-track seg-track-2x2">
+                <label class="seg-pill" title="16 Hz Beta binaural + polyrhythmic Lydian FM arpeggiator for motor symmetry">
+                  <input type="radio" name="neuroProtocolRadio" value="ras_motor" checked>
+                  <span>Motor RAS (16 Hz &beta;)</span>
+                </label>
+                <label class="seg-pill" title="0.10 Hz Mayer-wave 6-breaths/min vagal baroreflex pad + 10 Hz Alpha binaural">
+                  <input type="radio" name="neuroProtocolRadio" value="hrv_alpha">
+                  <span>0.1 Hz HRV (10 Hz &alpha;)</span>
+                </label>
+                <label class="seg-pill" title="40 Hz Gamma cognitive alertness entrainment + pentatonic harmonic pulse">
+                  <input type="radio" name="neuroProtocolRadio" value="gamma_focus">
+                  <span>Vigilance (40 Hz &gamma;)</span>
+                </label>
+                <label class="seg-pill" title="2.5 Hz Delta circadian/shelter recovery + Paul Kellet 7-pole 1/f Pink-Noise wash">
+                  <input type="radio" name="neuroProtocolRadio" value="delta_sleep">
+                  <span>Shelter (2.5 Hz &delta;)</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="dsp-toggles-row">
+              <button type="button" class="btn btn-secondary btn-xs" id="toggleAutoDuckBtn" aria-pressed="true">
+                <span>Sidechain Duck (&minus;10 dB)</span>
+              </button>
+              <button type="button" class="btn btn-secondary btn-xs" id="toggleAutoRxSyncBtn" aria-pressed="true">
+                <span>Auto-Rx Protocol Sync</span>
+              </button>
+            </div>
+
+            <div class="sliders-stack">
+              <div class="slider-row">
+                <label for="inAudioGain" class="slider-meta"><span>Master Music Gain</span><span><output class="mono" id="outAudioGain">65</output><small>%</small></span></label>
+                <input type="range" id="inAudioGain" min="5" max="100" step="1" value="65" aria-valuetext="65 percent">
+              </div>
+              <div class="slider-row">
+                <label for="inBinauralHz" class="slider-meta"><span>Dichotic Binaural &Delta;f</span><span><output class="mono" id="outBinauralHz">16.0</output><small>Hz</small></span></label>
+                <input type="range" id="inBinauralHz" min="1.5" max="42.0" step="0.5" value="16.0" aria-valuetext="16.0 Hertz">
+              </div>
+              <div class="slider-row">
+                <label for="inKinCoupling" class="slider-meta"><span>3D ROM Sonification</span><span><output class="mono" id="outKinCoupling">82</output><small>%</small></span></label>
+                <input type="range" id="inKinCoupling" min="0" max="100" step="2" value="82" aria-valuetext="82 percent">
+              </div>
+              <div class="slider-row">
+                <label for="inNeuroTempo" class="slider-meta"><span>Entrainment Tempo</span><span><output class="mono" id="outNeuroTempo">72</output><small>BPM</small></span></label>
+                <input type="range" id="inNeuroTempo" min="42" max="132" step="1" value="72" aria-valuetext="72 beats per minute">
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <header class="card-header-flex">
+              <div>
+                <h3>AI Voice Flight Surgeon &amp; Vocal Stress DSP</h3>
+                <p class="muted-sub">85 Hz rumble filter · +4.5 dB @ 3.2 kHz presence EQ · Boersma F<sub>0</sub>/jitter/HNR</p>
+              </div>
+            </header>
+
+            <div class="voice-btn-grid">
+              <button type="button" class="btn btn-secondary btn-sm" id="speakBriefingBtn" aria-pressed="false">
+                <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2h2.6L8.8 3v10L5.1 9.8H2.5v-3.6Z"/><path d="M11.2 5.4a3.8 3.8 0 0 1 0 5.2"/></svg>
+                <span id="speakBriefingLabel">Flight Surgeon Voice</span>
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="voiceCmdBtn" aria-pressed="false">
+                <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="2" width="5" height="7.5" rx="2.5"/><path d="M3.5 7.8a4.5 4.5 0 0 0 9 0M8 12.3v2M5.5 14.3h5"/></svg>
+                <span id="voiceCmdLabel">Voice Command</span>
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="micVocalBtn" aria-pressed="false">
+                <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h2l1.8-4.5 2.4 9 2.2-6.5 1.6 2H14"/></svg>
+                <span id="micVocalLabel">Live Mic Vocal DSP</span>
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="synthVocalBtn" aria-pressed="false">
+                <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M5.5 8h1.2l1.1-2.5 1.4 5 1.1-2.5h1.2"/></svg>
+                <span id="synthVocalLabel">Formant Vocal Test</span>
+              </button>
+            </div>
+
+            <div class="vocal-biomarker-grid">
+              <div class="k-metric">
+                <span class="k-label">Pitch F<sub>0</sub></span>
+                <strong class="k-val mono" id="vocalF0Val">— <small>Hz</small></strong>
+              </div>
+              <div class="k-metric">
+                <span class="k-label">Glottal Jitter</span>
+                <strong class="k-val mono" id="vocalJitterVal">— <small>%</small></strong>
+              </div>
+              <div class="k-metric">
+                <span class="k-label">HNR Clarity</span>
+                <strong class="k-val mono" id="vocalHnrVal">— <small>dB</small></strong>
+              </div>
+              <div class="k-metric">
+                <span class="k-label">Vocal Stress</span>
+                <strong class="k-val mono" id="vocalStressVal">Standby</strong>
+              </div>
+            </div>
+
+            <div class="voice-coach-row">
+              <button type="button" class="btn btn-secondary btn-xs" id="voiceRepCoachBtn" aria-pressed="false">
+                <span>Spoken Cycle &amp; Symmetry Coach</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         TAB PANEL 3: CONNECTED APPLE WATCH, MOBILE KINEMATICS APP & LIVE API
+         ====================================================================== -->
+    <div id="panelEdgeApi" role="tabpanel" aria-labelledby="tabEdgeApi" class="tab-panel" hidden>
+      <article class="card">
+        <header class="card-header-flex">
+          <div>
+            <h2>Connected Crew Edge Mesh: Apple Watch + Mobile Kinematics App &rarr; Fusion Hub</h2>
+            <p class="muted-sub">Stream Apple Watch HealthKit vitals, 100 Hz wrist tremor, and mobile 3D kinematics into the live FastAPI telemetry hub for closed-loop wrist haptics.</p>
+          </div>
+
+          <div class="action-row">
+            <button type="button" class="btn btn-primary btn-sm" id="toggleEdgeStreamBtn" aria-pressed="false">
+              <svg class="icon-svg" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M4.2 2.8 13 8l-8.8 5.2V2.8Z"/></svg>
+              <span id="edgeStreamBtnLabel">Start 1 Hz Live Stream</span>
+            </button>
+            <a href="/docs" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+              <span>OpenAPI Docs (/docs)</span>
+            </a>
+          </div>
+        </header>
+
+        <div class="mesh-topology-grid">
+          <div class="mesh-node-card">
+            <div class="mesh-node-head">
+              <span class="status-pill status-nominal">BLE / Wi-Fi</span>
+              <span class="mono sol-tag">100 Hz IMU + PPG</span>
+            </div>
+            <h3>Apple Watch Ultra 2</h3>
+            <p class="muted-sub">HealthKit vitals + CMMotionManager 4–12 Hz wrist tremor</p>
+            <div class="watch-face-preview">
+              <div class="watch-ring">
+                <span class="watch-ring-lbl">READY</span>
+                <strong class="mono" id="watchRingScoreVal">44.7</strong>
+              </div>
+              <div class="watch-metrics mono">
+                <div id="watchLiveMetricsLine1">HR: 72 bpm · HRV: 47 ms</div>
+                <div id="watchLiveMetricsLine2">SpO₂: 97.9% · Tremor: 0.65 mm</div>
+                <div class="watch-haptic-line" id="watchHapticReadout">HAPTIC: WKHapticType.failure</div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-secondary btn-xs" id="pushWatchPacketBtn">Push Watch Packet</button>
+          </div>
+
+          <div class="mesh-node-card">
+            <div class="mesh-node-head">
+              <span class="status-pill status-nominal">On-Device AI</span>
+              <span class="mono sol-tag">iOS / Android</span>
+            </div>
+            <h3>Mobile Kinematics App</h3>
+            <p class="muted-sub">Handheld 3D pose &amp; exercise metric extraction at ARED bay</p>
+            <div class="node-kv-list mono" id="mobileNodeReadout">
+              <div><span>Protocol</span> <strong>ared_squat</strong></div>
+              <div><span>3D Joint ROM</span> <strong>94.0° / 118°</strong></div>
+              <div><span>L/R Symmetry</span> <strong>81.5%</strong></div>
+              <div><span>3D Trunk Lean</span> <strong>14.6° · 12 RPM</strong></div>
+            </div>
+            <button type="button" class="btn btn-secondary btn-xs" id="pushMobilePacketBtn">Push Mobile Burst</button>
+          </div>
+
+          <div class="mesh-node-card">
+            <div class="mesh-node-head">
+              <span class="status-pill status-watch">MIL-STD-1553</span>
+              <span class="mono sol-tag">Habitat Bus</span>
+            </div>
+            <h3>Habitat ECLSS &amp; Dosimetry</h3>
+            <p class="muted-sub">CDRA cabin CO₂ scrubber &amp; TEPC radiation dosimeter</p>
+            <div class="node-kv-list mono" id="eclssNodeReadout">
+              <div><span>Cabin ppCO₂</span> <strong>1.90 mmHg</strong></div>
+              <div><span>Radiation</span> <strong>0.58 mSv/day</strong></div>
+              <div><span>Comm Link</span> <strong>mars_transit</strong></div>
+              <div><span>NASA Limit</span> <strong>&lt;2.0 mmHg CO₂</strong></div>
+            </div>
+            <button type="button" class="btn btn-secondary btn-xs" id="pushEclssPacketBtn">Push ECLSS Packet</button>
+          </div>
+
+          <div class="mesh-node-card mesh-hub-highlight">
+            <div class="mesh-node-head">
+              <span class="badge badge-alert" id="hubSeverityBadge"><span aria-hidden="true">◆</span> Alert Hub</span>
+              <span class="mono sol-tag" id="apiLatencyVal">RTT: Ready</span>
+            </div>
+            <h3>AstroKinetics Fusion Hub</h3>
+            <p class="muted-sub">Stateful digital twin + 8-DOF Mahalanobis &chi;&sup2; + closed-loop Rx</p>
+            <div class="node-kv-list mono">
+              <div><span>Ingested</span> <strong id="fusedPacketCountVal">0 packets</strong></div>
+              <div><span>Fused D<sub>M</sub> (p)</span> <strong id="hubMahalanobisVal">6.99 (&lt;0.0001)</strong></div>
+              <div><span>Top Driver</span> <strong id="hubDriverVal">Bilateral Symmetry</strong></div>
+              <div><span>Audio Rx</span> <strong id="hubAudioRxVal">16 Hz · 64 BPM</strong></div>
+            </div>
+            <button type="button" class="btn btn-primary btn-xs" id="jumpToConsoleFromApiBtn">Inspect on Console &rarr;</button>
+          </div>
+        </div>
+      </article>
+
+      <div class="api-workbench-grid">
+        <article class="card">
+          <header class="card-header-flex">
+            <div>
+              <h3>Live REST API Sandbox</h3>
+              <p class="muted-sub">POST /api/ingest/edge-telemetry — updates the active Mission Console state</p>
+            </div>
+            <span class="status-pill status-nominal mono" id="apiResponseBadge">HTTP 200 Ready</span>
+          </header>
+
+          <fieldset class="seg-group">
+            <legend class="micro-label">Device Payload Preset</legend>
+            <div class="seg-track">
+              <label class="seg-pill">
+                <input type="radio" name="apiPresetRadio" value="watch_vitals" checked>
+                <span>Apple Watch</span>
+              </label>
+              <label class="seg-pill">
+                <input type="radio" name="apiPresetRadio" value="mobile_kinematics">
+                <span>Mobile App</span>
+              </label>
+              <label class="seg-pill">
+                <input type="radio" name="apiPresetRadio" value="combined_bridge">
+                <span>Watch + iOS</span>
+              </label>
+              <label class="seg-pill">
+                <input type="radio" name="apiPresetRadio" value="spe_watch_alert">
+                <span>SPE Storm</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div>
+            <label for="apiRequestEditor" class="micro-label">Request JSON Payload</label>
+            <textarea id="apiRequestEditor" class="code-editor mono" rows="11" spellcheck="false"></textarea>
+          </div>
+
+          <div class="action-row">
+            <button type="button" class="btn btn-primary btn-sm" id="sendApiPostBtn">
+              <span>Execute Live POST /api/ingest/edge-telemetry</span>
+            </button>
+          </div>
+
+          <div>
+            <span class="micro-label">Live Server Response (Mahalanobis + Watch Haptic Directive)</span>
+            <pre class="code-packet mono api-response-pre" id="apiResponsePre"></pre>
+          </div>
+        </article>
+
+        <div class="studio-column">
+          <article class="card">
+            <header class="card-header-flex">
+              <div>
+                <h3>Drop-In Watch &amp; Mobile Integration Code</h3>
+                <p class="muted-sub">Pre-configured for this live endpoint in Swift, cURL, or Python</p>
+              </div>
+              <button type="button" class="btn btn-secondary btn-xs" id="copySdkCodeBtn">Copy Snippet</button>
+            </header>
+
+            <fieldset class="seg-group">
+              <legend class="micro-label">Client Language</legend>
+              <div class="seg-track seg-track-3">
+                <label class="seg-pill">
+                  <input type="radio" name="sdkLangRadio" value="swift" checked>
+                  <span>Swift (HealthKit + iOS)</span>
+                </label>
+                <label class="seg-pill">
+                  <input type="radio" name="sdkLangRadio" value="curl">
+                  <span>cURL</span>
+                </label>
+                <label class="seg-pill">
+                  <input type="radio" name="sdkLangRadio" value="python">
+                  <span>Python Bridge</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <pre class="code-packet mono sdk-code-pre" id="sdkCodePre"></pre>
+          </article>
+
+          <article class="card">
+            <header class="card-header-flex">
+              <div>
+                <h3 id="edgeStreamTableHeading">Live Ingested Telemetry Stream</h3>
+                <p class="muted-sub">Recent packets from Apple Watch, Mobile Kinematics App &amp; ECLSS</p>
+              </div>
+            </header>
+            <div tabindex="0" role="region" aria-labelledby="edgeStreamTableHeading" class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Packet</th>
+                    <th scope="col">Source</th>
+                    <th scope="col">Channels</th>
+                    <th scope="col">D<sub>M</sub> (Score)</th>
+                    <th scope="col">Wrist Haptic</th>
+                  </tr>
+                </thead>
+                <tbody id="edgePacketTableBody">
+                  <tr>
+                    <th scope="row">Ready</th>
+                    <td>Apple Watch + Mobile</td>
+                    <td>16-ch Mesh</td>
+                    <td class="mono">—</td>
+                    <td>Click "Execute Live POST" or "Start 1 Hz Live Stream"</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Settings & Crew Privacy Modal Dialog -->
+  <dialog id="settingsDialog" closedby="any" aria-labelledby="settingsDialogTitle">
+    <form method="dialog" class="dialog-inner">
+      <header class="dialog-header">
+        <div>
+          <h2 id="settingsDialogTitle">Crew Privacy Governance, Comm Link &amp; Display</h2>
+          <p class="muted-sub">Configure confined-habitat medical data locks and theme preferences</p>
+        </div>
+        <button type="submit" class="btn btn-secondary btn-xs" aria-label="Close">Close</button>
+      </header>
+
+      <div class="dialog-section">
+        <label for="privacyTierSelect" class="dialog-label">Crew Data Privacy Tier</label>
+        <p class="muted-sub">Controls visibility of personal behavioral mood &amp; journal logs across crew roles.</p>
+        <select id="privacyTierSelect" name="privacyTierSelect" class="full-select">
+          <option value="astronaut_private">Astronaut Private Tablet (Full personal metrics, mood &amp; journal unlocked)</option>
+          <option value="cmo_operational">Crew Medical Officer View (Mood &amp; journal locked unless life-safety alert)</option>
+          <option value="flight_surgeon_packet">Earth Flight Surgeon Store-and-Forward Downlink View</option>
+        </select>
+      </div>
+
+      <div class="dialog-section">
+        <label for="commModeSelect" class="dialog-label">Deep-Space Communication Link State</label>
+        <p class="muted-sub">Tests Earth-independent PWA offline autonomy and Store-and-Forward telemetry queuing.</p>
+        <select id="commModeSelect" name="commModeSelect" class="full-select">
+          <option value="iss_live">ISS / Lunar Near-Side (0.8s Latency · Live NASA OSDR Sync)</option>
+          <option value="lunar_farside">Lunar Far-Side Outpost (Relay Window Delay · Edge Autonomous)</option>
+          <option value="mars_transit" selected>Mars Transit Cruise (18m 20s One-Way · Store-and-Forward Queue)</option>
+          <option value="solar_blackout">Solar Conjunction Blackout (Zero Earth Link · 100% Onboard Edge)</option>
+        </select>
+      </div>
+
+      <div class="dialog-section">
+        <span class="dialog-label">Workstation Color Scheme</span>
+        <p class="muted-sub">Follows OS/habitat lighting by default; manual pins persist without flash.</p>
+        <fieldset class="theme-fieldset">
+          <legend class="sr-only">Color scheme preference</legend>
+          <label class="radio-pill">
+            <input type="radio" name="colorSchemePref" value="system" checked>
+            <span id="systemThemeLabel">System (Automatic)</span>
+          </label>
+          <label class="radio-pill">
+            <input type="radio" name="colorSchemePref" value="light">
+            <span>Light Clinical</span>
+          </label>
+          <label class="radio-pill">
+            <input type="radio" name="colorSchemePref" value="dark">
+            <span>Dark Mission Control</span>
+          </label>
+        </fieldset>
+      </div>
+
+      <footer class="dialog-footer">
+        <button type="submit" class="btn btn-primary btn-sm">Apply &amp; Close</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Store-and-Forward Flight Surgeon Telemetry Packet Modal Dialog -->
+  <dialog id="packetDialog" closedby="any" aria-labelledby="packetDialogTitle">
+    <form method="dialog" class="dialog-inner dialog-wide">
+      <header class="dialog-header">
+        <div>
+          <h2 id="packetDialogTitle">Store-and-Forward Flight Surgeon Downlink Packet</h2>
+          <p class="muted-sub">Privacy-governed NASA ExMC JSON payload with 3D kinematics, Neuro-Acoustic Rx &amp; 8-DOF Mahalanobis attribution</p>
+        </div>
+        <button type="submit" class="btn btn-secondary btn-xs">Close</button>
+      </header>
+      <pre class="code-packet mono" id="packetPre"></pre>
+      <footer class="dialog-footer">
+        <button type="button" class="btn btn-secondary btn-sm" id="copyPacketBtn">Copy JSON Payload</button>
+        <button type="submit" class="btn btn-primary btn-sm">Done</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script type="module" src="/static/app.js?v=3.4.0"></script>
+</body>
+</html>

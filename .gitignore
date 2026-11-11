@@ -1,0 +1,23 @@
+# Python & runtime artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets & environment
+.env
+.env.*
+!.env.example
+
+# OS & editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Superseded local drafts & private notes
+submission_package/_archive_v33/
+submission_package/email_final_followup.txt
