@@ -5712,3 +5712,23 @@
     filter: brightness(1.08);
   }
 }
+
+/* Team mark in the header. The mark is drawn in white, so it always sits on a dark chip. */
+@layer components {
+  .brand-team-mark {
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 2.3rem;
+    block-size: 2.3rem;
+    border-radius: 0.6rem;
+    background-color: #0b111f;
+    border: 1px solid var(--border-control);
+
+    & img {
+      inline-size: 1.75rem;
+      block-size: auto;
+      display: block;
+    }
+  }
+}

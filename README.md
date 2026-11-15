@@ -99,6 +99,6 @@ Then open `http://localhost:8080` (and `http://localhost:8080/docs` for interact
 ## Credits, third-party material and licensing
 
 - **AstroKinetics application code** (this repository, unless listed below): MIT, see [`LICENSE`](./LICENSE).
-- **ASTRA companion material** — the orbital story, the Watch + iPhone guided demo, the 29-second ASTRA film and the knowledge bundle under `webapp/static/showcase/`, `submission_package/assets/astra/` and `webapp/data/astra_*.json` / `aura_nasa_corpus.json` — comes from the ASTRA Space Health Companion project led by Carlos Jaimes and is included here for the joint Team AI-MED 01 Space Apps submission. **It is not covered by this repository's MIT license**; see [`NOTICE.md`](./NOTICE.md).
+- **ASTRA companion material** — the orbital story, the Watch + iPhone guided demo, the 29-second ASTRA film and the knowledge bundle — was contributed by Carlos Jaimes and the ASTRA team for the joint Team AI-MED 01 submission and is released here under the same **MIT License**.
 - **3D anatomy model** — BodyParts3D 4.0, © The Database Center for Life Science, **CC BY 4.0**, via the Human Atlas project (MIT). See [`webapp/static/atlas/ATTRIBUTION.md`](./webapp/static/atlas/ATTRIBUTION.md).
 - NASA data and scientific sources are listed in the sections above and in the portal's Evidence tab.

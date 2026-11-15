@@ -32,22 +32,22 @@
         demo: "02 Watch + iPhone Demo",
         studio: "03 3D Twin Lab",
         film: "0:29 Film",
-        askBtn: "Ask ASTRA · Grok Voice",
-        grokPill: "Grok Voice AI",
-        narrate: "🔊 Narrate with Grok",
+        askBtn: "Ask ASTRA",
+        grokPill: "ASTRA Voice",
+        narrate: "🔊 Narrate",
         narrating: "🔊 Narrating Live",
         studioStory: "Orbital Story",
         studioDemo: "Watch + iPhone Demo",
       },
       ui: {
-        title: "ASTRA × Grok Voice",
+        title: "ASTRA Voice",
         badgeLive: "clawagents · Live",
-        readyState: "READY · GROK VOICE NEURAL AUDIO",
-        thinkingState: "REASONING WITH CLAWAGENTS + GROK…",
-        speakingState: "SPEAKING VIA XAI GROK VOICE…",
+        readyState: "READY",
+        thinkingState: "THINKING…",
+        speakingState: "SPEAKING…",
         listeningState: "LISTENING TO CREW VOICE…",
         welcome:
-          "Hi, I’m ASTRA powered by ClawAgents and xAI Grok Voice. Ask anything about astronaut baselines, try our Day 12 triage, or ask me to switch modes or launch the demo.",
+          "Hi, I’m ASTRA. Ask anything about astronaut baselines, try our Day 12 triage, or ask me to switch modes or launch the demo.",
         placeholder: "Ask ASTRA or say “launch demo”…",
         send: "Send",
         chips: [
@@ -131,22 +131,22 @@
         demo: "02 Demo Watch + iPhone",
         studio: "03 Lab 3D",
         film: "0:29 Video",
-        askBtn: "Hablar con ASTRA · Voz Grok",
-        grokPill: "Voz IA Grok",
-        narrate: "🔊 Narrar con Grok",
+        askBtn: "Hablar con ASTRA",
+        grokPill: "Voz ASTRA",
+        narrate: "🔊 Narrar",
         narrating: "🔊 Narrando en vivo",
         studioStory: "Historia Orbital",
         studioDemo: "Demo Watch + iPhone",
       },
       ui: {
-        title: "ASTRA × Voz Grok",
+        title: "Voz ASTRA",
         badgeLive: "clawagents · Activo",
-        readyState: "LISTO · VOZ NEURONAL GROK",
-        thinkingState: "RAZONANDO CON CLAWAGENTS + GROK…",
-        speakingState: "HABLANDO CON XAI GROK VOICE…",
+        readyState: "LISTO",
+        thinkingState: "PENSANDO…",
+        speakingState: "HABLANDO…",
         listeningState: "ESCUCHANDO A LA TRIPULACIÓN…",
         welcome:
-          "Hola, soy ASTRA con ClawAgents y Grok Voice de xAI. Pregúntame cómo cambia lo normal en órbita, prueba el triaje del Día 12 o pídeme abrir el demo interactivo.",
+          "Hola, soy ASTRA. Pregúntame cómo cambia lo normal en órbita, prueba el triaje del Día 12 o pídeme abrir el demo interactivo.",
         placeholder: "Pregunta a ASTRA o di “abrir demo”…",
         send: "Enviar",
         chips: [
@@ -230,22 +230,22 @@
         demo: "02 Démo Watch + iPhone",
         studio: "03 Labo 3D",
         film: "0:29 Film",
-        askBtn: "Parler à ASTRA · Voix Grok",
-        grokPill: "Voix IA Grok",
-        narrate: "🔊 Lire avec Grok",
+        askBtn: "Parler à ASTRA",
+        grokPill: "Voix ASTRA",
+        narrate: "🔊 Lire à voix haute",
         narrating: "🔊 Narration active",
         studioStory: "Récit Orbital",
         studioDemo: "Démo Watch + iPhone",
       },
       ui: {
-        title: "ASTRA × Voix Grok",
+        title: "Voix ASTRA",
         badgeLive: "clawagents · Actif",
-        readyState: "PRÊT · SYNTHÈSE VOCALE GROK",
-        thinkingState: "ANALYSE CLAWAGENTS + GROK…",
-        speakingState: "VOIX NEURONALE GROK EN COURS…",
+        readyState: "PRÊT",
+        thinkingState: "RÉFLEXION…",
+        speakingState: "PAROLE EN COURS…",
         listeningState: "ÉCOUTE DE L'ÉQUIPAGE…",
         welcome:
-          "Bonjour, je suis ASTRA propulsé par ClawAgents et xAI Grok Voice. Demandez comment la normale évolue en orbite, testez le triage du Jour 12 ou lancez la démo guidée.",
+          "Bonjour, je suis ASTRA. Demandez comment la normale évolue en orbite, testez le triage du Jour 12 ou lancez la démo guidée.",
         placeholder: "Posez une question ou dites « lancer la démo »…",
         send: "Envoyer",
         chips: [
@@ -329,22 +329,22 @@
         demo: "02 Watch + iPhone デモ",
         studio: "03 3Dラボ",
         film: "0:29 映像",
-        askBtn: "ASTRAに質問 · Grok音声",
-        grokPill: "Grok音声AI",
-        narrate: "🔊 Grokで音声解説",
+        askBtn: "ASTRAに質問",
+        grokPill: "ASTRA音声",
+        narrate: "🔊 音声解説",
         narrating: "🔊 音声解説中",
         studioStory: "軌道ストーリー",
         studioDemo: "Watch + iPhone デモ",
       },
       ui: {
-        title: "ASTRA × Grok 音声AI",
+        title: "ASTRA 音声",
         badgeLive: "clawagents · 稼働中",
-        readyState: "準備完了 · GROK ニューラル音声",
-        thinkingState: "CLAWAGENTS + GROK で推論中…",
-        speakingState: "XAI GROK 音声で回答中…",
+        readyState: "準備完了",
+        thinkingState: "考え中…",
+        speakingState: "回答中…",
         listeningState: "音声を聞き取っています…",
         welcome:
-          "こんにちは。ClawAgentsとxAI Grok Voiceで動くASTRAです。軌道上の正常値変化や12日目のトリアージについて質問するか、デモの起動を音声で指示してください。",
+          "こんにちは、ASTRAです。軌道上の正常値変化や12日目のトリアージについて質問するか、デモの起動を音声で指示してください。",
         placeholder: "質問を入力、または「デモを開いて」…",
         send: "送信",
         chips: [
@@ -427,22 +427,22 @@
         demo: "02 手表+手机演示",
         studio: "03 3D数字孪生",
         film: "0:29 影片",
-        askBtn: "唤醒 ASTRA · Grok 语音",
-        grokPill: "Grok 语音 AI",
-        narrate: "🔊 Grok 语音解说",
+        askBtn: "唤醒 ASTRA",
+        grokPill: "ASTRA 语音",
+        narrate: "🔊 语音解说",
         narrating: "🔊 正在语音解说",
         studioStory: "返回故事",
         studioDemo: "手表+手机演示",
       },
       ui: {
-        title: "ASTRA × Grok 语音助手",
+        title: "ASTRA 语音助手",
         badgeLive: "clawagents · 在线",
-        readyState: "就绪 · XAI GROK 神经网络语音",
-        thinkingState: "CLAWAGENTS + GROK 正在推理…",
-        speakingState: "正在播放 GROK 语音回复…",
+        readyState: "就绪",
+        thinkingState: "正在思考…",
+        speakingState: "正在回答…",
         listeningState: "正在聆听航天员语音…",
         welcome:
-          "你好，我是由 ClawAgents 与 xAI Grok Voice 驱动的 ASTRA 智能伴侣。欢迎询问轨道基线变化、体验第12天症状分诊，或直接让我打开互动演示。",
+          "你好，我是 ASTRA 智能伴侣。欢迎询问轨道基线变化、体验第12天症状分诊，或直接让我打开互动演示。",
         placeholder: "输入问题或说“打开演示”…",
         send: "发送",
         chips: [
@@ -525,22 +525,22 @@
         demo: "02 Watch + iPhone Demo",
         studio: "03 3D-Labor",
         film: "0:29 Film",
-        askBtn: "ASTRA fragen · Grok Voice",
-        grokPill: "Grok Voice KI",
-        narrate: "🔊 Mit Grok vorlesen",
-        narrating: "🔊 Grok spricht mit",
+        askBtn: "ASTRA fragen",
+        grokPill: "ASTRA Voice",
+        narrate: "🔊 Vorlesen",
+        narrating: "🔊 Liest vor",
         studioStory: "Orbital-Story",
         studioDemo: "Watch + iPhone Demo",
       },
       ui: {
-        title: "ASTRA × Grok Voice",
+        title: "ASTRA Voice",
         badgeLive: "clawagents · Aktiv",
-        readyState: "BEREIT · GROK NEURAL VOICE",
-        thinkingState: "CLAWAGENTS + GROK ANALYSIEREN…",
-        speakingState: "XAI GROK VOICE SPRICHT…",
+        readyState: "BEREIT",
+        thinkingState: "DENKT NACH…",
+        speakingState: "SPRICHT…",
         listeningState: "HÖRE CREW-SPRACHE ZU…",
         welcome:
-          "Hallo, ich bin ASTRA mit ClawAgents und xAI Grok Voice. Fragen Sie mich zur Orbit-Basislinie, testen Sie Tag 12 oder starten Sie per Sprache die interaktive Demo.",
+          "Hallo, ich bin ASTRA. Fragen Sie mich zur Orbit-Basislinie, testen Sie Tag 12 oder starten Sie per Sprache die interaktive Demo.",
         placeholder: "Frage stellen oder „Demo öffnen“ sagen…",
         send: "Senden",
         chips: [
@@ -1964,7 +1964,7 @@
     return (
       '<span class="astra-lang-wrap ' +
       (extraClass || "") +
-      '" title="Switch portal & Grok Voice language">' +
+      '" title="Switch language">' +
       '<span aria-hidden="true">🌐</span>' +
       '<select class="astra-lang-select" aria-label="Language">' +
       opts +
@@ -2169,7 +2169,7 @@
     drawer.id = "astraGrokDrawer";
     drawer.className = "astra-grok-drawer";
     drawer.hidden = true;
-    drawer.setAttribute("aria-label", "ASTRA Grok Voice Copilot");
+    drawer.setAttribute("aria-label", "ASTRA voice assistant");
     drawer.innerHTML =
       '<div class="astra-gd-head">' +
         '<div class="astra-gd-title">' +
@@ -2183,7 +2183,7 @@
         "</div>" +
       "</div>" +
       '<div class="astra-gd-controls">' +
-        '<select id="astraVoiceSelect" class="astra-gd-select" aria-label="Grok Voice Persona">' +
+        '<select id="astraVoiceSelect" class="astra-gd-select" aria-label="Voice">' +
           VOICES.map(function (v) {
             return '<option value="' + v.id + '"' + (v.id === currentVoice ? " selected" : "") + ">" + v.label + "</option>";
           }).join("") +

@@ -1,5 +1,7 @@
 # 2026 NASA International Space Apps Challenge — Turnkey Portal Submission Packet
 
+> **Use `Space_Apps_Portal_Form_Answers.docx` for the form.** It holds the current v5.1 answers for every field; Fields 4 to 6 below are the longer v3.4 text kept for reference.
+
 - **Local Event:** Houston, TX (`https://www.spaceappschallenge.org/2026/local-events/houston/`)
 - **Official Challenge:** *Create Health Monitoring Software for Astronauts on Space Missions* (`Intermediate` · `Human Exploration`, `Software`, `Space Exploration`)
 - **Hard Portal Cutoff:** **Sunday, November 15, 2026 at 11:59 PM (23:59) CST**
@@ -15,14 +17,14 @@
 
 ## Field 1 — Project Name
 ```text
-AstroKinetics: Autonomous 3D Neuromotor, Multi-Sensor & Neuro-Acoustic Crew Health Suite
+AstroKinetics · ASTRA: Autonomous 3D Crew Health Workstation with a Watch + iPhone Companion
 ```
 
 ---
 
-## Field 2 — High-Level Project Summary *(118 words — fits standard 50–150 word limit)*
+## Field 2 — High-Level Project Summary *(119 words — fits standard 50–150 word limit)*
 ```text
-On Artemis lunar stays and Mars missions with 44-minute communication blackouts, astronauts cannot rely on real-time Earth flight surgeons. AstroKinetics is an offline-first Progressive Web App and wearable fusion hub that empowers crew to gather, evaluate, and act on multi-system health drift autonomously. Using an ordinary cabin camera plus a live Apple Watch and Mobile Kinematics REST API, AstroKinetics fuses adaptive 3D musculoskeletal biomechanics, 478-point cranio-facial POS-rPPG, 21-joint hand tremor, vocal stress biomarkers, cognitive PVT latency, and habitat CO2/radiation into an 8-DOF Multivariate Mahalanobis covariance engine anchored to empirical NASA OSDR OSD-571 proteomics. Within milliseconds offline, it isolates environmental versus physiological root causes and prescribes NASA-STD-3001 countermeasures, closed-loop neuro-acoustic therapy, wrist haptics, and privacy-tiered flight-surgeon downlinks.
+On Artemis lunar stays and Mars transits, a question to Earth can take 44 minutes to answer, so the crew must be its own clinic. AstroKinetics · ASTRA is an offline-first web workstation that helps astronauts gather, evaluate and act on health drift without a flight surgeon on the line. A cabin camera tracks movement, tremor and pulse in 3D; a watch and a phone learn each astronaut's personal baseline on Earth and move it into orbit. Every signal lands on one 3D body map. An emergency red-flag gate runs first, then an 8-signal multivariate model anchored to NASA OSDR OSD-571 separates environmental from physiological causes and proposes NASA-STD-3001 countermeasures, with every answer showing its source and its limits.
 ```
 
 ---
@@ -30,7 +32,7 @@ On Artemis lunar stays and Mars missions with 44-minute communication blackouts,
 ## Field 3 — Project Links *(Paste on Submission Page)*
 - **Live Zero-Install Application (HTTPS):** `https://astrokinetics-space-health-765428358644.us-central1.run.app`
 - **Project Demo (`<= 30s` Video OR `<= 7-Slide` Deck):**
-  - *30-Second Video File (upload to YouTube Public/Unlisted or Google Drive Public):* `AstroKinetics_ASTRA_30s_Final_Demo.mp4` (`29.23s`, 1080p, burned-in English captions, Grok Voice narration, original score, recorded entirely from the live v5.1 portal)
+  - *30-Second Video File (upload to YouTube Public/Unlisted or Google Drive Public):* `AstroKinetics_ASTRA_30s_Final_Demo.mp4` (`29.23s`, 1080p, burned-in English captions, AI voice-over, original score, recorded entirely from the live v5.1 portal)
   - *Already-public link to the same video (works without YouTube):* `https://astrokinetics-space-health-765428358644.us-central1.run.app/video`
   - *7-Slide Executive Pitch Deck (Backup / Local Pitch):* `AstroKinetics_7Slide_Pitch_Deck.pptx` / `AstroKinetics_7Slide_Pitch_Deck.pdf`
 - **Public Open-Source GitHub Repository:** `https://github.com/x1jiang/astrokinetics` (MIT License)

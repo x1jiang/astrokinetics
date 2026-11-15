@@ -1,8 +1,8 @@
 """
 Final 30-second demo video for the AstroKinetics · ASTRA portal (v5.1).
 
-Records the LIVE portal in real motion (no mock-ups), narrates it with xAI Grok Voice through the
-portal's own /api/voice/tts endpoint, and assembles a 1920x1080, 30 fps H.264 film that stays
+Records the portal in real motion (no mock-ups), narrates it through the portal's own
+/api/voice/tts endpoint (xAI Grok Voice), and assembles a 1920x1080, 30 fps H.264 film that stays
 under the NASA Space Apps 30-second cap.
 
 Story: camera-based 3D monitoring -> watch and phone baseline -> one body map with real anatomy and
@@ -142,7 +142,7 @@ OVERLAY_JS = r"""
   document.head.appendChild(css);
   const layer = document.createElement('div');
   layer.id = 'akFilmLayer';
-  layer.innerHTML = `<div id="akEnd"><div class="box"><h1>AstroKinetics <span>&middot;</span> ASTRA</h1>
+  layer.innerHTML = `<div id="akEnd"><div class="box"><img src="/static/showcase/brand/ai-med.svg" alt="" style="width:150px;height:auto;margin-bottom:18px"><h1>AstroKinetics <span>&middot;</span> ASTRA</h1>
       <p>Autonomous crew health for missions beyond Earth</p>
       <div class="url">astrokinetics-space-health-765428358644.us-central1.run.app</div>
       <div class="team">Team AI-MED 01 &middot; Houston &middot; NASA Space Apps 2026</div></div></div>
