@@ -21,3 +21,6 @@ venv/
 # Superseded local drafts & private notes
 submission_package/_archive_v33/
 submission_package/email_final_followup.txt
+
+# Local agent scratch memory
+.clawagents/

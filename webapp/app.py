@@ -23,24 +23,33 @@ import httpx
 import numpy as np
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from scipy.stats import chi2
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
+SHOWCASE_DIR = STATIC_DIR / "showcase"
 DATA_DIR = BASE_DIR / "data"
 DB_PATH = Path(os.environ.get("ASTROKINETICS_DB", "/tmp/astrokinetics_sessions_v2.db"))
 
+from astra_companion import (
+    AURA_CORPUS,
+    EMPIRICAL_SUPPLEMENTS,
+    KNOWLEDGE_BUNDLE,
+    astra_router,
+    init_astra_db,
+)
+from grok_claw_voice import voice_router
+
 app = FastAPI(
-    title="AstroKinetics v3.4 — NASA Space Apps 2026 Astronaut Health & Neuro-Acoustic Suite",
-    version="3.4.0",
+    title="AstroKinetics · ASTRA v5.0 — Autonomous Astronaut Health Showcase, Watch/iPhone Demo & Grok Voice Suite",
+    version="5.0.0",
     description=(
-        "Offline-first astronaut health monitoring suite featuring adaptive multi-zone 3D MediaPipe biomechanics "
-        "(478-point FaceLandmarker ocular/rPPG + 21-joint HandLandmarker tremor + 1-Euro 3D WorldPose), "
-        "recorded 62-frame mocap replay vs. pre-flight ghost 3D digital twin, empirical "
-        "NASA OSDR OSD-571 Inspiration4 longitudinal proteomics, and Mahalanobis chi-square anomaly triage."
+        "Unified NASA Space Apps 2026 Showcase portal combining the 3D Orbital Showcase Journey, "
+        "14-step Apple Watch + iPhone Guided Demo, ClawAgents + xAI Grok Voice AI multilingual copilot, "
+        "3D MediaPipe biomechanics, 8-DOF Mahalanobis anomaly detection, NASA HUNCH triage, and AURA evidence engine."
     ),
 )
 
@@ -56,7 +65,7 @@ app.add_middleware(
 async def revalidate_static_and_shell(request: Request, call_next: Any) -> Response:
     response = await call_next(request)
     p = request.url.path
-    if p in ("/", "/sw.js", "/manifest.webmanifest") or p.startswith("/static/"):
+    if p in ("/", "/story", "/demo", "/studio", "/sw.js", "/manifest.webmanifest") or p.startswith(("/static/", "/demo/")):
         response.headers["Cache-Control"] = "no-cache, must-revalidate"
     return response
 
@@ -94,6 +103,7 @@ def init_db() -> None:
 
 
 init_db()
+init_astra_db(DB_PATH)
 
 
 def load_json_asset(filename: str) -> dict[str, Any]:
@@ -707,12 +717,33 @@ def evaluate_astronaut_state(data: TelemetryInput) -> dict[str, Any]:
 async def health_check() -> dict[str, Any]:
     return {
         "status": "ok",
-        "version": "3.4.0",
-        "service": "AstroKinetics v3.4 Adaptive Multi-Zone Vision, Pre-Flight Ghost Twin, Neuro-Acoustic & Edge Mesh Suite",
+        "version": "5.0.0",
+        "service": "AstroKinetics · ASTRA v5.0 Unified Showcase, Watch/iPhone Demo, ClawAgents Grok Voice & 3D Crew Health Suite",
+        "showcase_journey": True,
+        "voice_engine": "clawagents_py + xai-grok-voice",
         "empirical_osd571_biomarkers": len(OSDR_OSD571_EMPIRICAL.get("biomarkers", [])),
         "reference_mocap_frames": REFERENCE_3D_KEYPOINTS.get("num_frames", 0),
         "statistical_engine": "8-DOF Multivariate Mahalanobis + Chi-Square Survival (scipy.stats.chi2)",
-        "connected_edge_endpoints": ["/api/ingest/edge-telemetry", "/api/ingest/recent", "/api/kinematic-sample", "/docs"],
+        "astra_aura_corpus": {
+            "bilingual_concepts": len(KNOWLEDGE_BUNDLE.get("concepts", [])),
+            "reviewed_sources": len(KNOWLEDGE_BUNDLE.get("sources", [])),
+            "apple_biomarker_studies": len(KNOWLEDGE_BUNDLE.get("apple_studies", [])),
+            "nasa_pmc_publications": AURA_CORPUS.get("total_publications", 0),
+            "radlab_dostel_rows": EMPIRICAL_SUPPLEMENTS["radlab_iss_sample"]["row_count"],
+        },
+        "connected_edge_endpoints": [
+            "/api/voice/status",
+            "/api/voice/chat",
+            "/api/voice/tts",
+            "/api/ingest/edge-telemetry",
+            "/api/ingest/recent",
+            "/api/kinematic-sample",
+            "/api/hunch/triage",
+            "/api/astra/episodes",
+            "/api/astra/lidar-volume",
+            "/api/aura/ask",
+            "/docs",
+        ],
     }
 
 
@@ -988,9 +1019,47 @@ async def web_manifest() -> Response:
     return FileResponse(STATIC_DIR / "manifest.webmanifest", media_type="application/manifest+json")
 
 
+app.include_router(astra_router)
+app.include_router(voice_router)
+
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+if SHOWCASE_DIR.exists():
+    for _sub in ("assets", "stills", "bezels", "brand", "media"):
+        _sub_dir = SHOWCASE_DIR / _sub
+        if _sub_dir.exists():
+            app.mount(f"/{_sub}", StaticFiles(directory=str(_sub_dir)), name=f"showcase_{_sub}")
+
+
+@app.get("/demo")
+async def demo_redirect() -> RedirectResponse:
+    return RedirectResponse(url="/demo/#demo", status_code=307)
+
+
+if (SHOWCASE_DIR / "demo").exists():
+    app.mount("/demo", StaticFiles(directory=str(SHOWCASE_DIR / "demo"), html=True), name="showcase_demo")
+
+
+@app.get("/studio")
+async def studio() -> FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+@app.get("/console")
+@app.get("/lab")
+async def console_redirect() -> RedirectResponse:
+    return RedirectResponse(url="/studio", status_code=307)
+
+
+@app.get("/story")
+async def story() -> Response:
+    showcase_index = SHOWCASE_DIR / "index.html"
+    if showcase_index.exists():
+        return FileResponse(showcase_index)
+    return RedirectResponse(url="/", status_code=307)
 
 
 @app.get("/")
 async def index() -> FileResponse:
+    # The workstation is the front door; the Watch + iPhone demo is one of its tabs.
     return FileResponse(STATIC_DIR / "index.html")

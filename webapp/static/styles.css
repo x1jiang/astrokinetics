@@ -162,10 +162,19 @@
       --scrollbar-thumb: light-dark(var(--scrollbar-thumb-light), var(--scrollbar-thumb-dark));
     }
 
-    color-scheme: light dark;
+    color-scheme: dark light;
     accent-color: var(--accent);
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    --nominal-text: var(--nominal-fg);
+    --watch-text: var(--watch-fg);
+    --alert-text: var(--alert-fg);
+    --ok-bg: var(--nominal-bg);
+    --ok-fg: var(--nominal-fg);
+    --warn-bg: var(--watch-bg);
+    --warn-fg: var(--watch-fg);
+    --crit-bg: var(--alert-bg);
+    --crit-fg: var(--alert-fg);
 
     &:has(> head > meta[name="color-scheme"][content="dark"]) {
       color-scheme: dark;
@@ -381,14 +390,37 @@
     }
   }
 
-  /* Centered 3-Segment WAI-ARIA Tab Switcher */
+  .brand-story-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.65rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    border: 1px solid var(--border-control);
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  }
+
+  .brand-story-pill:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+
+
+  /* Centered 5-Segment WAI-ARIA Tab Switcher */
   .workspace-tablist {
     display: inline-flex;
     flex-wrap: wrap;
     flex-wrap: balance;
     align-items: safe center;
-    gap: 0.22rem;
-    padding: 0.2rem;
+    gap: 0.18rem;
+    padding: 0.18rem;
     border-radius: 0.62rem;
     background-color: var(--bg-elevated);
     border: 1px solid var(--border-subtle);
@@ -397,15 +429,16 @@
   .workspace-tab {
     display: inline-flex;
     align-items: safe center;
-    gap: 0.38rem;
-    padding: 0.36rem 0.74rem;
+    gap: 0.32rem;
+    padding: 0.34rem 0.6rem;
     border-radius: 0.46rem;
     border: 0;
     background: transparent;
     color: var(--text-muted);
     font-family: inherit;
-    font-size: 0.79rem;
+    font-size: 0.75rem;
     font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
     transition: background-color 0.14s ease, color 0.14s ease, box-shadow 0.14s ease;
 
@@ -2187,6 +2220,511 @@
     }
   }
 
+  /* ======================================================================
+     ASTRA v4.0 — NASA HUNCH Triage, Episode Governance, LiDAR & AURA RAG
+     ====================================================================== */
+  .inline-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.42rem;
+  }
+
+  .astra-grid-2col {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap);
+    align-items: start;
+  }
+
+  @media (max-width: 66rem) {
+    .astra-grid-2col {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .astra-section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-block: 0.65rem 0.35rem;
+  }
+
+  .astra-vignette-strip,
+  .aura-prompt-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.38rem;
+    margin-block-start: 0.45rem;
+  }
+
+  .hunch-symptom-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.36rem;
+  }
+
+  @media (max-width: 52rem) {
+    .hunch-symptom-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .symptom-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.34rem;
+    padding: 0.34rem 0.46rem;
+    border-radius: 0.44rem;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-elevated);
+    font-size: 0.71rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+
+    &:has(> input:checked) {
+      border-color: var(--accent);
+      background-color: var(--accent-soft);
+      color: var(--text-primary);
+    }
+
+    &.symptom-red:has(> input:checked) {
+      border-color: var(--alert-text);
+      background-color: var(--alert-bg);
+      color: var(--alert-text);
+    }
+  }
+
+  .astra-form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.48rem;
+    margin-block: 0.65rem 0.5rem;
+  }
+
+  @media (max-width: 52rem) {
+    .astra-form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .astra-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-inline-size: 0;
+
+    & > span {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    & > input,
+    & > select {
+      inline-size: 100%;
+      padding: 0.34rem 0.46rem;
+      border-radius: 0.4rem;
+      border: 1px solid var(--border-control);
+      background-color: var(--bg-recessed);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+  }
+
+  .astra-field-wide {
+    flex: 1 1 16rem;
+  }
+
+  .astra-actions-row,
+  .astra-controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.55rem;
+    margin-block: 0.55rem;
+  }
+
+  .checkbox-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.36rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .hunch-outcome-card,
+  .aura-answer-panel,
+  .profile-compare-box {
+    margin-block-start: 0.65rem;
+    padding: 0.72rem 0.85rem;
+    border-radius: 0.62rem;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-recessed);
+  }
+
+  .hunch-tier-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.82rem;
+  }
+
+  .hunch-engines-split,
+  .astra-subsplit {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    margin-block-start: 0.65rem;
+  }
+
+  @media (max-width: 52rem) {
+    .hunch-engines-split,
+    .astra-subsplit {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .engine-box {
+    padding: 0.58rem 0.68rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-surface);
+  }
+
+  .engine-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    font-size: 0.76rem;
+    margin-block-end: 0.42rem;
+  }
+
+  .trace-list {
+    margin: 0;
+    padding-inline-start: 1.05rem;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+
+  .ml-prob-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+  }
+
+  .ml-bar-row {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr) 2.9rem;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.69rem;
+    font-weight: 600;
+  }
+
+  .ml-bar-track {
+    block-size: 0.42rem;
+    border-radius: 999px;
+    background-color: var(--bg-recessed);
+    overflow: hidden;
+  }
+
+  .ml-bar-fill {
+    block-size: 100%;
+    border-radius: 999px;
+    background-color: var(--accent);
+  }
+
+  .astra-state-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.42rem;
+    margin-block-start: 0.55rem;
+  }
+
+  .state-cell {
+    padding: 0.46rem 0.58rem;
+    border-radius: 0.48rem;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-recessed);
+    display: flex;
+    flex-direction: column;
+    gap: 0.14rem;
+
+    & > span {
+      font-size: 0.66rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    & > strong {
+      font-size: 0.77rem;
+      color: var(--text-primary);
+    }
+  }
+
+  .astra-decision-banner {
+    margin-block-start: 0.55rem;
+    padding: 0.55rem 0.68rem;
+    border-radius: 0.5rem;
+    border-inline-start: 3px solid var(--accent);
+    background-color: var(--bg-recessed);
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    font-size: 0.76rem;
+  }
+
+  .astra-guard-alert {
+    margin-block-start: 0.55rem;
+    padding: 0.52rem 0.7rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--alert-border, color-mix(in oklab, var(--alert-text) 45%, transparent));
+    background-color: var(--alert-bg);
+    color: var(--alert-text);
+    font-size: 0.74rem;
+    font-weight: 600;
+  }
+
+  .astra-transition-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.38rem;
+    margin-block-start: 0.6rem;
+  }
+
+  .astra-close-row {
+    display: flex;
+    gap: 0.45rem;
+    margin-block-start: 0.55rem;
+
+    & > input {
+      flex: 1 1 auto;
+      padding: 0.36rem 0.55rem;
+      border-radius: 0.44rem;
+      border: 1px solid var(--border-control);
+      background-color: var(--bg-recessed);
+      color: var(--text-primary);
+      font-size: 0.76rem;
+    }
+  }
+
+  .audit-timeline {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-block-size: 11.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.32rem;
+    font-size: 0.7rem;
+
+    & > li {
+      padding: 0.34rem 0.48rem;
+      border-radius: 0.4rem;
+      background-color: var(--bg-recessed);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+  }
+
+  .surface-mini-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.34rem;
+    font-size: 0.7rem;
+
+    & > div {
+      padding: 0.4rem 0.52rem;
+      border-radius: 0.42rem;
+      background-color: var(--bg-recessed);
+      border: 1px solid var(--border-subtle);
+    }
+  }
+
+  .astra-lidar-card {
+    margin-block-start: var(--gap);
+  }
+
+  .lidar-layout {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.9fr) minmax(0, 1.3fr);
+    gap: var(--gap);
+    align-items: center;
+    margin-block-start: 0.65rem;
+  }
+
+  @media (max-width: 58rem) {
+    .lidar-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .lidar-canvas-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.55rem;
+    border-radius: 0.58rem;
+    background-color: var(--bg-recessed);
+    border: 1px solid var(--border-subtle);
+
+    & canvas {
+      inline-size: 100%;
+      max-inline-size: 460px;
+      block-size: auto;
+      border-radius: 0.44rem;
+    }
+  }
+
+  .lidar-legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-block-start: 0.4rem;
+    font-size: 0.69rem;
+    color: var(--text-secondary);
+
+    & i {
+      display: inline-block;
+      inline-size: 0.55rem;
+      block-size: 0.55rem;
+      border-radius: 999px;
+      margin-inline-end: 0.25rem;
+    }
+  }
+
+  .dot-observed { background-color: #10b981; }
+  .dot-occluded { background-color: #f59e0b; }
+  .dot-inferred { background-color: #ef4444; }
+
+  .lidar-readout-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.48rem;
+    margin-block-start: 0.55rem;
+  }
+
+  .aura-ask-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-block-start: 0.55rem;
+
+    & > input[type="text"] {
+      flex: 1 1 20rem;
+      padding: 0.48rem 0.72rem;
+      border-radius: 0.48rem;
+      border: 1px solid var(--border-control);
+      background-color: var(--bg-recessed);
+      color: var(--text-primary);
+      font-size: 0.81rem;
+    }
+
+    & > select {
+      padding: 0.42rem 0.55rem;
+      border-radius: 0.44rem;
+      border: 1px solid var(--border-control);
+      background-color: var(--bg-recessed);
+      color: var(--text-primary);
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+  }
+
+  .aura-answer-body {
+    white-space: pre-line;
+    font-size: 0.81rem;
+    line-height: 1.52;
+    color: var(--text-primary);
+  }
+
+  .aura-limitations-box {
+    margin-block-start: 0.55rem;
+    padding: 0.48rem 0.65rem;
+    border-radius: 0.46rem;
+    border: 1px solid color-mix(in oklab, var(--watch-text) 40%, transparent);
+    background-color: var(--watch-bg);
+    color: var(--watch-text);
+    font-size: 0.73rem;
+  }
+
+  .aura-citations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
+    gap: 0.5rem;
+    margin-block-start: 0.65rem;
+  }
+
+  .aura-citation-card {
+    padding: 0.52rem 0.64rem;
+    border-radius: 0.48rem;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-surface);
+    display: flex;
+    flex-direction: column;
+    gap: 0.24rem;
+    font-size: 0.72rem;
+  }
+
+  .compact-select,
+  .compact-search {
+    padding: 0.32rem 0.54rem;
+    border-radius: 0.42rem;
+    border: 1px solid var(--border-control);
+    background-color: var(--bg-recessed);
+    color: var(--text-primary);
+    font-size: 0.74rem;
+    font-weight: 600;
+  }
+
+  .astra-table-scroll {
+    max-block-size: 17.5rem;
+    overflow: auto;
+    margin-block-start: 0.55rem;
+  }
+
+  .astra-table-scroll-lg {
+    max-block-size: 24rem;
+    overflow: auto;
+    margin-block-start: 0.6rem;
+  }
+
+  .pop-badge {
+    display: inline-block;
+    padding: 0.1rem 0.36rem;
+    border-radius: 999px;
+    font-size: 0.64rem;
+    font-weight: 700;
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+  }
+
+  .pop-human {
+    background-color: var(--nominal-bg);
+    color: var(--nominal-text);
+  }
+
+  .pop-caveat {
+    background-color: var(--watch-bg);
+    color: var(--watch-text);
+  }
+
   /* Forced Colors / High Contrast Mode */
   @media (forced-colors: active) {
     .card,
@@ -2208,5 +2746,25 @@
     .workspace-tab[aria-selected="true"] {
       outline: 3px solid Highlight;
     }
+  }
+}
+
+/* ASTRA Watch + iPhone companion tab: the guided walk-through runs in a frame
+   that takes the workstation's surface, type and accent (see demo/index.html, embed mode). */
+@layer components {
+  .companion-card {
+    padding-block-end: 0;
+    overflow: hidden;
+  }
+
+  .companion-frame {
+    display: block;
+    inline-size: calc(100% + 2rem);
+    margin-inline: -1rem;
+    block-size: clamp(34rem, calc(100dvh - 17.5rem), 48rem);
+    border: 0;
+    border-block-start: 1px solid var(--border-subtle);
+    background: transparent;
+    color-scheme: inherit;
   }
 }

@@ -3,7 +3,9 @@
 - **Local Event:** Houston, TX (`https://www.spaceappschallenge.org/2026/local-events/houston/`)
 - **Official Challenge:** *Create Health Monitoring Software for Astronauts on Space Missions* (`Intermediate` · `Human Exploration`, `Software`, `Space Exploration`)
 - **Hard Portal Cutoff:** **Sunday, November 15, 2026 at 11:59 PM (23:59) CST**
-- **Live Cloud Run App URL:** https://astrokinetics-space-health-765428358644.us-central1.run.app
+- **Live Cloud Run App URL (Unified `v5.0` Showcase, Guided Watch+iPhone Demo & 3D Lab):** https://astrokinetics-space-health-765428358644.us-central1.run.app
+- **14-Step Watch + iPhone Guided Demo:** https://astrokinetics-space-health-765428358644.us-central1.run.app/demo/#demo
+- **3D Digital Twin & HUNCH Triage Workstation:** https://astrokinetics-space-health-765428358644.us-central1.run.app/studio
 - **Interactive OpenAPI / Swagger Docs:** https://astrokinetics-space-health-765428358644.us-central1.run.app/docs
 
 ---

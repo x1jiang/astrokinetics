@@ -1,22 +1,19 @@
-const CACHE_NAME = "astrokinetics-v3.4.0-r2-edge-cache";
+const CACHE_NAME = "astrokinetics-astra-v5.0.0-showcase";
 const PRECACHE_URLS = [
-  "/",
-  "/static/styles.css?v=3.4.0",
-  "/static/dsp.js?v=3.4.0",
-  "/static/biomech3d.js?v=3.4.0",
-  "/static/audio_engine.js?v=3.4.0",
-  "/static/app.js?v=3.4.0",
+  "/studio",
+  "/static/styles.css?v=5.0.0",
+  "/static/grok_voice_widget.css?v=5.0.0",
+  "/static/grok_voice_widget.js?v=5.0.0",
   "/manifest.webmanifest",
   "/api/scenarios",
-  "/api/osdr-empirical",
-  "/api/kinematic-sample",
+  "/api/voice/status",
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then((cache) => cache.addAll(PRECACHE_URLS).catch(() => {}))
       .then(() => self.skipWaiting())
   );
 });
@@ -32,10 +29,12 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  const reqUrl = new URL(event.request.url);
+  if (reqUrl.pathname.startsWith("/api/voice/")) return;
   event.respondWith(
-    fetch(event.request, { cache: "no-cache" })
+    fetch(event.request, { cache: "no-store" })
       .then((resp) => {
-        if (resp && resp.status === 200) {
+        if (resp && resp.status === 200 && !reqUrl.pathname.startsWith("/media/")) {
           const clone = resp.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }

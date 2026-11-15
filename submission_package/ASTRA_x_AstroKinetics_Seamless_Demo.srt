@@ -1,0 +1,60 @@
+1
+00:00:00,350 --> 00:00:01,850
+Every body has its own normal.
+
+2
+00:00:01,950 --> 00:00:04,150
+On Earth, ASTRA learns yours.
+
+3
+00:00:04,400 --> 00:00:07,250
+16 measures a day, for 14 days.
+
+4
+00:00:08,240 --> 00:00:10,590
+Then you leave Earth, and your body changes.
+
+5
+00:00:11,140 --> 00:00:13,040
+Orbit mode moves your normal with you.
+
+6
+00:00:14,280 --> 00:00:15,530
+Day 12. Something shifts.
+
+7
+00:00:16,130 --> 00:00:19,580
+A guided check, and possible causes, with the evidence.
+
+8
+00:00:21,030 --> 00:00:24,290
+On the way to Mars, help from Earth is 44 minutes away.
+
+9
+00:00:24,370 --> 00:00:28,324
+AstroKinetics watches through one cabin camera and a smartwatch:
+
+10
+00:00:28,324 --> 00:00:31,099
+pulse, posture and tremor — fully offline.
+
+11
+00:00:31,179 --> 00:00:34,991
+It compares each astronaut with their own pre-flight baseline,
+
+12
+00:00:34,991 --> 00:00:40,275
+and tells cabin CO₂, muscle strain and radiation apart — using real NASA crew data.
+
+13
+00:00:40,355 --> 00:00:45,301
+Then it gives one clear action: a countermeasure, therapy audio and a wrist cue.
+
+14
+00:00:45,381 --> 00:00:47,621
+From Mars to rural clinics on Earth.
+
+15
+00:00:47,971 --> 00:00:50,241
+ASTRA. Know your normal.
+

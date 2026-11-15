@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ASTRA — Your normal changes when you leave Earth</title>
+<meta name="description" content="ASTRA is an astronaut health companion for iPhone and Apple Watch. It learns one astronaut's normal on Earth, adjusts it for spaceflight, and guides what to check when something feels wrong.">
+<meta name="theme-color" content="#070d14">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070d14'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23f3f5f2' stroke-width='2'/%3E%3Ccircle cx='23' cy='10' r='3' fill='%23ffb347'/%3E%3C/svg%3E">
+<!-- Code and copy prepared with AI assistance (Claude). All health values on this page are illustrative. -->
+<style>html{color:#f3f5f2;background:#070d14}#pre{z-index:100;color:#f3f5f2;background:#070d14;place-items:center;font:17px/1.5 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;transition:opacity .5s;display:grid;position:fixed;inset:0}#pre.out{opacity:0;pointer-events:none}#pre p{margin:0}.pre-in{justify-items:center;gap:18px;display:grid}.pre-mark{letter-spacing:.42em;padding-left:.42em;font:700 1.5rem ui-monospace,Menlo,monospace}.pre-arc{width:220px;height:34px;position:relative}.pre-arc i{border:1px solid #f3f5f275;border-radius:50%;width:7px;height:7px;margin:-3.5px;transition:background .3s,border-color .3s;position:absolute}.pre-arc i.on{background:#f3f5f2;border-color:#f3f5f2}.pre-status{color:#f3f5f2b8;text-align:center;width:22ch;min-height:1.4em;font:500 .8rem ui-monospace,Menlo,monospace}.pre-note{color:#f3f5f28a;font-size:.8rem}</style>
+  <script type="module" crossorigin src="./assets/index-Du1SsmBt.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-COyEYw5O.css">
+  <link rel="stylesheet" href="/static/grok_voice_widget.css?v=5.0.0">
+</head>
+<body>
+<script>
+/* Tier choice and preloader, inline so a failed module can never leave a stuck overlay.
+   Default page = static (plain sections). The 3D journey is an enhancement. */
+(function () {
+  /* A refresh always starts from the top, behind the loading screen. */
+  try {
+    history.scrollRestoration = 'manual';
+    var nav = performance.getEntriesByType('navigation')[0];
+    if (nav && nav.type === 'reload' && location.hash) history.replaceState(null, '', location.pathname + location.search);
+  } catch (e) {}
+  var q = /[?&]tier=(webgl|static)/.exec(location.search), ok;
+  try {
+    ok = !matchMedia('(prefers-reduced-motion: reduce)').matches && innerWidth >= 350 && innerHeight >= 360 &&
+      !(navigator.connection && navigator.connection.saveData) &&
+      !(navigator.deviceMemory && navigator.deviceMemory < 4) && !(navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) &&
+      !!document.createElement('canvas').getContext('webgl2');
+  } catch (e) { ok = false; }
+  if (q) ok = q[1] === 'webgl';
+  if (!ok) return;
+  var root = document.documentElement; root.classList.add('webgl'); root.classList.toggle('compact', innerWidth < 1024);
+  var dots = '';
+  for (var i = 0; i < 14; i++) { var a = (-26 + i * 4) * Math.PI / 180; dots += '<i style="left:' + (50 + Math.sin(a) * 110).toFixed(2) + '%;top:' + (100 - Math.cos(a) * 100 + 4).toFixed(2) + '%"></i>'; }
+  document.body.insertAdjacentHTML('afterbegin',
+    '<div id="pre" role="status" aria-live="polite"><div class="pre-in"><p class="pre-mark">ASTRA</p><div class="pre-arc">' + dots +
+    '</div><p class="pre-status" id="preStatus">Starting</p></div></div>');
+  window.__astraFail = function () {
+    var p = document.getElementById('pre'); if (p) p.remove();
+    root.classList.remove('webgl'); window.__astraFailed = true;
+    document.dispatchEvent(new Event('astra:static'));
+  };
+  window.__astraWatchdog = setTimeout(window.__astraFail, 8000);
+})();
+</script>
+
+<a class="skip" href="#how">Skip to how ASTRA works</a>
+
+<header class="bar glass">
+  <a class="mark" href="#distance">ASTRA</a>
+  <button class="btn btn-quiet" type="button" id="sound" aria-pressed="false" hidden>Sound off</button>
+  <a class="btn btn-quiet" href="/?tab=demo">Launch the demo</a>
+</header>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="scrim" aria-hidden="true"></div>
+<div class="tags" aria-hidden="true"><span class="tag" id="tagN0"></span><div class="readout" id="tagRead"></div><span class="tag" id="tagSnap"></span><span class="tag" id="tagBand"></span><span class="tag warn" id="tagD12">Day 12 · outside your normal</span></div>
+
+<main id="journey">
+  <section class="chapter" id="distance" data-i="0">
+    <div class="stick"><div class="copy">
+      <p class="label"><span>01</span> Distance</p>
+      <h1><span class="line"><span>The farther</span></span><span class="line"><span>the mission,</span></span><span class="line"><span>the farther</span></span><span class="line"><span>the doctor.</span></span></h1>
+      <p class="body">A value that is fine on the ground can mean something else in orbit. A watch shows a number. It does not say what to check next, or what is missing.</p>
+      <button class="btn" type="button" data-go="1:0.03">Start on the ground</button>
+      <img class="still" src="stills/distance.jpg" width="1200" height="800" loading="eager" fetchpriority="high" alt="A phone and a watch on a round base on an empty plain before dawn. Both screens show the ASTRA mark, a ring with one point travelling round it, and the line “Know your normal.”">
+    </div></div>
+  </section>
+
+  <section class="chapter" id="baseline" data-i="1">
+    <div class="stick"><div class="copy">
+      <p class="label"><span>02</span> Baseline</p>
+      <h2><span class="line"><span>A baseline that</span></span><span class="line"><span>travels with</span></span><span class="line"><span>the astronaut.</span></span></h2>
+      <p class="body">Every daily check records 16 measures from Apple Watch, iPhone tests and three questions. Together they make one snapshot of the astronaut that day. Fourteen snapshots draw a baseline that belongs to this astronaut, not to an average person.</p>
+      <button class="btn" type="button" data-go="1:0.95">Build the baseline</button>
+      <img class="still" src="stills/baseline.jpg" width="1200" height="800" loading="lazy" alt="A graduated ring surrounds the two devices. It carries 14 points joined by one line, one snapshot per day, inside a band marked as this astronaut's normal. Each snapshot combines the 16 measures taken that day.">
+      <ol class="sr">
+        <li>Phone: “Daily check n of 14”. Sixteen measures fill in one by one: resting heart rate, heart rate variability, blood oxygen, breathing rate, wrist temperature, sleep, deep sleep, cardio recovery, exercise, ambient noise, reaction time, near vision, hand tremor, symptoms, sleep quality and mood. After 14 days the screen changes to “Your baseline”: one snapshot per day, one line, a band for “your normal” and where day 15 is expected. Each signal also keeps its own range, for example resting heart rate 50–60 bpm.</li>
+        <li>Watch: “Day n of 14” with the measure just taken, then “Baseline ready, 14 days, 224 readings”.</li>
+      </ol>
+    </div></div>
+  </section>
+
+  <section class="chapter" id="orbit" data-i="2">
+    <div class="stick"><div class="copy">
+      <p class="label"><span>03</span> Orbit</p>
+      <h2><span class="line"><span>Your normal</span></span><span class="line"><span>changes when you</span></span><span class="line"><span>leave Earth.</span></span></h2>
+      <p class="body">On the Inspiration4 mission, crew wearing Apple Watch showed heart rate and heart rate variability that changed across mission phases, differently for each person. So the first snapshot in orbit lands outside the Earth baseline. Orbit mode moves the expected ranges, and ASTRA keeps watching.</p>
+      <button class="btn" type="button" data-toggle="2:0.47:0.9">Flip to Orbit mode</button>
+      <img class="still" src="stills/orbit-earth.jpg" width="1200" height="800" loading="lazy" alt="First day in orbit, judged against the Earth baseline: today's snapshot sits above the band, in amber." data-state="earth" data-earth="stills/orbit-earth.jpg" data-orbit="stills/orbit.jpg" data-alt-earth="First day in orbit, judged against the Earth baseline: today's snapshot sits above the band, in amber." data-alt-orbit="Orbit mode on: the band has moved and widened. The same snapshot is now inside it and no longer amber.">
+      <ol class="sr">
+        <li>Phone: “You are leaving Earth”. The first check in orbit lists the 16 measures; five sit outside their Earth ranges, among them resting heart rate at 64 bpm and sleep at 5.9 hours. When Orbit mode turns on, the ranges move and the list reads “16 of 16 inside orbit ranges”.</li>
+        <li>Watch: “Today's check, 16 measures, outside Earth normal”, then “inside orbit normal”. The readings themselves do not change.</li>
+      </ol>
+    </div></div>
+  </section>
+
+  <section class="chapter" id="evidence" data-i="3">
+    <div class="stick"><div class="copy">
+      <p class="label"><span>04</span> Evidence</p>
+      <h2><span class="line"><span>Eleven quiet days.</span></span><span class="line"><span>Then something</span></span><span class="line"><span>drifts.</span></span></h2>
+      <p class="body">On mission day 12 the snapshot falls outside the astronaut's orbit normal. ASTRA shows which measures moved it, she says what she feels, and it ranks possible causes with evidence for each. Never a diagnosis. The episode stays open until reviewed.</p>
+      <button class="btn" type="button" data-go="3:0.8">I feel unwell</button>
+      <img class="still" src="stills/evidence.jpg" width="1200" height="800" loading="lazy" alt="Eleven snapshots sit inside the orbit band. The snapshot for day 12 sits below it, in amber. The phone lists three possible causes.">
+      <ol class="sr">
+        <li>Phone: “Mission day 12, Today. Snapshot outside your normal”. The 16 measures are listed; two are marked: heart rate variability at 41 ms and sleep at 5.7 hours. Then “Result, not a diagnosis. Possible causes”: eye changes that need review, headward fluid shift, local or allergic reaction. Next step: flag this episode for flight surgeon review and repeat the checks in 24 hours.</li>
+        <li>Watch: “Check in, snapshot outside your normal, 2 of 16 measures”, then “Result ready, 3 possible causes”, then “Reminder set, 08:00 tomorrow, repeat check”.</li>
+      </ol>
+    </div></div>
+  </section>
+
+  <section class="chapter" id="mission" data-i="4">
+    <div class="stick"><div class="copy">
+      <p class="label"><span>05</span> Mission</p>
+      <h2><span class="line"><span>From a feeling</span></span><span class="line"><span>to a plan.</span></span></h2>
+      <p class="body">A personal baseline, a range that follows the astronaut into orbit, a guided check, possible causes with evidence, and a follow-up that stays open until it is reviewed. On iPhone and Apple Watch, with no link to Earth required.</p>
+      <a class="btn btn-amber" href="/?tab=demo">Launch the demo</a>
+      <img class="still" src="stills/today.jpg" width="1200" height="800" loading="lazy" alt="The two devices and their rings seen from far away, above a curved horizon. One marker and one empty slot are still amber: the episode stays open.">
+    </div></div>
+  </section>
+</main>
+
+<section class="status science" id="science" aria-labelledby="sciH">
+  <div class="status-in">
+    <h2 id="sciH">Built on NASA science</h2>
+    <div class="cols">
+      <div><h3>Signals in flight</h3><p>Inspiration4 crew wore Apple Watch before, during and after flight. Heart rate and heart rate variability changed across mission phases and differed between crew members. ASTRA's Earth-to-orbit baseline is built on that finding.</p>
+        <p class="src">Jones et al., Nature 2024 · data in the NASA Open Science Data Repository (OSDR)</p></div>
+      <div><h3>What to watch for</h3><p>The possible causes ASTRA ranks follow risks NASA studies in astronauts: headward fluid shift and spaceflight-associated neuro-ocular syndrome (SANS), sleep loss and circadian misalignment, and cabin CO₂.</p>
+        <p class="src">NASA Human Research Program · Human Research Roadmap, risks and evidence</p></div>
+      <div><h3>How it asks</h3><p>When something feels off, ASTRA asks the way a flight surgeon would: name the symptom, answer only the questions that matter, then take the measures that tell the causes apart. Each possible cause is weighed against your own baseline and shows its evidence.</p>
+        <p class="src">Open rule table · every cause linked to its NASA source</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="status" id="how" aria-labelledby="howH">
+  <div class="status-in">
+    <h2 id="howH">How ASTRA works</h2>
+    <div class="cols">
+      <div><h3>What each check records</h3><ul>
+        <li>Apple Watch, 10 measures: resting heart rate, heart rate variability, blood oxygen, breathing rate, wrist temperature, sleep, deep sleep, cardio recovery, exercise and ambient noise</li>
+        <li>iPhone tests, 3 measures: reaction time, near vision and hand tremor</li>
+        <li>Three questions: symptoms, sleep quality and mood</li>
+        <li>Every value keeps its time, unit, source and quality</li></ul></div>
+      <div><h3>How it reasons</h3><ul>
+        <li>Personal profile: a range for each signal and context, updated after every check</li>
+        <li>Anomaly detection: how far today sits from this astronaut's own normal</li>
+        <li>Symptom assessment: explicit, versioned rules choose the next question and rank possible causes</li>
+        <li>Assistant: explains results in plain words and cites its sources. It never decides the result</li></ul></div>
+      <div><h3>Where it runs</h3><ul>
+        <li>iPhone keeps the record and runs the essential flow offline</li>
+        <li>Apple Watch measures, reminds and takes quick answers</li>
+        <li>An on-board server runs the language model, with no internet</li>
+        <li>Every episode stays open until its follow-up is done and reviewed</li></ul></div>
+    </div>
+    <p class="film"><a class="btn btn-amber" href="/?tab=demo">Launch the demo</a> <a class="btn btn-play" href="media/astra-film-29s.mp4" id="filmOpen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>Watch the film <span>0:29</span></a></p>
+  </div>
+</section>
+
+<section class="team" id="team" aria-labelledby="teamH">
+  <div class="status-in team-in">
+    <img class="team-logo" src="brand/ai-med.svg" width="360" height="300" alt="AI-MED, STEM for All: team logo">
+    <div class="team-body">
+      <h2 id="teamH">Team AI-MED 01</h2>
+      <p class="team-meta">Houston, TX, United States · Challenge: Create Health Monitoring Software for Astronauts on Space Missions</p>
+      <ul class="members">
+        <li><i aria-hidden="true">MA</i><span>Myreen Ahsan<small>Team owner</small></span></li>
+        <li><i aria-hidden="true">CJ</i><span>Carlos Alfredo Jaimes Garcia</span></li>
+        <li><i aria-hidden="true">XJ</i><span>Xiaoqian Jiang</span></li>
+        <li><i aria-hidden="true">AJ</i><span>Ashley Jiang</span></li>
+        <li><i aria-hidden="true">CJ</i><span>Carlos Alberto Jaramillo</span></li>
+      </ul>
+    </div>
+    <div class="event">
+      <img src="brand/space-apps.svg" width="561" height="221" alt="NASA Space Apps Challenge">
+      <p>Created for the 2026 NASA Space Apps Challenge.</p>
+    </div>
+    <p class="fine">Beyond orbit, the same personal baseline helps anyone far from a doctor: polar stations, ships at sea, remote clinics.</p>
+    <p class="fine">iPhone and Apple Watch are trademarks of Apple Inc., registered in the U.S. and other countries. Device frames are original drawings. Code, copy, logo and film prepared with AI assistance.</p>
+  </div>
+</section>
+
+<div class="cue" id="cue" aria-hidden="true"><i></i><span id="cueText">Scroll to explore</span></div>
+
+<nav class="rail glass" aria-label="Chapters">
+  <button type="button" id="prev" aria-label="Previous scene"><span>Previous</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+  <div class="scale">
+    <i class="bead" id="railBead"></i>
+    <button type="button" class="tick" data-ch="0" aria-label="Distance"></button>
+    <button type="button" class="tick" data-ch="1" aria-label="Baseline"></button>
+    <button type="button" class="tick" data-ch="2" aria-label="Orbit"></button>
+    <button type="button" class="tick" data-ch="3" aria-label="Evidence"></button>
+    <button type="button" class="tick" data-ch="4" aria-label="Mission"></button>
+  </div>
+  <button type="button" id="next" aria-label="Next scene"><span>Next</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+</nav>
+
+<dialog class="player" id="player" aria-label="ASTRA, the film" data-lenis-prevent>
+  <div class="player-stage">
+    <video id="playerVideo" src="media/astra-film-29s.mp4" poster="media/astra-film-poster.jpg" controls playsinline preload="none"></video>
+  </div>
+  <button class="player-close" type="button" id="playerClose" aria-label="Close the film"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+</dialog>
+
+<script>
+  // Evict stale pre-v5 service worker caches if any were installed on prior visits
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (regs) {
+      regs.forEach(function (r) { r.update().catch(function () {}); });
+    }).catch(function () {});
+  }
+</script>
+<script src="/static/grok_voice_widget.js?v=5.0.0" defer></script>
+</body>
+</html>

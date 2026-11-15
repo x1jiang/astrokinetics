@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en" data-mode="earth">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ASTRA — Guided demo</title>
+<meta name="description" content="A 14-step walk through the ASTRA concept on a simulated phone and watch. Illustrative data, fictional astronaut.">
+<!-- Code and copy prepared with AI assistance (Claude). All health values are illustrative. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070d14'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23f3f5f2' stroke-width='2'/%3E%3Ccircle cx='23' cy='10' r='3' fill='%23ffb347'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="/static/grok_voice_widget.css?v=5.0.0">
+<style>
+/* Device photos as frames (journey/public/bezels). If the images are missing, the drawn devices are used instead. */
+.ph-screen { display: contents; }
+.bezel { display: none; }
+.bezels .bezel { display: block; position: absolute; inset: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; }
+.bezels .xphone { --ph: min(690px, calc(100svh - 90px)); --pw: calc(var(--ph) * 1350 / 2760); width: var(--pw); height: var(--ph); padding: 0; background: none; box-shadow: none; border-radius: 0; display: block; }
+.bezels .ph-screen { display: grid; grid-template-rows: auto 1fr auto; position: absolute; left: 5.4%; top: 2.5%; width: 89.3%; height: 95%; border-radius: calc(var(--pw) * 0.13); overflow: hidden; background: var(--bg); }
+.bezels .ph-status { border-radius: 0; padding: 20px 26px 8px; }
+.bezels .ph-tabs { border-radius: 0; padding-bottom: 22px; }
+.bezels .xwatch { --ww: 250px; width: var(--ww); height: calc(var(--ww) * 940 / 620); font-size: 9.4px; padding: 0; background: none; box-shadow: none; border-radius: 0; }
+.bezels .xwatch::before, .bezels .xwatch::after, .bezels .xw-crown { display: none; }
+.bezels .xw-screen { position: absolute; left: 15.6%; top: 22.9%; width: 68.8%; height: 54.2%; border-radius: 24% / 20%; }
+@media (max-width: 900px) {
+  .bezels .xphone { --ph: min(100cqh, calc((100cqw - clamp(90px, 28cqw, 120px) - 10px) * 2760 / 1350), 690px); --pw: calc(var(--ph) * 1350 / 2760); }
+  .bezels .xwatch { --ww: min(clamp(90px, 28cqw, 120px), calc(100cqh * 620 / 940)); font-size: calc(var(--ww) * .0376); }
+  .bezels .ph-status { padding: 16px 14px 6px; font-size: .65rem; }
+  .bezels .ph-tabs { padding: 8px 2px 12px; font-size: .58rem; }
+  .bezels .scr { padding: 12px 10px; }
+  .bezels .s-t { font-size: 1.18rem; }
+  .bezels .s-sub, .bezels .card { font-size: .8rem; }
+  .bezels .opt, .bezels .cta { min-height: 44px; font-size: .84rem; }
+}
+
+/* Embed mode (?embed=1): the demo is the workstation's "Watch + iPhone" tab.
+   The page chrome takes the workstation's surface, type and accent; the phone and
+   watch screens keep ASTRA's own Earth / Orbit look, because they are the product. */
+html.embed, html.embed[data-mode] {
+  --bg: #0f172a; --surface: #152038; --ink: #f1f5f9; --muted: #94a3b8; --line: #1e293b;
+  --accent: #38bdf8; --accent-soft: #122849; --on-accent: #04101f; --ctl: #334155;
+  --sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+html.embed[data-host="light"], html.embed[data-host="light"][data-mode] {
+  --bg: #ffffff; --surface: #f3f6fb; --ink: #0f172a; --muted: #52627a; --line: #e2e8f0;
+  --accent: #0b57d0; --accent-soft: #e8f0fe; --on-accent: #ffffff; --ctl: #cbd5e1;
+  color-scheme: light;
+}
+html.embed .ph-screen {
+  --bg: #f3f5f2; --surface: #ffffff; --ink: #10201c; --muted: #5a6964; --line: #d5dcd8;
+  --accent: #b45f06; --accent-soft: #fbe9d0;
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--sans); color: var(--ink);
+}
+html.embed[data-mode="orbit"] .ph-screen {
+  --bg: #070d14; --surface: #0f1822; --ink: #e9eef4; --muted: #93a1b2; --line: #223041;
+  --accent: #ffb347; --accent-soft: #3a2a10;
+}
+html.embed body { background: transparent; font-size: 15px; }
+html.embed .xp { background: transparent; animation: none; transition: none; gap: 20px;
+  grid-template-columns: minmax(260px, 360px) 1fr; padding: 40px 28px 20px !important; }
+html.embed .xp-close, html.embed .astra-demo-dock, html.embed .astra-grok-launcher { display: none !important; }
+html.embed .xp-restart { right: 24px; top: 16px; font-size: .68rem; }
+html.embed .xp-restart:hover { color: var(--accent); }
+html.embed .xp-progress { height: 2px; }
+html.embed .eyebrow { font-size: .66rem; letter-spacing: .1em; margin-bottom: 10px; }
+html.embed .coach h2 { font-size: clamp(1.25rem, 2.2vw, 1.6rem); font-weight: 700; letter-spacing: -.015em; line-height: 1.2; }
+html.embed .coach-body { font-size: .92rem; line-height: 1.55; margin-top: 10px; min-height: 7.5em; }
+html.embed .coach-actions { gap: 8px; margin-top: 16px; }
+html.embed .coach-actions > button { border-radius: .5rem; padding: .5rem .9rem; font: 600 .78rem/1.2 var(--sans); letter-spacing: 0;
+  text-transform: none; border: 1px solid var(--ctl); background: var(--bg); color: var(--ink); box-shadow: none; transform: none;
+  transition: background-color .14s ease, border-color .14s ease; }
+html.embed .coach-actions > button:hover:not(:disabled) { background: var(--surface); border-color: var(--accent); transform: none; box-shadow: none; }
+html.embed .coach-actions > .btn { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+html.embed .coach-actions > .btn:hover:not(:disabled) { background: var(--accent); filter: brightness(1.07); }
+html.embed .coach-actions > [aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+html.embed .bezels .xphone { --ph: min(640px, calc(100svh - 70px)); }
+@media (max-width: 900px) { html.embed .xp { padding: 34px 16px 14px !important; } }
+</style>
+<script>
+/* Embed mode: follow the workstation's light / dark theme and load its typefaces. */
+(function () {
+  if (!/[?&]embed=1/.test(location.search)) return;
+  var root = document.documentElement;
+  root.classList.add('embed');
+  var f = document.createElement('link'); f.rel = 'stylesheet';
+  f.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap';
+  document.head.appendChild(f);
+  function sync() {
+    var scheme = 'dark';
+    try {
+      var m = window.parent.document.querySelector('meta[name="color-scheme"]');
+      scheme = (m && m.content) || 'dark';
+    } catch (e) {}
+    if (scheme !== 'light' && scheme !== 'dark') scheme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    root.setAttribute('data-host', scheme);
+  }
+  sync();
+  try {
+    var meta = window.parent.document.querySelector('meta[name="color-scheme"]');
+    if (meta) new MutationObserver(sync).observe(meta, { attributes: true, attributeFilter: ['content'] });
+  } catch (e) {}
+})();
+</script>
+<script>
+/* The demo expects the old deck's mode switch. This page only needs the attribute. */
+window.ASTRA = {
+  setMode: function (m) { document.documentElement.setAttribute('data-mode', m); },
+  getMode: function () { return document.documentElement.getAttribute('data-mode') || 'earth'; }
+};
+</script>
+</head>
+<body class="bezels">
+<button type="button" data-launch id="start" hidden>Start</button>
+<noscript><p style="padding:24px">The guided demo needs JavaScript. <a href="/">Back to the workstation</a>.</p></noscript>
+
+<div class="xp" id="xp" hidden role="dialog" aria-modal="true" aria-label="ASTRA guided demo">
+  <div class="xp-progress"><i id="xpBar"></i></div>
+  <button class="xp-restart" id="cRestart" type="button">Restart</button>
+  <button class="xp-close" id="xpClose" type="button">Back to the journey ✕</button>
+  <aside class="coach">
+    <p class="eyebrow" id="cK"></p>
+    <h2 id="cT"></h2>
+    <p class="coach-body" id="cB"></p>
+    <div class="coach-actions">
+      <button class="btn" id="cNext" type="button">Next</button>
+      <button class="btn-ghost" id="cAuto" type="button">Auto-play</button>
+    </div>
+  </aside>
+  <div class="stage">
+    <div class="xwatch" id="xw"><div class="xw-crown"></div><div class="xw-screen" id="xwS"></div><img class="bezel" src="../bezels/watch.png" alt="" onerror="document.body.classList.remove('bezels')"></div>
+    <div class="xlink" id="xlink" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="xphone">
+      <div class="ph-screen">
+      <div class="ph-status"><span>9:41</span><span id="phMode">EARTH</span></div>
+      <div class="ph-view" id="phV" aria-live="polite"></div>
+      <nav class="ph-tabs" aria-hidden="true"><span data-tab="today">Today</span><span data-tab="check">Check</span><span data-tab="history">History</span><span data-tab="profile">Profile</span></nav>
+      </div>
+      <img class="bezel" src="../bezels/phone.png" alt="" onerror="document.body.classList.remove('bezels')">
+    </div>
+  </div>
+</div>
+
+<script src="experience.js"></script>
+<script src="/static/grok_voice_widget.js?v=5.0.0" defer></script>
+<script>
+(function () {
+  var xp = document.getElementById('xp');
+  if (xp.hidden) document.getElementById('start').click();          // opened without #demo
+  var embedded = document.documentElement.classList.contains('embed');
+  new MutationObserver(function () {
+    if (!xp.hidden) return;
+    if (embedded) document.getElementById('start').click();         // inside the workstation tab there is nothing to go back to
+    else location.replace('/?tab=demo');
+  })
+    .observe(xp, { attributes: true, attributeFilter: ['hidden'] }); // Close, Escape or the last button
+})();
+</script>
+</body>
+</html>

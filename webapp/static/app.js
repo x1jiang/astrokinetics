@@ -17,9 +17,9 @@ import {
   HandDexterityTracker,
   PosRppgProcessor,
   computeClientMahalanobis,
-} from "./dsp.js?v=3.4.0";
-import { NeuroAcousticEngine, NEURO_PROTOCOLS } from "./audio_engine.js?v=3.4.0";
-import { Biomech3DStage } from "./biomech3d.js?v=3.4.0";
+} from "./dsp.js?v=4.0.0";
+import { NeuroAcousticEngine, NEURO_PROTOCOLS } from "./audio_engine.js?v=4.0.0";
+import { Biomech3DStage } from "./biomech3d.js?v=4.0.0";
 
 const FALLBACK_SCENARIOS = {
   nominal_lunar: {
@@ -403,12 +403,12 @@ function initColorSchemeControls() {
     try {
       stored = localStorage.getItem("color-scheme");
     } catch {}
-    const activeVal = stored === "light" || stored === "dark" ? stored : "system";
+    const activeVal = stored === "light" || stored === "dark" ? stored : "dark";
     radios.forEach((r) => {
       r.checked = r.value === activeVal;
     });
     if (meta) {
-      meta.content = stored === "light" || stored === "dark" ? stored : "light dark";
+      meta.content = activeVal;
     }
     refreshThemeDependentCanvases();
   }
@@ -824,6 +824,7 @@ function renderEvaluation(res) {
   }
   syncConnectedMeshReadouts(res);
   renderCovarianceRadar();
+  window.dispatchEvent(new CustomEvent("astrokinetics:evaluation", { detail: res }));
 }
 
 // ----------------------------------------------------------------------------
@@ -3537,12 +3538,18 @@ function activateWorkspaceTab(tabId, moveFocus = false, useTransition = true) {
       }
     });
 
+    if (state.activeWorkspaceTab === "panelWatchDemo") {
+      // The companion walk-through loads on first visit, not with the workstation.
+      const frame = document.getElementById("companionFrame");
+      if (frame && !frame.getAttribute("src")) frame.setAttribute("src", frame.dataset.src);
+    }
     if (state.activeWorkspaceTab === "panelMissionConsole") {
       renderCovarianceRadar();
       if (state.osdrEmpirical) renderOsdrCohortChart();
     } else if (state.activeWorkspaceTab === "panelNeuroLab") {
       renderAcousticSpectrumScope(performance.now());
     }
+    window.dispatchEvent(new CustomEvent("astrokinetics:tabchange", { detail: { panelId: state.activeWorkspaceTab } }));
   };
 
   if (useTransition && document.startViewTransition && !prefersReducedMotion()) {
@@ -3559,6 +3566,9 @@ function initWorkspaceTabs() {
 
   tabs.forEach((tab) => {
     tab.addEventListener("click", () => activateWorkspaceTab(tab.id, false, true));
+  });
+  document.getElementById("companionToTriageBtn")?.addEventListener("click", () => {
+    activateWorkspaceTab("tabAstraTriage", true, true);
   });
 
   // WAI-ARIA Authoring Practices keyboard navigation: ArrowRight, ArrowLeft, Home, End
@@ -3582,7 +3592,13 @@ function initWorkspaceTabs() {
   });
 
   const requestedTab = new URLSearchParams(window.location.search).get("tab");
-  if (requestedTab === "neuro" || requestedTab === "audio" || requestedTab === "voice") {
+  if (requestedTab === "demo" || requestedTab === "companion" || requestedTab === "iphone") {
+    activateWorkspaceTab("tabWatchDemo", false, false);
+  } else if (requestedTab === "triage" || requestedTab === "astra" || requestedTab === "hunch") {
+    activateWorkspaceTab("tabAstraTriage", false, false);
+  } else if (requestedTab === "aura" || requestedTab === "knowledge" || requestedTab === "evidence") {
+    activateWorkspaceTab("tabAuraKnowledge", false, false);
+  } else if (requestedTab === "neuro" || requestedTab === "audio" || requestedTab === "voice") {
     activateWorkspaceTab("tabNeuroLab", false, false);
   } else if (requestedTab === "api" || requestedTab === "edge" || requestedTab === "watch") {
     activateWorkspaceTab("tabEdgeApi", false, false);
@@ -4496,6 +4512,13 @@ async function bootstrap() {
       }
     })
     .catch(() => {});
+
+  window.AstroKineticsBridge = {
+    getState: () => state,
+    activateWorkspaceTab,
+    applyScenario,
+    pushSingleSimulatedEdgeBurst,
+  };
 
   startStudioLoop();
 }
