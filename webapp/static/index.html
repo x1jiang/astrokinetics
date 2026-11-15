@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=5.0.0">
+  <link rel="stylesheet" href="/static/styles.css?v=5.1.2">
   <link rel="stylesheet" href="/static/grok_voice_widget.css?v=5.0.0">
 </head>
 <body>
@@ -664,235 +664,424 @@
          TAB PANEL 2: NASA HUNCH TRIAGE, ASTRA EPISODE GOVERNANCE & LIDAR
          ====================================================================== -->
     <div id="panelAstraTriage" role="tabpanel" aria-labelledby="tabAstraTriage" class="tab-panel" hidden>
+      <!-- Safety summary strip (filled from /api/hunch/catalog and the episode list) -->
+      <div class="ax-kpi-strip" id="triageKpiStrip" aria-label="Triage safety summary">
+        <div class="ax-kpi"><span class="ax-kpi-label">Red-flag gate</span><strong class="ax-kpi-value mono">8<small>patterns</small></strong><span class="ax-kpi-foot">checked first, under 100 ms</span></div>
+        <div class="ax-kpi"><span class="ax-kpi-label">Safety tests</span><strong class="ax-kpi-value mono">12/12</strong><span class="ax-kpi-foot">15 clinical vignettes</span></div>
+        <div class="ax-kpi"><span class="ax-kpi-label">Rule / ML agreement</span><strong class="ax-kpi-value mono">87<small>%</small></strong><span class="ax-kpi-foot">rule engine has authority</span></div>
+        <div class="ax-kpi"><span class="ax-kpi-label">Episodes</span><strong class="ax-kpi-value mono">4</strong><span class="ax-kpi-foot">loading status</span></div>
+      </div>
+
+      <!-- Crew body map: sensors, layers and live readings -->
+      <article class="card ax-card bm-card">
+        <header class="card-header-flex">
+          <div>
+            <h2>Crew Body Map</h2>
+            <p class="muted-sub" title="The pulse wave in the arteries is slowed to one body length per beat so it can be seen">What the watch, phone and camera are measuring right now. Drag to turn.</p>
+          </div>
+          <div class="bm-controls">
+          <div class="ax-seg" id="bodyGravSeg" role="group" aria-label="Gravity">
+            <button type="button" class="ax-seg-btn" data-grav="earth" aria-pressed="false">Earth 1g</button>
+            <button type="button" class="ax-seg-btn" data-grav="orbit" aria-pressed="false">Orbit 0g</button>
+          </div>
+          <div class="ax-seg" id="bodyLayerSeg" role="group" aria-label="Body layer">
+            <button type="button" class="ax-seg-btn is-active" data-layer="all" aria-pressed="true">All</button>
+            <button type="button" class="ax-seg-btn" data-layer="skin" aria-pressed="false">Circulation</button>
+            <button type="button" class="ax-seg-btn" data-layer="muscle" aria-pressed="false">Muscle</button>
+            <button type="button" class="ax-seg-btn" data-layer="bone" aria-pressed="false">Bone</button>
+          </div>
+          </div>
+        </header>
+        <div class="bm-layout">
+          <div class="bm-stage">
+  <div class="bm-figure">
+            <canvas id="body3dCanvas" class="bm-canvas" aria-hidden="true"></canvas>
+            <svg id="hunchBodyMap" class="bm" viewBox="0 0 520 412" data-layer="all" role="img" aria-label="Crew body map: where each sensor measures and its current reading">
+    <defs><linearGradient id="bmGravGradient" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#4d6bff"/><stop offset="0.3" stop-color="#4dbdfa"/><stop offset="1" stop-color="#ff6b33"/></linearGradient></defs>
+    <g class="bm-skin">
+      <path class="bm-arm" d="M218 100 L200 160 L190 216"/><path class="bm-arm" d="M302 100 L320 160 L330 216"/>
+      <path class="bm-leg" d="M244 232 L240 302 L238 378"/><path class="bm-leg" d="M276 232 L280 302 L282 378"/>
+      <circle cx="187" cy="232" r="9"/><circle cx="333" cy="232" r="9"/>
+      <ellipse cx="232" cy="392" rx="13" ry="6.5"/><ellipse cx="288" cy="392" rx="13" ry="6.5"/>
+      <rect x="250" y="62" width="20" height="22" rx="7"/>
+      <path d="M222 92 Q260 80 298 92 L289 150 L285 206 Q260 220 235 206 L231 150 Z"/>
+      <path d="M235 202 Q260 214 285 202 L291 232 Q260 248 229 232 Z"/>
+      <circle cx="260" cy="44" r="24"/>
+    </g>
+    <g class="bm-muscle">
+      <ellipse cx="221" cy="104" rx="11" ry="14" transform="rotate(20 221 104)"/><ellipse cx="299" cy="104" rx="11" ry="14" transform="rotate(-20 299 104)"/><ellipse cx="244" cy="116" rx="15" ry="12"/><ellipse cx="276" cy="116" rx="15" ry="12"/><rect x="248" y="140" width="10" height="14" rx="3"/><rect x="262" y="140" width="10" height="14" rx="3"/><rect x="248" y="158" width="10" height="14" rx="3"/><rect x="262" y="158" width="10" height="14" rx="3"/><rect x="248" y="176" width="10" height="14" rx="3"/><rect x="262" y="176" width="10" height="14" rx="3"/>
+      <ellipse cx="209" cy="130" rx="8" ry="22" transform="rotate(17 209 130)"/><ellipse cx="311" cy="130" rx="8" ry="22" transform="rotate(-17 311 130)"/><ellipse cx="195" cy="188" rx="7" ry="22" transform="rotate(10 195 188)"/><ellipse cx="325" cy="188" rx="7" ry="22" transform="rotate(-10 325 188)"/>
+      <ellipse class="bm-quad" cx="242" cy="266" rx="12" ry="30" transform="rotate(3 242 266)"/><ellipse class="bm-quad" cx="278" cy="266" rx="12" ry="30" transform="rotate(-3 278 266)"/><ellipse class="bm-calf" cx="239" cy="338" rx="9" ry="27" transform="rotate(1 239 338)"/><ellipse class="bm-calf" cx="281" cy="338" rx="9" ry="27" transform="rotate(-1 281 338)"/>
+    </g>
+    <g class="bm-bone">
+      <circle cx="260" cy="42" r="17"/><path d="M247 51 Q260 70 273 51"/>
+      <path class="bm-spine" d="M260 84 L260 212"/>
+      <path d="M260 94 L224 100"/><path d="M260 94 L296 100"/>
+      <path d="M260 108 Q230 106 228 118"/><path d="M260 108 Q290 106 292 118"/><path d="M260 121 Q231.5 119 229.5 131"/><path d="M260 121 Q288.5 119 290.5 131"/><path d="M260 134 Q233 132 231 144"/><path d="M260 134 Q287 132 289 144"/><path d="M260 147 Q234.5 145 232.5 157"/><path d="M260 147 Q285.5 145 287.5 157"/><path d="M260 160 Q236 158 234 170"/><path d="M260 160 Q284 158 286 170"/>
+      <path d="M236 210 Q229 229 246 235 Q260 226 274 235 Q291 229 284 210"/>
+      <path class="bm-long" d="M218 100 L200 160 L190 216"/><path class="bm-long" d="M302 100 L320 160 L330 216"/>
+      <path class="bm-long bm-femur" d="M244 232 L240 302 L238 378"/><path class="bm-long bm-femur" d="M276 232 L280 302 L282 378"/>
+      <g class="bm-joints"><circle cx="218" cy="100" r="4"/><circle cx="200" cy="160" r="4"/><circle cx="190" cy="216" r="4"/><circle cx="302" cy="100" r="4"/><circle cx="320" cy="160" r="4"/><circle cx="330" cy="216" r="4"/><circle cx="244" cy="232" r="4.6"/><circle cx="240" cy="302" r="4.6"/><circle cx="238" cy="378" r="4.6"/><circle cx="276" cy="232" r="4.6"/><circle cx="280" cy="302" r="4.6"/><circle cx="282" cy="378" r="4.6"/></g>
+    </g>
+    <circle class="ax-zone" data-zone="head" cx="260" cy="44" r="29"/>
+    <ellipse class="ax-zone" data-zone="eyes" cx="260" cy="40" rx="15" ry="6"/>
+    <ellipse class="ax-zone" data-zone="neck" cx="260" cy="73" rx="15" ry="9"/>
+    <ellipse class="ax-zone" data-zone="chest" cx="260" cy="124" rx="35" ry="29"/>
+    <g class="bm-sensors">
+      <!-- blood-pressure cuff, viewer-left upper arm -->
+      <rect class="bm-device" x="198" y="122" width="22" height="13" rx="3" transform="rotate(17 209 128)"/>
+      <!-- Apple Watch, viewer-left wrist -->
+      <circle class="bm-ping" cx="190" cy="214" r="9"/>
+      <rect class="bm-device bm-watch" x="182" y="208" width="16" height="12" rx="3.5" transform="rotate(10 190 214)"/>
+      <!-- heart -->
+      <path class="bm-heart" id="bmHeart" d="M270 111 c-3 -6 -12 -4 -12 3 c0 6 8 10 12 14 c4 -4 12 -8 12 -14 c0 -7 -9 -9 -12 -3 z"/>
+      <!-- iPhone held in the viewer-right hand (tremor) -->
+      <circle class="bm-ping bm-ping-2" cx="333" cy="232" r="9"/>
+      <rect class="bm-device" x="328" y="222" width="10" height="18" rx="2.5"/>
+      <!-- camera pose markers: knee joint and thigh -->
+      <circle class="bm-ring" cx="280" cy="302" r="9"/>
+      <!-- iPhone LiDAR scanning the viewer-right calf -->
+      <g class="bm-lidar">
+        <path d="M352 326 L291 314"/><path d="M352 338 L291 338"/><path d="M352 350 L291 362"/>
+        <rect class="bm-device" x="352" y="324" width="11" height="28" rx="3"/>
+      </g>
+      <rect class="bm-scanline" x="170" y="0" width="180" height="26"/>
+    </g>
+    <g class="bm-grav" id="bmGrav" hidden>
+      <text class="bm-label" x="14" y="318">FLUID PRESSURE VS HEART</text>
+      <rect class="bm-grav-bar" x="14" y="325" width="118" height="4" rx="2"/>
+      <text class="bm-gline" x="14" y="349"><tspan class="bm-unit">HEAD</tspan><tspan class="bm-gval" dx="6" id="bmGravHead">0</tspan><tspan class="bm-unit" dx="3">mmHg</tspan></text>
+      <text class="bm-gline" x="14" y="369"><tspan class="bm-unit">FEET</tspan><tspan class="bm-gval" dx="8" id="bmGravFeet">0</tspan><tspan class="bm-unit" dx="3">mmHg</tspan></text>
+      <text class="bm-gnote" x="14" y="388" id="bmGravNote"></text>
+    </g>
+    <g class="bm-callout" data-key="sleep">
+      <path class="bm-leader" d="M154 40 L220 40 L236 42"/>
+      <circle class="bm-anchor" cx="236" cy="42" r="2.6"/>
+      <text class="bm-label" x="148" y="33" text-anchor="end">SLEEP &#183; WATCH</text>
+      <text class="bm-value" x="148" y="52" text-anchor="end"><tspan data-val>&#8212;</tspan><tspan class="bm-unit" dx="3" data-unit></tspan></text>
+    </g>
+    <g class="bm-callout" data-key="sbp">
+      <path class="bm-leader" d="M154 124 L183 124 L199 128"/>
+      <circle class="bm-anchor" cx="199" cy="128" r="2.6"/>
+      <text class="bm-label" x="148" y="117" text-anchor="end">BLOOD PRESSURE &#183; CUFF</text>
+      <text class="bm-value" x="148" y="136" text-anchor="end"><tspan data-val>&#8212;</tspan><tspan class="bm-unit" dx="3" data-unit></tspan></text>
+    </g>
+    <g class="bm-callout" data-key="spo2">
+      <path class="bm-leader" d="M154 196 L165 196 L181 212"/>
+      <circle class="bm-anchor" cx="181" cy="212" r="2.6"/>
+      <text class="bm-label" x="148" y="189" text-anchor="end">SpO&#8322; &#183; WATCH</text>
+      <text class="bm-value" x="148" y="208" text-anchor="end"><tspan data-val>&#8212;</tspan><tspan class="bm-unit" dx="3" data-unit></tspan></text>
+    </g>
+    <g class="bm-callout" data-key="temp">
+      <path class="bm-leader" d="M154 252 L168 252 L184 219"/>
+      <circle class="bm-anchor" cx="184" cy="219" r="2.6"/>
+      <text class="bm-label" x="148" y="245" text-anchor="end">WRIST TEMP &#183; WATCH</text>
+      <text class="bm-value" x="148" y="264" text-anchor="end"><tspan data-val>&#8212;</tspan><tspan class="bm-unit" dx="3" data-unit></tspan></text>
+    </g>
+    <g class="bm-callout" data-key="hr">
+      <path class="bm-leader" d="M366 62 L295 62 L279 116"/>
+      <circle class="bm-anchor" cx="279" cy="116" r="2.6"/>
+      <text class="bm-label" x="372" y="55" text-anchor="start">HEART RATE &#183; WATCH</text>
+      <text class="bm-value" x="372" y="74" text-anchor="start"><tspan data-val>&#8212;</tspan><tspan class="bm-unit" dx="3" data-unit></tspan></text>
+    </g>
+    <g class="bm-callout" data-key="tremor">
+      <path class="bm-leader" d="M366 190 L357 190 L341 230"/>
+      <circle class="bm-anchor" cx="341" cy="230" r="2.6"/>
+      <text class="bm-label" x="372" y="183" text-anchor="start">HAND TREMOR &#183; IPHONE</text>
+      <text class="bm-value" x="372" y="202" text-anchor="start"><tspan data-val>&#8212;</tspan><tspan class="bm-unit" dx="3" data-unit></tspan></text>
+    </g>
+    <g class="bm-callout" data-key="sym">
+      <path class="bm-leader" d="M366 250 L305 250 L289 262"/>
+      <circle class="bm-anchor" cx="289" cy="262" r="2.6"/>
+      <text class="bm-label" x="372" y="243" text-anchor="start">L/R SYMMETRY &#183; CAMERA</text>
+      <text class="bm-value" x="372" y="262" text-anchor="start"><tspan data-val>&#8212;</tspan><tspan class="bm-unit" dx="3" data-unit></tspan></text>
+    </g>
+    <g class="bm-callout" data-key="rom">
+      <path class="bm-leader" d="M366 300 L305 300 L289 302"/>
+      <circle class="bm-anchor" cx="289" cy="302" r="2.6"/>
+      <text class="bm-label" x="372" y="293" text-anchor="start">KNEE RANGE &#183; CAMERA</text>
+      <text class="bm-value" x="372" y="312" text-anchor="start"><tspan data-val>&#8212;</tspan><tspan class="bm-unit" dx="3" data-unit></tspan></text>
+    </g>
+    <g class="bm-callout" data-key="vol">
+      <path class="bm-leader" d="M366 372 L374 372 L358 352"/>
+      <circle class="bm-anchor" cx="358" cy="352" r="2.6"/>
+      <text class="bm-label" x="372" y="365" text-anchor="start">CALF VOLUME &#183; LIDAR</text>
+      <text class="bm-value" x="372" y="384" text-anchor="start"><tspan data-val>&#8212;</tspan><tspan class="bm-unit" dx="3" data-unit></tspan></text>
+    </g>
+  </svg>
+          </div>
+          <span class="bm-status mono" id="body3dStatus" hidden></span>
+          <a class="bm-credit" href="/static/atlas/ATTRIBUTION.md" target="_blank" rel="noopener noreferrer">Anatomy: BodyParts3D &copy; DBCLS, CC BY 4.0 &middot; via Human Atlas</a>
+          </div>
+          <div class="bm-side">
+            <div class="bm-devices" aria-hidden="true">
+              <span><i class="ax-dot ax-dot-nominal"></i>Apple Watch</span>
+              <span><i class="ax-dot ax-dot-nominal"></i>iPhone LiDAR</span>
+              <span><i class="ax-dot ax-dot-nominal"></i>Camera pose</span>
+            </div>
+            <div class="ax-monitor">
+              <canvas id="vitalsMonitorCanvas" width="560" height="96" aria-label="Animated heart and oxygen traces following the heart rate and SpO2 values below"></canvas>
+              <span class="ax-monitor-tag mono">ILLUSTRATIVE TRACE</span>
+            </div>
+            <div class="ax-vitals" id="hunchVitals" title="A tile turns amber or red only when the triage engine flags that vital">
+              <label class="ax-vital" data-vital="hr"><span class="ax-vital-label">Heart rate</span><span class="ax-vital-row"><input type="number" id="hunchHrInput" value="72" min="25" max="240" step="1"><span class="ax-unit">bpm</span></span></label>
+              <label class="ax-vital" data-vital="sbp"><span class="ax-vital-label">Systolic BP</span><span class="ax-vital-row"><input type="number" id="hunchSbpInput" value="118" min="50" max="250" step="1"><span class="ax-unit">mmHg</span></span></label>
+              <label class="ax-vital" data-vital="spo2"><span class="ax-vital-label">SpO<sub>2</sub></span><span class="ax-vital-row"><input type="number" id="hunchSpo2Input" value="98" min="50" max="100" step="1"><span class="ax-unit">%</span></span></label>
+              <label class="ax-vital" data-vital="temp"><span class="ax-vital-label">Temperature</span><span class="ax-vital-row"><input type="number" id="hunchTempInput" value="36.8" min="33" max="43" step="0.1"><span class="ax-unit">&deg;C</span></span></label>
+              <label class="ax-vital" data-vital="sleep"><span class="ax-vital-label">Sleep</span><span class="ax-vital-row"><input type="number" id="hunchSleepInput" value="6.8" min="0" max="24" step="0.1"><span class="ax-unit">h</span></span></label>
+              <label class="ax-vital" data-vital="severity"><span class="ax-vital-label">Severity</span><span class="ax-vital-row"><input type="number" id="hunchSeverityInput" value="3" min="1" max="10" step="1"><span class="ax-unit">/ 10</span></span></label>
+            </div>
+          </div>
+        </div>
+      </article>
+
       <div class="astra-grid-2col">
-        <!-- Left Column: NASA HUNCH 8-Red-Flag Safety Gate & Dual-Engine Triage -->
-        <article class="card">
+        <!-- Left: NASA HUNCH red-flag gate and dual-engine triage -->
+        <article class="card ax-card">
           <header class="card-header-flex">
             <div>
-              <h2>NASA HUNCH Dual-Engine Triage &amp; 8-Red-Flag Gate</h2>
-              <p class="muted-sub">Deterministic emergency preemption (&lt;100ms) + explainable Rule Engine vs. educational ML comparator &amp; quality abstention</p>
+              <h2>HUNCH Triage &middot; Red-Flag Gate</h2>
+              <p class="muted-sub">Red flags first. Rules decide. ML only compares.</p>
             </div>
-            <div class="inline-actions">
-              <span class="micro-tag mono">15 VIGNETTES &middot; 12/12 SAFETY TESTS</span>
-            </div>
+            <span class="micro-tag mono">NOT A DIAGNOSIS</span>
           </header>
 
-          <!-- Preset Clinical Vignette Strip -->
-          <div class="astra-vignette-strip" id="hunchVignetteStrip" role="group" aria-label="Load clinical test vignette">
-            <button type="button" class="btn btn-secondary btn-xs" data-vignette="mi_emergency">MI Triad Emergency</button>
-            <button type="button" class="btn btn-secondary btn-xs" data-vignette="sans_vision">Acute SANS Vision Loss</button>
-            <button type="button" class="btn btn-secondary btn-xs" data-vignette="poor_capture">Poor Signal &rarr; Abstain</button>
-            <button type="button" class="btn btn-secondary btn-xs" data-vignette="barger_sleep">6.1h ISS Sleep Profile</button>
-            <button type="button" class="btn btn-ghost btn-xs" id="hunchResetBtn">Reset Check</button>
+          <section class="ax-section">
+            <div class="ax-section-head">
+              <h3>Test vignettes</h3>
+              <button type="button" class="btn btn-ghost btn-xs" id="hunchResetBtn">Reset</button>
+            </div>
+            <div class="astra-vignette-strip" id="hunchVignetteStrip" role="group" aria-label="Load clinical test vignette">
+              <button type="button" class="ax-chip-btn" data-vignette="mi_emergency"><i class="ax-dot ax-dot-alert" aria-hidden="true"></i>MI triad emergency</button>
+              <button type="button" class="ax-chip-btn" data-vignette="sans_vision"><i class="ax-dot ax-dot-alert" aria-hidden="true"></i>Acute SANS vision loss</button>
+              <button type="button" class="ax-chip-btn" data-vignette="poor_capture"><i class="ax-dot ax-dot-neutral" aria-hidden="true"></i>Poor signal &rarr; abstain</button>
+              <button type="button" class="ax-chip-btn" data-vignette="barger_sleep"><i class="ax-dot ax-dot-nominal" aria-hidden="true"></i>6.1 h ISS sleep profile</button>
+            </div>
+          </section>
+
+          <div id="hunchSymptomGrid">
+            <section class="ax-section">
+              <div class="ax-section-head">
+                <h3>Emergency red-flag symptoms</h3>
+                <span class="ax-count mono" id="hunchRedCount">0 selected</span>
+              </div>
+              <div class="ax-chip-grid">
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="chest_pain"><span>Chest pain</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="sob"><span>Shortness of breath</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="diaphoresis"><span>Diaphoresis</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="thunderclap_headache"><span>Thunderclap headache</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="confusion"><span>Confusion / AMS</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="fever"><span>Fever &ge; 38 &deg;C</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="neck_stiffness"><span>Neck stiffness</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="non_blanching_rash"><span>Non-blanching rash</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="acute_vision_loss"><span>Acute vision loss</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="new_seizure"><span>New seizure</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="syncope"><span>Syncope / collapse</span></label>
+                <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="hemoptysis"><span>Hemoptysis</span></label>
+              </div>
+            </section>
+            <section class="ax-section">
+              <div class="ax-section-head">
+                <h3>Other symptoms</h3>
+                <span class="ax-count mono" id="hunchOtherCount">0 selected</span>
+              </div>
+              <div class="ax-chip-grid">
+                <label class="symptom-chip"><input type="checkbox" data-sym="headache"><span>Headache (gradual)</span></label>
+                <label class="symptom-chip"><input type="checkbox" data-sym="dizziness"><span>Dizziness / orthostatic</span></label>
+                <label class="symptom-chip"><input type="checkbox" data-sym="fatigue"><span>Fatigue / malaise</span></label>
+                <label class="symptom-chip"><input type="checkbox" data-sym="visual_blur"><span>Visual blur (SANS check)</span></label>
+              </div>
+            </section>
           </div>
 
-          <!-- Emergency Red-Flag & Symptom Selector -->
-          <div class="astra-section-label">Red-Flag Triggers &amp; Crew Symptom Check</div>
-          <div class="hunch-symptom-grid" id="hunchSymptomGrid">
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="chest_pain"><span>Chest Pain</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="sob"><span>Shortness of Breath</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="diaphoresis"><span>Diaphoresis (Sweat)</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="thunderclap_headache"><span>Thunderclap Headache</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="confusion"><span>Confusion / AMS</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="fever"><span>Fever (&ge;38&deg;C)</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="neck_stiffness"><span>Neck Stiffness</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="non_blanching_rash"><span>Non-Blanching Rash</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="acute_vision_loss"><span>Acute Vision Loss</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="new_seizure"><span>New Seizure</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="syncope"><span>Syncope / Collapse</span></label>
-            <label class="symptom-chip symptom-red"><input type="checkbox" data-sym="hemoptysis"><span>Hemoptysis</span></label>
-            <label class="symptom-chip"><input type="checkbox" data-sym="headache"><span>Headache (Gradual)</span></label>
-            <label class="symptom-chip"><input type="checkbox" data-sym="dizziness"><span>Dizziness / Orthostatic</span></label>
-            <label class="symptom-chip"><input type="checkbox" data-sym="fatigue"><span>Fatigue / Malaise</span></label>
-            <label class="symptom-chip"><input type="checkbox" data-sym="visual_blur"><span>Visual Blur (SANS Check)</span></label>
-          </div>
-
-          <!-- Vitals & Data Quality Inputs -->
-          <div class="astra-form-grid">
-            <label class="astra-field"><span>HR (bpm)</span><input type="number" id="hunchHrInput" value="72" min="25" max="240" step="1"></label>
-            <label class="astra-field"><span>SBP (mmHg)</span><input type="number" id="hunchSbpInput" value="118" min="50" max="250" step="1"></label>
-            <label class="astra-field"><span>SpO2 (%)</span><input type="number" id="hunchSpo2Input" value="98" min="50" max="100" step="1"></label>
-            <label class="astra-field"><span>Temp (&deg;C)</span><input type="number" id="hunchTempInput" value="36.8" min="33" max="43" step="0.1"></label>
-            <label class="astra-field"><span>Sleep (h)</span><input type="number" id="hunchSleepInput" value="6.8" min="0" max="24" step="0.1"></label>
-            <label class="astra-field"><span>Severity (1-10)</span><input type="number" id="hunchSeverityInput" value="3" min="1" max="10" step="1"></label>
-            <label class="astra-field"><span>Signal Quality</span>
+          <div class="ax-context-row">
+            <label class="ax-field"><span>Signal quality</span>
               <select id="hunchQualitySelect">
-                <option value="good" selected>Good (Verified)</option>
+                <option value="good" selected>Good (verified)</option>
                 <option value="fair">Fair</option>
-                <option value="poor">Poor (&rarr; Abstain)</option>
-                <option value="insufficient">Insufficient (&rarr; Repeat)</option>
+                <option value="poor">Poor &rarr; abstain</option>
+                <option value="insufficient">Insufficient &rarr; repeat</option>
               </select>
             </label>
-            <label class="astra-field"><span>Reference Profile</span>
+            <label class="ax-field"><span>Reference profile</span>
               <select id="hunchProfileSelect">
-                <option value="mission_microgravity" selected>Mission Profile (ISS/Mars)</option>
-                <option value="earth_1g">Earth-1g Preflight Baseline</option>
+                <option value="mission_microgravity" selected>Mission profile (ISS / Mars)</option>
+                <option value="earth_1g">Earth-1g preflight baseline</option>
               </select>
             </label>
+            <label class="ax-switch"><input type="checkbox" id="hunchWatchCheck" checked><span class="ax-switch-track" aria-hidden="true"></span><span>Watch connected</span></label>
+            <label class="ax-switch"><input type="checkbox" id="hunchRequireCompleteCheck"><span class="ax-switch-track" aria-hidden="true"></span><span>Require complete context</span></label>
           </div>
 
-          <div class="astra-actions-row">
-            <label class="checkbox-inline"><input type="checkbox" id="hunchWatchCheck" checked><span>Watch Connected</span></label>
-            <label class="checkbox-inline"><input type="checkbox" id="hunchRequireCompleteCheck"><span>Enforce Complete Context</span></label>
-            <button type="button" class="btn btn-primary btn-sm" id="runHunchTriageBtn">Evaluate Dual-Engine Triage</button>
-          </div>
+          <button type="button" class="btn btn-primary ax-run-btn" id="runHunchTriageBtn">Run triage</button>
 
-          <!-- Dual-Engine Triage Outcome Box -->
-          <div class="hunch-outcome-card" id="hunchOutcomeCard" aria-live="polite">
-            <div class="card-header-flex">
-              <div class="hunch-tier-row">
+          <!-- Outcome -->
+          <div class="ax-verdict" id="hunchOutcomeCard" data-tier="LOW" aria-live="polite">
+            <div class="ax-verdict-top">
+              <svg class="ax-gauge" id="hunchGauge" viewBox="0 0 200 122" role="img" aria-label="Acuity gauge">
+                <path class="ax-gauge-seg" data-step="LOW" d="M 22.03 97.82 A 78 78 0 0 1 43.33 46.41"/>
+                <path class="ax-gauge-seg" data-step="MODERATE" d="M 46.41 43.33 A 78 78 0 0 1 97.82 22.03"/>
+                <path class="ax-gauge-seg" data-step="URGENT" d="M 102.18 22.03 A 78 78 0 0 1 153.59 43.33"/>
+                <path class="ax-gauge-seg" data-step="EMERGENCY" d="M 156.67 46.41 A 78 78 0 0 1 177.97 97.82"/>
+                <g class="ax-gauge-ticks" aria-hidden="true"><text x="14" y="118">LOW</text><text x="186" y="118" text-anchor="end">EMERGENCY</text></g>
+                <g class="ax-gauge-needle" id="hunchNeedle"><path d="M100 100 L100 34"/><circle cx="100" cy="100" r="6.5"/></g>
+              </svg>
+              <div class="ax-verdict-main">
                 <span class="status-pill status-nominal" id="hunchTierPill">LOW</span>
-                <strong id="hunchHeadline">Ready — select symptoms or a clinical vignette to run &lt;100ms triage gate.</strong>
+                <strong class="ax-verdict-headline" id="hunchHeadline">Select symptoms or a vignette, then run triage.</strong>
+                <div class="ax-flag-list" id="hunchFlagList" hidden></div>
               </div>
-              <span class="mono micro-tag" id="hunchTimingTag">RF: 0.1ms · Rule: 0.2ms · ML: 0.2ms</span>
             </div>
-            <div class="hunch-engines-split">
-              <div class="engine-box">
-                <div class="engine-head"><strong>Rule Engine (Primary Authority)</strong><span class="micro-tag" id="hunchRuleBadge">Explainable</span></div>
+
+            <ol class="ax-pipe" id="hunchPipeline" aria-label="How the result was reached"></ol>
+
+            <div class="ax-ml">
+              <div class="engine-head"><strong>ML comparator</strong><span class="status-pill status-neutral" id="hunchMlAgreeBadge">Educational</span></div>
+              <div id="hunchMlBars" class="ml-prob-bars"></div>
+            </div>
+
+            <div class="ax-verdict-foot">
+              <details class="ax-why">
+                <summary>Why this result</summary>
                 <ul class="trace-list" id="hunchRuleTrace"></ul>
-              </div>
-              <div class="engine-box">
-                <div class="engine-head"><strong>Educational ML Comparator</strong><span class="micro-tag" id="hunchMlAgreeBadge">Concurrence</span></div>
-                <div id="hunchMlBars" class="ml-prob-bars"></div>
                 <p class="muted-sub" id="hunchMlNote"></p>
-              </div>
-            </div>
-            <div class="astra-actions-row">
-              <button type="button" class="btn btn-secondary btn-xs" id="openEpisodeFromHunchBtn">Log As ASTRA Longitudinal Episode</button>
+              </details>
+              <button type="button" class="btn btn-secondary btn-xs" id="openEpisodeFromHunchBtn">Log as episode</button>
             </div>
           </div>
         </article>
 
-        <!-- Right Column: ASTRA Longitudinal Episode, Task & Provenance State Machine -->
-        <article class="card">
+        <!-- Right: ASTRA longitudinal episode governance -->
+        <article class="card ax-card">
           <header class="card-header-flex">
             <div>
-              <h2>ASTRA Longitudinal Episode &amp; Non-Conflated Governance</h2>
-              <p class="muted-sub">Enforces notification &ne; completion, bad capture &ne; normal, sync &ne; human review, and audited closure</p>
+              <h2>Episode Governance</h2>
+              <p class="muted-sub">Five states, never merged.</p>
             </div>
-            <div class="inline-actions">
-              <div class="seg-track seg-compact" role="group" aria-label="Language">
-                <button type="button" class="btn btn-ghost btn-xs astra-lang-btn active" data-lang="en">EN</button>
-                <button type="button" class="btn btn-ghost btn-xs astra-lang-btn" data-lang="es">ES</button>
-              </div>
+            <div class="ax-seg" role="group" aria-label="Copy language">
+              <button type="button" class="ax-seg-btn astra-lang-btn is-active" data-lang="en" aria-pressed="true">EN</button>
+              <button type="button" class="ax-seg-btn astra-lang-btn" data-lang="es" aria-pressed="false">ES</button>
             </div>
           </header>
 
-          <!-- Active Episode Selector & Environment Controls -->
-          <div class="astra-controls-bar">
-            <label class="astra-field astra-field-wide">
-              <span id="astraEpSelectLabel">Active Episode</span>
+          <div class="ax-episode-bar">
+            <label class="ax-field ax-grow">
+              <span id="astraEpSelectLabel">Active episode</span>
               <select id="astraEpisodeSelect"></select>
             </label>
-            <label class="checkbox-inline"><input type="checkbox" id="astraInternetToggle"><span>Relay Online</span></label>
-            <label class="checkbox-inline"><input type="checkbox" id="astraWatchToggle" checked><span>Watch Link</span></label>
+            <label class="ax-switch"><input type="checkbox" id="astraInternetToggle"><span class="ax-switch-track" aria-hidden="true"></span><span>Relay online</span></label>
+            <label class="ax-switch"><input type="checkbox" id="astraWatchToggle" checked><span class="ax-switch-track" aria-hidden="true"></span><span>Watch link</span></label>
           </div>
 
-          <!-- Reference Baseline Profile Toggle (Earth-1g vs Mission Profile) -->
-          <div class="profile-compare-box" id="astraProfileBox">
-            <div class="card-header-flex">
-              <strong id="astraProfileTitle">Reference Profile: Mission Microgravity Norm</strong>
-              <div class="inline-actions">
-                <button type="button" class="btn btn-secondary btn-xs" id="toggleEarthProfileBtn" data-prof="earth_1g">Earth-1g Baseline</button>
-                <button type="button" class="btn btn-primary btn-xs" id="toggleMissionProfileBtn" data-prof="mission_microgravity">Mission Profile</button>
-              </div>
+          <div class="ax-decision" id="astraDecisionBanner">
+            <div class="ax-decision-head">
+              <span class="status-pill status-neutral" id="stDecisionTier">&mdash;</span>
+              <strong id="stDecisionType">Loading episode</strong>
+              <span class="ax-subject mono" id="stSubject"></span>
             </div>
-            <p class="muted-sub" id="astraProfileCopy">Evaluates crew observation against mission-validated adaptation envelopes before triggering an Earth-1g delta alert alone.</p>
+            <p id="stDecisionFinding"></p>
+            <div class="ax-decision-meta" id="stDecisionMeta"></div>
           </div>
 
-          <!-- Non-Conflated State Status Grid -->
-          <div class="astra-state-grid" id="astraStateGrid">
-            <div class="state-cell"><span>Episode Status</span><strong class="mono" id="stEpisodeStatus">open</strong></div>
-            <div class="state-cell"><span>Task State</span><strong class="mono" id="stTaskState">pending</strong></div>
-            <div class="state-cell"><span>Notification</span><strong class="mono" id="stNotification">dismissed</strong></div>
-            <div class="state-cell"><span>Capture Quality</span><strong class="mono" id="stQuality">insufficient</strong></div>
-            <div class="state-cell"><span>Relay Sync</span><strong class="mono" id="stSyncStatus">queued</strong></div>
-            <div class="state-cell"><span>Human Review</span><strong class="mono" id="stHumanReviewed">false</strong></div>
-          </div>
-
-          <div class="astra-decision-banner" id="astraDecisionBanner">
-            <strong id="stDecisionType">INCOMPLETE_CHECK_REQUIRED</strong>
-            <span id="stDecisionFinding">Loading active episode state...</span>
-          </div>
+          <ol class="ax-stepper" id="astraStepper" aria-label="Episode lifecycle"></ol>
 
           <div class="astra-guard-alert" id="astraGuardAlert" hidden role="alert"></div>
 
-          <!-- Governance Transition Actions -->
-          <div class="astra-transition-buttons">
-            <button type="button" class="btn btn-secondary btn-xs" data-ep-action="DISMISS">1. Dismiss Reminder (&ne; Complete)</button>
-            <button type="button" class="btn btn-secondary btn-xs" data-ep-action="BAD_CAPTURE">2. Reject Bad Capture (&ne; Normal)</button>
-            <button type="button" class="btn btn-primary btn-xs" data-ep-action="RECORD">3. Record Guided Capture</button>
-            <button type="button" class="btn btn-secondary btn-xs" data-ep-action="SYNC">4. Sync Telemetry</button>
-            <button type="button" class="btn btn-secondary btn-xs" data-ep-action="REVIEW">5. Log Human CMO Review</button>
+          <div class="ax-profile" id="astraProfileBox">
+            <div class="ax-profile-head">
+              <strong id="astraProfileTitle">Reference profile</strong>
+              <div class="ax-seg" role="group" aria-label="Reference baseline">
+                <button type="button" class="ax-seg-btn" id="toggleEarthProfileBtn" data-prof="earth_1g" aria-pressed="false">Earth-1g</button>
+                <button type="button" class="ax-seg-btn is-active" id="toggleMissionProfileBtn" data-prof="mission_microgravity" aria-pressed="true">Mission</button>
+              </div>
+            </div>
+            <p class="muted-sub" id="astraProfileCopy"></p>
           </div>
 
-          <div class="astra-close-row">
-            <input type="text" id="astraClosureReasonInput" placeholder="Required clinical rationale to close episode (e.g. Verified recovery x48h)">
-            <button type="button" class="btn btn-secondary btn-xs" id="astraCloseEpisodeBtn">6. Close Episode</button>
-          </div>
+          <section class="ax-section">
+            <div class="ax-section-head">
+              <h3>Protocol actions</h3>
+            </div>
+            <div class="astra-transition-buttons">
+              <button type="button" class="btn btn-secondary btn-xs" data-ep-action="DISMISS">Dismiss reminder</button>
+              <button type="button" class="btn btn-secondary btn-xs" data-ep-action="BAD_CAPTURE">Reject bad capture</button>
+              <button type="button" class="btn btn-primary btn-xs" data-ep-action="RECORD">Record guided capture</button>
+              <button type="button" class="btn btn-secondary btn-xs" data-ep-action="SYNC">Sync telemetry</button>
+              <button type="button" class="btn btn-secondary btn-xs" data-ep-action="REVIEW">Log CMO review</button>
+            </div>
+            <div class="astra-close-row">
+              <input type="text" id="astraClosureReasonInput" placeholder="Clinical rationale required to close, e.g. verified recovery over 48 h" aria-label="Closure rationale">
+              <button type="button" class="btn btn-secondary btn-xs" id="astraCloseEpisodeBtn">Close episode</button>
+            </div>
+          </section>
 
-          <!-- Audit Log & Multi-Surface Architecture -->
           <div class="astra-subsplit">
-            <div>
-              <div class="astra-section-label">Immutable Audit Trail</div>
-              <ul class="audit-timeline" id="astraAuditTimeline"></ul>
-            </div>
-            <div>
-              <div class="astra-section-label">Multi-Surface Contract Ownership</div>
+            <section class="ax-section">
+              <div class="ax-section-head"><h3>Audit trail</h3><span class="ax-count mono" id="astraAuditCount"></span></div>
+              <ol class="audit-timeline" id="astraAuditTimeline"></ol>
+            </section>
+            <section class="ax-section">
+              <div class="ax-section-head"><h3>Three surfaces</h3></div>
               <div class="surface-mini-list" id="astraSurfaceList"></div>
-            </div>
+            </section>
           </div>
         </article>
       </div>
 
-      <!-- Full-Width Card: iPhone LiDAR Closed-Mesh Signed Tetrahedral Volumetry -->
-      <article class="card astra-lidar-card">
+      <!-- Full width: iPhone LiDAR closed-mesh volumetry -->
+      <article class="card ax-card astra-lidar-card">
         <header class="card-header-flex">
           <div>
-            <h2>iPhone LiDAR Closed-Mesh Calf Volumetry &amp; Observed-Coverage Quality Gate</h2>
-            <p class="muted-sub">Signed tetrahedral volume <code>V = (1/6)|&Sigma; v0 &middot; (v1 &times; v2)|</code> between tibial plateau and malleolus with raw <code>sceneDepth + confidenceMap</code> (&ge;82% gate)</p>
+            <h2>LiDAR Limb Volumetry &middot; Coverage Gate</h2>
+            <p class="muted-sub">Closed-mesh volume from an iPhone scan. Held unless 82% of the surface was actually seen.</p>
           </div>
-          <span class="status-pill status-nominal" id="lidarGatePill">PASS &middot; 88.0% OBSERVED</span>
+          <span class="status-pill status-nominal" id="lidarGatePill">PASS &middot; 88% OBSERVED</span>
         </header>
 
         <div class="lidar-layout">
-          <div class="lidar-canvas-wrap">
-            <canvas id="lidarMeshCanvas" width="460" height="250" aria-label="3D wireframe calf volumetric mesh colored by observed versus occluded and inferred surface coverage"></canvas>
+          <div class="ax-viewport">
+            <canvas id="lidarMeshCanvas" width="460" height="280" aria-label="Wireframe limb mesh coloured by observed, occluded and inferred surface"></canvas>
+            <span class="ax-viewport-tag mono" id="lidarViewportTag">CLOSED MESH</span>
+            <div class="ax-viewport-readout"><strong class="mono" id="lidarHeroVol">&mdash;</strong><span>cm&sup3;</span></div>
             <div class="lidar-legend-row">
-              <span><i class="dot-observed"></i> Observed LiDAR (&ge;82%)</span>
-              <span><i class="dot-occluded"></i> Occluded Rear Arc</span>
-              <span><i class="dot-inferred"></i> Inferred Cap Closure</span>
+              <span><i class="dot-observed"></i> Observed</span>
+              <span><i class="dot-occluded"></i> Occluded rear arc</span>
+              <span><i class="dot-inferred"></i> Inferred cap closure</span>
             </div>
           </div>
 
           <div class="lidar-controls-col">
-            <div class="astra-form-grid">
-              <label class="astra-field"><span>Limb Segment</span>
+            <div class="ax-form-grid">
+              <label class="ax-field"><span>Limb segment</span>
                 <select id="lidarLimbSelect">
-                  <option value="left_calf" selected>Left Calf (Sol Longitudinal)</option>
-                  <option value="right_calf">Right Calf</option>
-                  <option value="left_forearm">Left Forearm</option>
+                  <option value="left_calf" selected>Left calf</option>
+                  <option value="right_calf">Right calf</option>
+                  <option value="left_forearm">Left forearm</option>
                 </select>
               </label>
-              <label class="astra-field"><span>Capture Pipeline</span>
+              <label class="ax-field"><span>Capture pipeline</span>
                 <select id="lidarModeSelect">
                   <option value="raw_sceneDepth" selected>Raw sceneDepth + confidenceMap</option>
-                  <option value="personSegmentationWithDepth">personSegmentationWithDepth (Legacy Risk)</option>
+                  <option value="personSegmentationWithDepth">personSegmentationWithDepth (legacy risk)</option>
                 </select>
               </label>
-              <label class="astra-field"><span>Observed Coverage (%)</span><input type="number" id="lidarCovInput" value="88" min="40" max="100" step="1"></label>
-              <label class="astra-field"><span>Proximal Circ (cm)</span><input type="number" id="lidarProxInput" value="37.4" min="18" max="60" step="0.2"></label>
-              <label class="astra-field"><span>Mid Calf Circ (cm)</span><input type="number" id="lidarMidInput" value="34.2" min="18" max="60" step="0.2"></label>
-              <label class="astra-field"><span>Baseline Earth (mL)</span><input type="number" id="lidarBaseVolInput" value="2380" min="500" max="5000" step="10"></label>
+              <label class="ax-field"><span>Observed coverage</span><span class="ax-input-unit"><input type="number" id="lidarCovInput" value="88" min="40" max="100" step="1"><span class="ax-unit">%</span></span></label>
+              <label class="ax-field"><span>Proximal circumference</span><span class="ax-input-unit"><input type="number" id="lidarProxInput" value="37.4" min="18" max="60" step="0.2"><span class="ax-unit">cm</span></span></label>
+              <label class="ax-field"><span>Mid-calf circumference</span><span class="ax-input-unit"><input type="number" id="lidarMidInput" value="34.2" min="18" max="60" step="0.2"><span class="ax-unit">cm</span></span></label>
+              <label class="ax-field"><span>Earth baseline volume</span><span class="ax-input-unit"><input type="number" id="lidarBaseVolInput" value="2380" min="500" max="5000" step="10"><span class="ax-unit">mL</span></span></label>
             </div>
+
+            <div class="ax-coverage" id="lidarCoverage"></div>
+
             <div class="astra-actions-row">
-              <button type="button" class="btn btn-primary btn-sm" id="runLidarCalcBtn">Compute Signed Tetrahedral Volume</button>
-              <button type="button" class="btn btn-secondary btn-xs" id="simulatePartialLidarBtn">Test Partial 64% Scan (&rarr; HOLD)</button>
+              <button type="button" class="btn btn-primary btn-sm" id="runLidarCalcBtn">Compute volume</button>
+              <button type="button" class="btn btn-secondary btn-xs" id="simulatePartialLidarBtn">Try a partial 64% scan</button>
             </div>
+
             <div class="lidar-readout-strip" id="lidarReadoutStrip">
-              <div class="k-metric"><span>Computed Volume</span><strong class="mono" id="lidarVolVal">2,148.2 cm&sup3;</strong></div>
-              <div class="k-metric"><span>Preflight Fluid Delta</span><strong class="mono" id="lidarDeltaVal">-231.8 mL (-9.7%)</strong></div>
-              <div class="k-metric"><span>Triangles / Vertices</span><strong class="mono" id="lidarGeoVal">432 / 218</strong></div>
+              <div class="k-metric"><span class="k-label">Computed volume</span><strong class="ax-readout mono" id="lidarVolVal">&mdash;</strong></div>
+              <div class="k-metric"><span class="k-label">Change from Earth baseline</span><strong class="ax-readout mono" id="lidarDeltaVal">&mdash;</strong></div>
+              <div class="k-metric"><span class="k-label">Mesh</span><strong class="ax-readout mono" id="lidarGeoVal">&mdash;</strong></div>
             </div>
             <div class="astra-guard-alert" id="lidarWarningBox" hidden></div>
           </div>
@@ -901,103 +1090,137 @@
     </div>
 
     <!-- ======================================================================
-         TAB PANEL 3: AURA CITED SPACE MEDICINE RAG, RADLAB & BARGER SLEEP
+         TAB PANEL 3: AURA CITED SPACE MEDICINE EVIDENCE, RADLAB & BARGER SLEEP
          ====================================================================== -->
     <div id="panelAuraKnowledge" role="tabpanel" aria-labelledby="tabAuraKnowledge" class="tab-panel" hidden>
-      <!-- Top Card: AURA Extractive Cited Q&A -->
-      <article class="card">
+      <!-- Corpus summary strip (filled from /api/aura/overview) -->
+      <div class="ax-kpi-strip ax-kpi-strip-5" id="auraKpiStrip" aria-label="Evidence corpus summary">
+        <div class="ax-kpi"><span class="ax-kpi-label">Concepts</span><strong class="ax-kpi-value mono">16</strong><span class="ax-kpi-foot">bilingual definitions</span></div>
+        <div class="ax-kpi"><span class="ax-kpi-label">Reviewed sources</span><strong class="ax-kpi-value mono">70</strong><span class="ax-kpi-foot">official docs and studies</span></div>
+        <div class="ax-kpi"><span class="ax-kpi-label">Apple device studies</span><strong class="ax-kpi-value mono">15</strong><span class="ax-kpi-foot">peer-reviewed validations</span></div>
+        <div class="ax-kpi"><span class="ax-kpi-label">NASA PMC papers</span><strong class="ax-kpi-value mono">572</strong><span class="ax-kpi-foot">space biology corpus</span></div>
+        <div class="ax-kpi ax-kpi-wide"><span class="ax-kpi-label">PMC corpus by study population</span><div class="ax-popbar" id="auraPopBar"></div><div class="ax-poplegend" id="auraPopLegend"></div></div>
+      </div>
+
+      <!-- Evidence engine: cited question answering -->
+      <article class="card ax-card">
         <header class="card-header-flex">
           <div>
-            <h2>AURA Offline Cited Space Medicine Engine</h2>
-            <p class="muted-sub">Grounded synthesis across 16 bilingual concepts, 70 reviewed sources, 15 Apple Watch/iPhone validation studies, &amp; 572 NASA Space Biology PMC articles</p>
+            <h2>AURA Evidence Engine</h2>
+            <p class="muted-sub">Every answer shows its source and its limit.</p>
           </div>
-          <div class="inline-actions">
-            <span class="micro-tag mono" id="auraStatsTag">16 CONCEPTS &middot; 70 SOURCES &middot; 15 APPLE &middot; 572 PMC</span>
-          </div>
+          <span class="micro-tag mono" id="auraStatsTag">OFFLINE &middot; EXTRACTIVE</span>
         </header>
 
         <div class="aura-ask-bar">
-          <input type="text" id="auraQuestionInput" placeholder="Ask about SDNN vs RMSSD, Barger 2014 ISS sleep, LiDAR sceneDepth, RadLab DosTel, SANS, or spaceflight proteomics...">
-          <label class="checkbox-inline"><input type="checkbox" id="auraHumanOnlyCheck" checked><span>Human-Applicable Only</span></label>
-          <select id="auraLangSelect" aria-label="Answer language">
+          <span class="ax-search">
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+            <input type="text" id="auraQuestionInput" aria-label="Question for the evidence engine" placeholder="Ask about SDNN vs RMSSD, ISS sleep, LiDAR sceneDepth, DosTel radiation, SANS…">
+          </span>
+          <label class="ax-switch"><input type="checkbox" id="auraHumanOnlyCheck" checked><span class="ax-switch-track" aria-hidden="true"></span><span>Human-applicable only</span></label>
+          <select id="auraLangSelect" class="compact-select" aria-label="Answer language">
             <option value="en" selected>EN</option>
             <option value="es">ES</option>
           </select>
-          <button type="button" class="btn btn-primary btn-sm" id="auraAskBtn">Query Cited Corpus</button>
+          <button type="button" class="btn btn-primary btn-sm" id="auraAskBtn">Ask</button>
         </div>
 
-        <div class="aura-prompt-chips" role="group" aria-label="Suggested AURA queries">
-          <button type="button" class="btn btn-secondary btn-xs aura-chip-btn" data-q="What is the difference between Apple Watch SDNN and RMSSD?">SDNN vs RMSSD</button>
-          <button type="button" class="btn btn-secondary btn-xs aura-chip-btn" data-q="How much sleep do astronauts get on ISS according to Barger 2014?">Barger 2014 ISS Sleep</button>
-          <button type="button" class="btn btn-secondary btn-xs aura-chip-btn" data-q="Why does ARKit personSegmentationWithDepth fail LiDAR volumetry?">LiDAR sceneDepth Warning</button>
-          <button type="button" class="btn btn-secondary btn-xs aura-chip-btn" data-q="RadLab DosTel ISS radiation absorbed dose rate South Atlantic Anomaly">RadLab DosTel Radiation</button>
-          <button type="button" class="btn btn-secondary btn-xs aura-chip-btn" data-q="diagnose me and prescribe antibiotic dose">Test Principled Abstention</button>
+        <div class="aura-prompt-chips" role="group" aria-label="Suggested questions">
+          <button type="button" class="ax-chip-btn aura-chip-btn" data-q="What is the difference between Apple Watch SDNN and RMSSD?">SDNN vs RMSSD</button>
+          <button type="button" class="ax-chip-btn aura-chip-btn" data-q="How much sleep do astronauts get on ISS according to Barger 2014?">ISS sleep (Barger 2014)</button>
+          <button type="button" class="ax-chip-btn aura-chip-btn" data-q="Why does ARKit personSegmentationWithDepth fail LiDAR volumetry?">LiDAR sceneDepth warning</button>
+          <button type="button" class="ax-chip-btn aura-chip-btn" data-q="RadLab DosTel ISS radiation absorbed dose rate South Atlantic Anomaly">DosTel radiation</button>
+          <button type="button" class="ax-chip-btn aura-chip-btn" data-q="diagnose me and prescribe antibiotic dose"><i class="ax-dot ax-dot-neutral" aria-hidden="true"></i>Clinical request &rarr; declined</button>
         </div>
 
-        <div class="aura-answer-panel" id="auraAnswerPanel" aria-live="polite">
-          <div class="aura-answer-body" id="auraAnswerText">Select a suggested question or type any space-health query to inspect source-grounded citations and scientific limitations.</div>
-          <div class="aura-limitations-box" id="auraLimitationsBox" hidden></div>
-          <div class="aura-citations-grid" id="auraCitationsGrid"></div>
+        <div class="ax-evidence-stage">
+          <div class="ax-constellation">
+            <canvas id="auraGraphCanvas" width="420" height="420" aria-label="The evidence corpus drawn as rings around the engine; cited items light up when a question is answered"></canvas>
+            <div class="ax-poplegend" id="auraGraphLegend"></div>
+          </div>
+          <div class="aura-answer-panel" id="auraAnswerPanel" aria-live="polite">
+            <div class="ax-answer-head" id="auraAnswerHead"></div>
+            <div class="aura-answer-body" id="auraAnswerText"><p class="muted-sub">Ask a question to light up its sources.</p></div>
+            <div class="aura-limitations-box" id="auraLimitationsBox" hidden></div>
+            <div id="auraCitationsGrid" hidden></div>
+          </div>
         </div>
       </article>
 
-      <!-- Middle Row: Empirical RadLab Radiation Chart + Barger 2014 ISS Sleep Tables -->
+      <!-- Empirical data: ISS dosimetry and published sleep tables -->
       <div class="astra-grid-2col">
-        <article class="card">
+        <article class="card ax-card">
           <header class="card-header-flex">
             <div>
-              <h3>NASA RadLab ISS Dosimetry (164 Empirical Records)</h3>
-              <p class="muted-sub">Absorbed dose rate (&mu;Gy/h) &amp; particle flux from DosTel1 / DosTel2 along orbital passes</p>
+              <h3>ISS Dosimetry &middot; DosTel</h3>
+              <p class="muted-sub" title="Official NASA RadLab example query, dose rate above 2 µGy/h; not a random sample">NASA RadLab, two orbits on 1&ndash;2 April 2022</p>
             </div>
-            <select id="radlabInstrumentSelect" class="compact-select" aria-label="Filter radiation instrument">
-              <option value="ALL" selected>All Instruments (DosTel1 + DosTel2)</option>
-              <option value="DosTel1">DosTel1 Only</option>
-              <option value="DosTel2">DosTel2 Only</option>
+            <select id="radlabInstrumentSelect" class="compact-select" aria-label="Radiation instrument">
+              <option value="ALL" selected>DosTel1 + DosTel2</option>
+              <option value="DosTel1">DosTel1</option>
+              <option value="DosTel2">DosTel2</option>
             </select>
           </header>
-          <canvas id="radlabChartCanvas" width="560" height="220" aria-label="RadLab ISS absorbed dose rate telemetry plot across 164 DosTel samples"></canvas>
+          <div class="ax-plot">
+            <div class="ax-orbit-grid">
+              <canvas id="radlabChartCanvas" width="560" height="230" aria-label="Absorbed dose rate over time for the DosTel instruments"></canvas>
+              <canvas id="radlabGlobeCanvas" class="ax-globe" width="260" height="230" aria-label="Globe showing where the station was for each sample, coloured by dose rate"></canvas>
+            </div>
+            <div class="ax-plot-foot">
+              <span class="ax-scale"><i></i> low &rarr; high dose</span>
+              <button type="button" class="btn btn-ghost btn-xs" id="radlabReplayBtn">Replay orbit</button>
+            </div>
+          </div>
           <div class="lidar-readout-strip" id="radlabStatsStrip">
-            <div class="k-metric"><span>Samples</span><strong class="mono" id="radlabCountVal">164</strong></div>
-            <div class="k-metric"><span>Mean Dose Rate</span><strong class="mono" id="radlabMeanVal">-- &mu;Gy/h</strong></div>
-            <div class="k-metric"><span>Peak Orbital Spike</span><strong class="mono" id="radlabPeakVal">-- &mu;Gy/h</strong></div>
+            <div class="k-metric"><span class="k-label">Samples</span><strong class="ax-readout mono" id="radlabCountVal">&mdash;</strong></div>
+            <div class="k-metric"><span class="k-label">Mean dose rate</span><strong class="ax-readout mono" id="radlabMeanVal">&mdash;</strong></div>
+            <div class="k-metric"><span class="k-label">Peak dose rate</span><strong class="ax-readout mono" id="radlabPeakVal">&mdash;</strong></div>
           </div>
         </article>
 
-        <article class="card">
+        <article class="card ax-card">
           <header class="card-header-flex">
             <div>
-              <h3>Barger et al. (2014) ISS Sleep &amp; NASA NLSP Tables</h3>
-              <p class="muted-sub">Lancet Neurology (PMC4188436) published actigraphy tables + Apollo AP005 / DSO-484 caveats</p>
+              <h3>Astronaut Sleep &middot; Published Tables</h3>
+              <p class="muted-sub" title="Published aggregate values (mean and SD), not participant data">Barger et al., Lancet Neurology 2014</p>
             </div>
-            <select id="bargerTableSelect" class="compact-select" aria-label="Select empirical sleep or NLSP table">
-              <option value="0">Table 1: Shuttle &amp; ISS Sleep Outcomes</option>
-              <option value="1">Table 2: SL-90 Preflight Baseline</option>
-              <option value="2">Table 2: L-11 Launch Countdown</option>
-              <option value="3">Table 2: Inflight Sleep Duration</option>
-              <option value="nlsp">NASA NLSP Manifest (Apollo / DSO-484)</option>
+            <select id="bargerTableSelect" class="compact-select" aria-label="Sleep table">
+              <option value="chart" selected>Chart &middot; sleep per night by mission phase</option>
+              <option value="0">Table 1 &middot; Shuttle and ISS sleep outcomes</option>
+              <option value="1">Table 2 &middot; SL-90 preflight</option>
+              <option value="2">Table 2 &middot; L-11 pre-launch</option>
+              <option value="3">Table 2 &middot; In flight</option>
+              <option value="nlsp">NASA NLSP manifest (Apollo / DSO-484)</option>
             </select>
           </header>
-          <div class="table-wrapper astra-table-scroll" id="bargerTableContainer" tabindex="0"></div>
+          <div class="ax-plot" id="sleepChartWrap">
+            <canvas id="sleepChartCanvas" class="ax-sleep" width="560" height="300" aria-label="Mean total sleep per night by mission phase for Shuttle and ISS crews, with standard deviation"></canvas>
+          </div>
+          <div class="table-wrapper astra-table-scroll" id="bargerTableContainer" tabindex="0" hidden></div>
         </article>
       </div>
 
-      <!-- Bottom Card: Filterable 657+ Source & Concept Registry -->
-      <article class="card">
+      <!-- Source registry -->
+      <article class="card ax-card">
         <header class="card-header-flex">
           <div>
-            <h3>Curated Registry, Apple Biomarker Studies &amp; 572 NASA PMC Publications</h3>
-            <p class="muted-sub">Inspect every verified primary citation, Apple study validation caveat, and model-organism tag</p>
+            <h3>Source Registry</h3>
+            <p class="muted-sub">Everything the engine can cite.</p>
           </div>
-          <div class="inline-actions">
-            <div class="seg-track seg-compact" id="auraExplorerTabs" role="group" aria-label="Filter evidence catalog">
-              <button type="button" class="btn btn-primary btn-xs aura-cat-btn" data-cat="apple">Apple Studies (15)</button>
-              <button type="button" class="btn btn-secondary btn-xs aura-cat-btn" data-cat="concepts">Concepts (16)</button>
-              <button type="button" class="btn btn-secondary btn-xs aura-cat-btn" data-cat="sources">Reviewed Sources (70)</button>
-              <button type="button" class="btn btn-secondary btn-xs aura-cat-btn" data-cat="pmc">NASA PMC Corpus (572)</button>
-            </div>
-            <input type="search" id="auraCatalogSearch" class="compact-search" placeholder="Filter titles, IDs, or topics...">
-          </div>
+          <span class="ax-count mono" id="auraCatalogCount"></span>
         </header>
+        <div class="ax-registry-bar">
+          <div class="ax-seg" id="auraExplorerTabs" role="group" aria-label="Registry section">
+            <button type="button" class="ax-seg-btn aura-cat-btn is-active" data-cat="apple" aria-pressed="true">Apple studies <span class="mono">15</span></button>
+            <button type="button" class="ax-seg-btn aura-cat-btn" data-cat="concepts" aria-pressed="false">Concepts <span class="mono">16</span></button>
+            <button type="button" class="ax-seg-btn aura-cat-btn" data-cat="sources" aria-pressed="false">Reviewed sources <span class="mono">70</span></button>
+            <button type="button" class="ax-seg-btn aura-cat-btn" data-cat="pmc" aria-pressed="false">NASA PMC corpus <span class="mono">572</span></button>
+          </div>
+          <span class="ax-search ax-search-compact">
+            <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+            <input type="search" id="auraCatalogSearch" aria-label="Filter the registry" placeholder="Filter by title, ID or topic">
+          </span>
+        </div>
         <div class="table-wrapper astra-table-scroll-lg" id="auraCatalogContainer" tabindex="0"></div>
       </article>
     </div>
@@ -1460,7 +1683,7 @@
   </dialog>
 
   <script type="module" src="/static/app.js?v=5.0.0"></script>
-  <script type="module" src="/static/astra_companion.js?v=5.0.0"></script>
+  <script type="module" src="/static/astra_companion.js?v=5.1.2"></script>
   <script src="/static/grok_voice_widget.js?v=5.0.0" defer></script>
 </body>
 </html>

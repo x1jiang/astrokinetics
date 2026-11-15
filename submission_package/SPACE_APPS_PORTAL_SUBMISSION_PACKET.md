@@ -3,9 +3,12 @@
 - **Local Event:** Houston, TX (`https://www.spaceappschallenge.org/2026/local-events/houston/`)
 - **Official Challenge:** *Create Health Monitoring Software for Astronauts on Space Missions* (`Intermediate` · `Human Exploration`, `Software`, `Space Exploration`)
 - **Hard Portal Cutoff:** **Sunday, November 15, 2026 at 11:59 PM (23:59) CST**
-- **Live Cloud Run App URL (Unified `v5.0` Showcase, Guided Watch+iPhone Demo & 3D Lab):** https://astrokinetics-space-health-765428358644.us-central1.run.app
-- **14-Step Watch + iPhone Guided Demo:** https://astrokinetics-space-health-765428358644.us-central1.run.app/demo/#demo
-- **3D Digital Twin & HUNCH Triage Workstation:** https://astrokinetics-space-health-765428358644.us-central1.run.app/studio
+- **Live Cloud Run App URL (`v5.1` workstation: 3D twin, Watch + iPhone, Crew Body Map triage, evidence):** https://astrokinetics-space-health-765428358644.us-central1.run.app
+- **14-Step Watch + iPhone Guided Demo (workstation tab):** https://astrokinetics-space-health-765428358644.us-central1.run.app/?tab=demo
+- **3D Crew Body Map & Triage:** https://astrokinetics-space-health-765428358644.us-central1.run.app/?tab=triage
+- **Cited Evidence Engine:** https://astrokinetics-space-health-765428358644.us-central1.run.app/?tab=evidence
+- **Orbital Story (scroll journey):** https://astrokinetics-space-health-765428358644.us-central1.run.app/story
+- **Live 3D Twin (home):** https://astrokinetics-space-health-765428358644.us-central1.run.app/
 - **Interactive OpenAPI / Swagger Docs:** https://astrokinetics-space-health-765428358644.us-central1.run.app/docs
 
 ---
@@ -27,7 +30,7 @@ On Artemis lunar stays and Mars missions with 44-minute communication blackouts,
 ## Field 3 — Project Links *(Paste on Submission Page)*
 - **Live Zero-Install Application (HTTPS):** `https://astrokinetics-space-health-765428358644.us-central1.run.app`
 - **Project Demo (`<= 30s` Video OR `<= 7-Slide` Deck):**
-  - *30-Second Video File (upload to YouTube Public/Unlisted or Google Drive Public):* `AstroKinetics_30s_SpaceApps_Demo.mp4` (`28.6s`, 1080p, burned-in English captions, Grok Voice narration + Veo 3.1 aerospace footage + live software capture)
+  - *30-Second Video File (upload to YouTube Public/Unlisted or Google Drive Public):* `AstroKinetics_ASTRA_30s_Final_Demo.mp4` (`29.23s`, 1080p, burned-in English captions, Grok Voice narration, recorded entirely from the live v5.1 portal)
   - *7-Slide Executive Pitch Deck (Backup / Local Pitch):* `AstroKinetics_7Slide_Pitch_Deck.pptx` / `AstroKinetics_7Slide_Pitch_Deck.pdf`
 - **Public Open-Source GitHub Repository:** `https://github.com/x1jiang/astrokinetics` (MIT License)
 
@@ -83,6 +86,7 @@ The exact offline camera + smartwatch + edge triage architecture built for Mars 
 ## Field 6 — External Open-Source Software & Scientific Literature Citations
 ```markdown
 - **On-Device Neural Vision:** Google `@mediapipe/tasks-vision` v0.10.18 (`FaceLandmarker`, `PoseLandmarker Full`, `HandLandmarker`, Apache-2.0).
+- **3D Anatomy Model (Crew Body Map):** BodyParts3D 4.0, © The Database Center for Life Science, CC BY 4.0 (Mitsuhashi et al., 2009, *Nucleic Acids Res.*, doi:10.1093/nar/gkn613); browser-ready geometry from the open-source Human Atlas project (github.com/ashemag/human-atlas, MIT). The pulse wave and gravity fluid-shift views are illustrative animations on this geometry, not simulations.
 - **Backend & Statistical Runtime:** Python `FastAPI`, `Pydantic`, `SciPy` (`scipy.stats.chi2` 8-DOF survival math), `NumPy`, and `SQLite` persistent Sol ledger (Apache-2.0 / BSD).
 - **Signal Processing & Clinical Algorithms:**
   - Casiez, G., Roussel, N., & Vogel, D. (2012). *1-Euro Filter: A Simple Speed-Based Low-Pass Filter for Noisy Input in Interactive Systems* (CHI 2012).
@@ -100,7 +104,9 @@ The exact offline camera + smartwatch + edge triage architecture built for Mars 
 ```markdown
 In full compliance with NASA International Space Apps Challenge AI/SI transparency rules:
 1. **Runtime Software Architecture:** All physiological scoring (`8-DOF Multivariate Mahalanobis Distance` and `Chi-Square` survival statistics), 1-Euro kinematic filtering, Wang POS chrominance rPPG, Boersma vocal autocorrelation DSP, and WebAudio neuro-acoustic synthesis are deterministic, inspectable mathematical algorithms implemented directly in open-source Python and JavaScript (`MIT`). Client-side computer vision uses Google's open-source `@mediapipe/tasks-vision` (`FaceLandmarker`, `PoseLandmarker`, `HandLandmarker`) running 100% locally in the browser with zero cloud transmission of crew video.
-2. **Development & Presentation Assets:** AI coding and writing assistance (Google Antigravity / Gemini and Anthropic Claude Code) was used under human engineering direction to accelerate UI scaffolding, test verification, and documentation formatting. Concept illustrations in the pitch deck were generated with AI image generation, and B-roll space/dual-use clips plus voiceover narration in the 30-second overview video were produced using Google Veo 3.1 and xAI Grok Voice TTS paired with authentic live screen captures of the running AstroKinetics software. All scientific equations, NASA OSDR `OSD-571` empirical values, and `NASA-STD-3001` thresholds were verified directly against primary NASA sources.
+2. **Development & Presentation Assets:** AI coding and writing assistance (Google Antigravity / Gemini and Anthropic Claude Code) was used under human engineering direction to accelerate UI scaffolding, test verification, and documentation formatting. Concept illustrations in the pitch deck were generated with AI image generation, and the 30-second video is narrated with xAI Grok Voice TTS over authentic screen recordings of the running AstroKinetics software (no generated footage). All scientific equations, NASA OSDR `OSD-571` empirical values, and `NASA-STD-3001` thresholds were verified directly against primary NASA sources.
+3. **Runtime Voice Assistant (optional):** The "Ask ASTRA" assistant uses xAI Grok for conversation, speech-to-text and text-to-speech through the open-source ClawAgents framework. It explains findings and navigates the portal; it never makes the triage decision, which stays with the deterministic red-flag gate and rule engine. Without a network link it falls back to offline replies.
+4. **Illustrative Visuals:** The 3D body uses the BodyParts3D 4.0 reference anatomy (CC BY 4.0). Its pulse-wave and gravity fluid-shift views, the animated heart and pulse traces, and all crew values in the guided demo are illustrations, not simulations or patient data.
 ```
 
 ---

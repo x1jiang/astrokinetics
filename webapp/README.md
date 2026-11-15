@@ -39,3 +39,10 @@ gcloud run deploy astrokinetics-space-health \
   --region=us-central1 \
   --allow-unauthenticated
 ```
+
+## Anatomy model credit
+
+The 3D body in the Triage tab's Crew Body Map uses **BodyParts3D 4.0** geometry
+(© The Database Center for Life Science, CC BY 4.0), taken from the
+[Human Atlas](https://github.com/ashemag/human-atlas) project (MIT) and repacked by
+`scripts/build_body_atlas.py`. Full attribution: `static/atlas/ATTRIBUTION.md`.
