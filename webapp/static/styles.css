@@ -5697,3 +5697,18 @@
     fill: var(--accent);
   }
 }
+
+/* Header link to the 30-second demo video */
+@layer components {
+  .brand-video-pill {
+    border-color: var(--accent);
+    background-color: var(--accent);
+    color: var(--accent-contrast);
+  }
+
+  .brand-video-pill:hover {
+    background-color: var(--accent);
+    color: var(--accent-contrast);
+    filter: brightness(1.08);
+  }
+}

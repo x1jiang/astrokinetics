@@ -363,13 +363,9 @@ def stage_assemble(plan: dict) -> None:
         ms = int(round((starts[i] + LEAD) * 1000))
         filters.append(f"[{n_in + i}:a]adelay={ms}|{ms},volume=1.7[a{i}]")
         amix.append(f"[a{i}]")
-    # a quiet warm pad underneath
-    pad = ("aevalsrc='0.030*sin(2*PI*110*t)+0.024*sin(2*PI*164.81*t)+0.018*sin(2*PI*220*t)+0.012*sin(2*PI*329.63*t)':"
-           f"s=48000:d={total:.3f},aformat=channel_layouts=stereo,tremolo=f=0.18:d=0.35,lowpass=f=900,"
-           f"afade=t=in:d=1.2,afade=t=out:st={total - 1.6:.3f}:d=1.6[pad]")
-    filters.append(pad)
-    filters.append(f"{''.join(amix)}[pad]amix=inputs={len(scenes) + 1}:normalize=0,alimiter=limit=0.95,"
-                   f"afade=t=out:st={total - 0.5:.3f}:d=0.5[aout]")
+    # narration only: an earlier cut had a synthesized pad underneath, which read as background hum
+    filters.append(f"{''.join(amix)}amix=inputs={len(scenes)}:normalize=0,alimiter=limit=0.95,"
+                   f"afade=t=out:st={total - 0.4:.3f}:d=0.4[aout]")
     filters.append(f"[{last}]fade=t=in:d=0.35,fade=t=out:st={total - 0.45:.3f}:d=0.45[vout]")
 
     tmp_out = WORK / "final.mp4"

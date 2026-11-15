@@ -1051,6 +1051,15 @@ async def console_redirect() -> RedirectResponse:
     return RedirectResponse(url="/studio", status_code=307)
 
 
+@app.get("/video")
+async def demo_video() -> Response:
+    """Public page for the 30-second Space Apps demo video."""
+    page = STATIC_DIR / "final" / "index.html"
+    if page.exists():
+        return FileResponse(page)
+    return RedirectResponse(url="/", status_code=307)
+
+
 @app.get("/story")
 async def story() -> Response:
     showcase_index = SHOWCASE_DIR / "index.html"

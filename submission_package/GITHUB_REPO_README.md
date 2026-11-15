@@ -1,30 +1,35 @@
-# AstroKinetics (`v3.4.0`) — Autonomous 3D Neuromotor, Multi-Sensor & Neuro-Acoustic Crew Health Suite
+# AstroKinetics · ASTRA (`v5.1`) — 3D Crew Health Workstation, Watch + iPhone Companion, Grok Voice AI & Cited Evidence
 
 [![Live Cloud Run App](https://img.shields.io/badge/Live_Demo-Google_Cloud_Run-0284c7?style=for-the-badge)](https://astrokinetics-space-health-765428358644.us-central1.run.app)
+[![Interactive Watch+iPhone Demo](https://img.shields.io/badge/Guided_Demo-Apple_Watch_%2B_iPhone-ffb347?style=for-the-badge)](https://astrokinetics-space-health-765428358644.us-central1.run.app/?tab=demo)
+[![3D Crew Body Map](https://img.shields.io/badge/3D_Body_Map-Triage-10b981?style=for-the-badge)](https://astrokinetics-space-health-765428358644.us-central1.run.app/?tab=triage)
+[![30-second demo](https://img.shields.io/badge/Video-30_second_demo-e11d48?style=for-the-badge)](https://astrokinetics-space-health-765428358644.us-central1.run.app/video)
 [![OpenAPI Docs](https://img.shields.io/badge/REST_API-Swagger_OpenAPI-059669?style=for-the-badge)](https://astrokinetics-space-health-765428358644.us-central1.run.app/docs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-fbbf24?style=for-the-badge)](./LICENSE)
 [![NASA Data: OSD-571](https://img.shields.io/badge/NASA_OSDR-OSD--571_%2F_GLDS--563-7c3aed?style=for-the-badge)](https://osdr.nasa.gov/bio/repo/data/studies/OSD-571)
 
-> **2026 NASA International Space Apps Challenge (Houston Local Event)**  
+> **2026 NASA International Space Apps Challenge (Houston Local Event — Team AI-MED 01)**  
 > **Challenge:** *Create Health Monitoring Software for Astronauts on Space Missions*  
-> **Live Zero-Install Web App & Edge Hub:** https://astrokinetics-space-health-765428358644.us-central1.run.app
+> **Live Unified Showcase & Cloud Run Portal:** https://astrokinetics-space-health-765428358644.us-central1.run.app  
+> **30-second demo video:** https://astrokinetics-space-health-765428358644.us-central1.run.app/video  
+> **Direct Routes:** `/` *(Live 3D Twin workstation)* · `/?tab=demo` *(14-step Watch + iPhone companion)* · `/?tab=triage` *(3D Crew Body Map, red-flag triage, episodes, LiDAR)* · `/?tab=evidence` *(cited evidence engine)* · `/story` *(orbital story)* · `/video` *(demo video)*
+
+**What is new in `v5.1`:** the workstation is the front door and the Watch + iPhone companion is one of its tabs; the Triage tab opens with a 3D anatomical **Crew Body Map** (skeleton, heart, arteries, muscles) carrying live sensor callouts, a heartbeat-synced pulse wave and an Earth / Orbit gravity fluid-shift view; the Evidence tab draws the corpus as a constellation that lights up the sources behind each answer; the voice assistant picks a working microphone and speaker and takes turns hands-free. The pulse wave and gravity view are illustrations on real anatomy, not simulations.
 
 ---
 
-## 1. Mission Overview
+## 1. Mission & Judge Showcase Architecture (`v5.0.0`)
 
-During Artemis lunar surface operations, Mars transit (**up to 22-minute one-way / 44-minute round-trip communication delay**), and two-week solar-conjunction blackouts, astronauts cannot depend on real-time Earth flight surgeons. **AstroKinetics** is an offline-capable Progressive Web App (PWA) and wearable/mobile REST telemetry hub that lets crew **gather**, **evaluate offline**, and **act immediately** on covariant physiological and habitat drift.
+During Artemis lunar surface operations, Mars transit (**up to 22-minute one-way / 44-minute round-trip communication delay**), and two-week solar-conjunction blackouts, astronauts cannot depend on real-time Earth flight surgeons. **AstroKinetics · ASTRA** unifies an easy-to-digest orbital story with real multimodal sensing and voice-first autonomy:
 
-### Key Innovations
-1. **Adaptive Multi-Zone On-Device 3D Vision (`FaceMesh 478-pt` + `WorldPose 33-pt` + `Hands 21-pt`):**
-   - Automatically detects whether the crew member is seated close at a cabin terminal (**478-point Cranio-Facial Mesh, 3-Zone Forehead/Malar Wang POS-rPPG, Ocular `EAR`/`PERCLOS` drowsiness, 3D Head Pose & Facial Symmetry**), holding up hands (**21-Joint 4–12 Hz Tremor & Finger-Tap Assay**), waist-up (**Upper-Body 3D Goniometry**), or standing (**Full-Body 3D ARED Squat Kinematics** with 1-Euro jitter stabilization).
-   - **100% Zero-Cloud Privacy:** Raw camera frames never leave local RAM.
-2. **Interactive 3D Musculoskeletal Twin with Pre-Flight `1g` Baseline Ghost:**
-   - 60-FPS 3D biomechanical viewport with dual force-plate ground-reaction vectors (`GRF`), `%MVC` muscle-activation heatmap, recorded 62-frame motion-capture benchmark playback, and a **What-If Digital Twin** superimposing a translucent **Cyan Pre-Flight 1g Baseline Ghost** (`ΔDRIFT`, `ΔROM`, `ΔTILT`).
-3. **8-DOF Multivariate Mahalanobis ($\Sigma^{-1/2}$) Triage & Empirical NASA `OSD-571` Proteomics:**
-   - Computes Cholesky-whitened Mahalanobis Distance ($D_M$), 8-DOF $\chi^2_8$ survival $p$-values, and per-channel variance attributions (`%` of $D_M^2$) to separate **cabin `ppCO2` hypercapnia** from **microgravity musculoskeletal asymmetry** and **Solar Particle Event (`SPE`) radiation prodrome** — anchored to downloaded **NASA OSDR `OSD-571` (`GLDS-563`)** SpaceX Inspiration4 astronaut plasma proteomics.
-4. **Closed-Loop Neuro-Acoustic Therapy, Vocal Stress DSP & Connected Watch/Mobile API:**
-   - Synthesizes 4 real-time WebAudio protocols (`16 Hz Beta Motor RAS`, `10 Hz Alpha / 0.10 Hz Mayer-Wave HRV`, `40 Hz Gamma Vigilance`, `2.5 Hz Delta + 1/f Pink-Noise Storm Shelter`) modulated by live 3D joint ROM, Boersma vocal jitter/HNR analysis, spoken Flight Surgeon briefings, and live `POST /api/ingest/edge-telemetry` fusion returning `WKHapticType` Apple Watch wrist cues.
+1. **Cinematic 3D Orbital Showcase (`/`, `#mission`, `0:29` Film) & 14-Step Apple Watch + iPhone Demo (`/demo/#demo`):**
+   - Walks judges through *"Your normal changes when you leave Earth"* — 14-day personal baselines (224 readings), Orbit mode threshold adaptation, Mission Day 12 drift & SANS / headward fluid shift follow-up, and synchronized Watch-to-iPhone haptic/screen interaction (with Auto-Play and optional live Grok Voice narration).
+2. **Smart Multi-Turn Grok Voice AI powered by `clawagents_py` (`/api/voice/status`, `/api/voice/chat`, `/api/voice/tts`):**
+   - Floating 60-FPS plasma voice copilot across every view (`/`, `/demo/`, `/studio`) backed by `clawagents` (`clawagents==6.20.101`) + xAI `grok-4.20-0309-non-reasoning` with domain tools (`get_astronaut_state`, `run_hunch_triage_check`, `lookup_nasa_evidence`, `control_portal_ui`) and xAI Grok Voice neural speech (`eve`, `ara`, `rex`, `leo`, `lumen`) supporting live portal navigation and Web Speech crew microphone input.
+3. **6-Language Instant Switching (`EN`, `ES`, `FR`, `JA`, `ZH`, `DE`):**
+   - Synchronizes UI copy across `/`, `/demo/`, and `/studio` with Grok LLM responses and native xAI Grok Voice TTS accents (`en`, `es`, `fr`, `ja`, `zh`, `de`).
+4. **Live 3D Biomechanics, HUNCH Safety Gate, LiDAR Volumetry & AURA Lab (`/studio`):**
+   - **Adaptive Multi-Zone On-Device 3D Vision (`FaceMesh 478-pt` + `WorldPose 33-pt` + `Hands 21-pt`)** with 100% zero-cloud camera privacy, **Interactive 3D Musculoskeletal Twin with Pre-Flight `1g` Baseline Ghost**, **8-DOF Multivariate Mahalanobis ($\Sigma^{-1/2}$) Triage & Empirical NASA `OSD-571` Proteomics**, **NASA HUNCH 8-Red-Flag Safety Gate**, and **Closed-Loop Neuro-Acoustic Therapy & Connected Watch/Mobile API**.
 
 ---
 
@@ -88,3 +93,12 @@ Then open `http://localhost:8080` (and `http://localhost:8080/docs` for interact
 
 - Released under the OSI-approved **MIT License** ([`LICENSE`](./LICENSE)).
 - Client-side neural landmark detection uses open-source Google `@mediapipe/tasks-vision` (`FaceLandmarker`, `PoseLandmarker`, `HandLandmarker`) executing locally in WebAssembly/WebGPU; statistical scoring (`SciPy` / JS Cholesky Mahalanobis), 1-Euro filtering, Wang POS-rPPG, Boersma vocal DSP, and WebAudio neuro-acoustic synthesis are deterministic mathematical implementations. AI coding/documentation assistance and presentation media tools (Gemini / Claude Code / Veo 3.1 / Grok Voice TTS) are transparently disclosed on the Space Apps submission portal.
+
+---
+
+## Credits, third-party material and licensing
+
+- **AstroKinetics application code** (this repository, unless listed below): MIT, see [`LICENSE`](./LICENSE).
+- **ASTRA companion material** — the orbital story, the Watch + iPhone guided demo, the 29-second ASTRA film and the knowledge bundle under `webapp/static/showcase/`, `submission_package/assets/astra/` and `webapp/data/astra_*.json` / `aura_nasa_corpus.json` — comes from the ASTRA Space Health Companion project led by Carlos Jaimes and is included here for the joint Team AI-MED 01 Space Apps submission. **It is not covered by this repository's MIT license**; see [`NOTICE.md`](./NOTICE.md).
+- **3D anatomy model** — BodyParts3D 4.0, © The Database Center for Life Science, **CC BY 4.0**, via the Human Atlas project (MIT). See [`webapp/static/atlas/ATTRIBUTION.md`](./webapp/static/atlas/ATTRIBUTION.md).
+- NASA data and scientific sources are listed in the sections above and in the portal's Evidence tab.
