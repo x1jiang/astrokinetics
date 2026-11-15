@@ -363,9 +363,18 @@ def stage_assemble(plan: dict) -> None:
         ms = int(round((starts[i] + LEAD) * 1000))
         filters.append(f"[{n_in + i}:a]adelay={ms}|{ms},volume=1.7[a{i}]")
         amix.append(f"[a{i}]")
-    # narration only: an earlier cut had a synthesized pad underneath, which read as background hum
-    filters.append(f"{''.join(amix)}amix=inputs={len(scenes)}:normalize=0,alimiter=limit=0.95,"
-                   f"afade=t=out:st={total - 0.4:.3f}:d=0.4[aout]")
+    # Voice, plus the original score (build_score.py) when present. The music ducks under each line
+    # and comes up in the gaps and on the end card.
+    score = PKG / "assets" / "audio_final" / "score.wav"
+    filters.append(f"{''.join(amix)}amix=inputs={len(scenes)}:normalize=0[voice]")
+    if score.exists():
+        inputs += ["-i", str(score)]
+        k = n_in + len(scenes)
+        filters.append("[voice]asplit=2[vmain][vkey]")
+        filters.append(f"[{k}:a]volume=0.46[music];[music][vkey]sidechaincompress=threshold=0.018:ratio=8:attack=20:release=450[ducked]")
+        filters.append(f"[vmain][ducked]amix=inputs=2:normalize=0,alimiter=limit=0.95,afade=t=out:st={total - 0.6:.3f}:d=0.6[aout]")
+    else:
+        filters.append(f"[voice]alimiter=limit=0.95,afade=t=out:st={total - 0.4:.3f}:d=0.4[aout]")
     filters.append(f"[{last}]fade=t=in:d=0.35,fade=t=out:st={total - 0.45:.3f}:d=0.45[vout]")
 
     tmp_out = WORK / "final.mp4"

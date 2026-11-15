@@ -30,7 +30,8 @@ On Artemis lunar stays and Mars missions with 44-minute communication blackouts,
 ## Field 3 — Project Links *(Paste on Submission Page)*
 - **Live Zero-Install Application (HTTPS):** `https://astrokinetics-space-health-765428358644.us-central1.run.app`
 - **Project Demo (`<= 30s` Video OR `<= 7-Slide` Deck):**
-  - *30-Second Video File (upload to YouTube Public/Unlisted or Google Drive Public):* `AstroKinetics_ASTRA_30s_Final_Demo.mp4` (`29.23s`, 1080p, burned-in English captions, Grok Voice narration, recorded entirely from the live v5.1 portal)
+  - *30-Second Video File (upload to YouTube Public/Unlisted or Google Drive Public):* `AstroKinetics_ASTRA_30s_Final_Demo.mp4` (`29.23s`, 1080p, burned-in English captions, Grok Voice narration, original score, recorded entirely from the live v5.1 portal)
+  - *Already-public link to the same video (works without YouTube):* `https://astrokinetics-space-health-765428358644.us-central1.run.app/video`
   - *7-Slide Executive Pitch Deck (Backup / Local Pitch):* `AstroKinetics_7Slide_Pitch_Deck.pptx` / `AstroKinetics_7Slide_Pitch_Deck.pdf`
 - **Public Open-Source GitHub Repository:** `https://github.com/x1jiang/astrokinetics` (MIT License)
 
