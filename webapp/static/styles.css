@@ -345,44 +345,48 @@
     align-items: baseline;
     gap: 0.3rem 1rem;
     padding: 0.55rem 0.85rem;
-    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
     border-radius: 0.55rem;
     font-size: 0.85rem;
   }
 
-  .project-intro p { margin: 0; color: var(--text-muted); }
+  .project-intro p { margin: 0; color: var(--text-secondary); }
+  .project-intro strong { color: var(--text-primary); }
   .project-intro a { color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 0.18em; }
   .project-intro-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; align-items: center; }
 
   .workstation-footer {
     margin-top: 1.5rem;
-    padding: 1.1rem 1.25rem;
-    border-top: 1px solid color-mix(in srgb, var(--border-subtle, #334155) 75%, transparent);
-    background: color-mix(in srgb, var(--surface-elevated, #0f172a) 65%, transparent);
+    padding: 1.15rem 1.25rem;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-card);
     border-radius: 0.75rem;
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     line-height: 1.55;
-    color: var(--text-muted);
+    color: var(--text-secondary);
   }
   .workstation-footer-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1rem 1.5rem;
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.9rem;
   }
   .workstation-footer h2 {
     margin: 0 0 0.4rem;
-    font-size: 0.9rem;
-    color: var(--text-primary, #f1f5f9);
+    font-size: 0.92rem;
+    color: var(--text-primary);
   }
-  .workstation-footer p { margin: 0 0 0.45rem; }
+  .workstation-footer strong { color: var(--text-primary); }
+  .workstation-footer p { margin: 0 0 0.45rem; color: var(--text-secondary); }
   .workstation-footer p:last-child { margin-bottom: 0; }
   .workstation-footer-links {
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem 1.1rem;
-    padding-top: 0.65rem;
-    border-top: 1px solid color-mix(in srgb, var(--border-subtle, #334155) 55%, transparent);
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--border-subtle);
   }
   .workstation-footer-links a {
     color: var(--accent);
@@ -393,8 +397,8 @@
 
   .qr-trigger-btn {
     appearance: none;
-    border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
-    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border: 1px solid var(--border-control);
+    background: var(--accent-soft);
     color: var(--accent);
     border-radius: 999px;
     padding: 0.18rem 0.65rem;
@@ -402,7 +406,7 @@
     font-weight: 700;
     cursor: pointer;
   }
-  .qr-trigger-btn:hover { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+  .qr-trigger-btn:hover { border-color: var(--accent); }
 
   .qr-strip {
     display: grid;
@@ -421,20 +425,21 @@
     align-items: center;
     gap: 0.7rem;
     padding: 0.55rem 0.7rem;
-    border: 1px solid color-mix(in srgb, var(--border-subtle, #334155) 75%, transparent);
+    border: 1px solid var(--border-control);
     border-radius: 0.65rem;
-    background: color-mix(in srgb, var(--surface-card, #111b2b) 85%, transparent);
-    color: var(--text-primary, #f1f5f9);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
     text-decoration: none;
   }
   .qr-card:hover { border-color: var(--accent); }
   .qr-card span { display: grid; gap: 0.12rem; }
-  .qr-card strong { font-size: 0.84rem; color: var(--text-primary, #f1f5f9); }
-  .qr-card small { font-size: 0.74rem; color: var(--text-muted); word-break: break-word; }
+  .qr-card strong { font-size: 0.84rem; color: var(--text-primary); }
+  .qr-card small { font-size: 0.74rem; color: var(--text-secondary); word-break: break-word; }
   .qr-card-lg { flex-direction: column; text-align: center; padding: 0.85rem; }
   .qr-img {
     display: block;
     background: #ffffff;
+    border: 1px solid var(--border-subtle);
     border-radius: 0.45rem;
     padding: 4px;
     flex-shrink: 0;
