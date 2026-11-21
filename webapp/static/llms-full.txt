@@ -91,6 +91,8 @@
 
 ## 5. Presentation — Demo Video Transcript (`0:29`, Recorded November 15, 2026)
 
+The demo is available on [YouTube with English captions](https://www.youtube.com/watch?v=X_X6ETl6_Fw) and on the [project portal](https://astrokinetics-space-health-765428358644.us-central1.run.app/video).
+
 - **00:00–00:06:** "Far from Earth, the crew is the clinic. AstroKinetics reads every movement from a camera, in 3D."
 - **00:06–00:10:** "A watch and a phone learn one astronaut's normal, then move it into orbit."
 - **00:10–00:16:** "Every signal lands on one living body map. Take gravity away, and fluid shifts toward the head."

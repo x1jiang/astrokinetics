@@ -6,6 +6,7 @@
 - **Project Overview & Verification:** https://astrokinetics-space-health-765428358644.us-central1.run.app/project
 - **Live Read-Only Verification API (JSON):** https://astrokinetics-space-health-765428358644.us-central1.run.app/api/verification-report
 - **29-Second Demo Video & Transcript:** https://astrokinetics-space-health-765428358644.us-central1.run.app/video
+- **29-Second Demo on YouTube:** https://www.youtube.com/watch?v=X_X6ETl6_Fw
 - **OpenAPI / Swagger Specification:** https://astrokinetics-space-health-765428358644.us-central1.run.app/docs
 - **Full Technical & Verification Dossier:** https://astrokinetics-space-health-765428358644.us-central1.run.app/llms-full.txt
 - **Open-Source Repository (MIT):** https://github.com/x1jiang/astrokinetics
