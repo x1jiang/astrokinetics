@@ -1,11 +1,17 @@
 User-agent: *
 Allow: /
 Allow: /project
+Allow: /for-judges
+Allow: /scenarios
+Allow: /data
+Allow: /guides
 Allow: /video
 Allow: /story
 Allow: /demo/
+Allow: /feed.xml
 Allow: /llms.txt
 Allow: /llms-full.txt
+Allow: /indexnow.txt
 Allow: /api/verification-report
 Allow: /api/scenarios
 Allow: /api/osdr-empirical

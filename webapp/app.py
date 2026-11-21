@@ -49,10 +49,11 @@ from astra_companion import (
     init_astra_db,
 )
 from grok_claw_voice import voice_router
+from seo_surfaces import build_seo_router
 
 app = FastAPI(
-    title="AstroKinetics · ASTRA v5.2 — Autonomous Astronaut Health Workstation, Watch + iPhone Companion & Evidence Engine",
-    version="5.2.0",
+    title="AstroKinetics · ASTRA v5.3 — Autonomous Astronaut Health Workstation, Watch + iPhone Companion & Evidence Engine",
+    version="5.3.0",
     description=(
         "Team AI-MED 01 (Houston, TX) — 2026 NASA International Space Apps Challenge "
         "('Create Health Monitoring Software for Astronauts on Space Missions'). "
@@ -70,15 +71,43 @@ app.add_middleware(
 )
 
 
+_TRAILING_SLASH_CANONICAL_PREFIXES = (
+    "/project/",
+    "/video/",
+    "/story/",
+    "/studio/",
+    "/for-judges/",
+    "/scenarios/",
+    "/data/",
+    "/guides/",
+)
+
+
 @app.middleware("http")
 async def revalidate_static_and_shell(request: Request, call_next: Any) -> Response:
-    response = await call_next(request)
     p = request.url.path
+    # 308 Permanent Redirect for trailing-slash variants of canonical non-slash pages (preserving query strings)
+    if (
+        request.method in ("GET", "HEAD")
+        and len(p) > 1
+        and p.endswith("/")
+        and (p in _TRAILING_SLASH_CANONICAL_PREFIXES or p.startswith(("/scenarios/", "/data/", "/guides/")))
+    ):
+        target = p.rstrip("/")
+        if request.url.query:
+            target = f"{target}?{request.url.query}"
+        return RedirectResponse(url=target, status_code=308)
+
+    response = await call_next(request)
     if p.startswith("/api/ingest/"):
         response.headers["Cache-Control"] = "no-store"
     elif p in (
         "/",
         "/project",
+        "/for-judges",
+        "/scenarios",
+        "/data",
+        "/guides",
         "/video",
         "/story",
         "/demo",
@@ -89,7 +118,8 @@ async def revalidate_static_and_shell(request: Request, call_next: Any) -> Respo
         "/llms-full.txt",
         "/robots.txt",
         "/sitemap.xml",
-    ) or p.startswith(("/static/", "/demo/")):
+        "/feed.xml",
+    ) or p.startswith(("/static/", "/demo/", "/scenarios/", "/data/", "/guides/")):
         response.headers["Cache-Control"] = "no-cache, must-revalidate"
     return response
 
@@ -752,8 +782,8 @@ def evaluate_astronaut_state(data: TelemetryInput) -> dict[str, Any]:
 async def health_check() -> dict[str, Any]:
     return {
         "status": "ok",
-        "version": "5.2.0",
-        "service": "AstroKinetics · ASTRA v5.2 — Autonomous Astronaut Health Workstation, Watch + iPhone Companion & Cited Evidence Suite",
+        "version": "5.3.0",
+        "service": "AstroKinetics · ASTRA v5.3 — Autonomous Astronaut Health Workstation, Watch + iPhone Companion & Cited Evidence Suite",
         "team": "Team AI-MED 01 (Houston, TX)",
         "challenge": "Create Health Monitoring Software for Astronauts on Space Missions (2026 NASA International Space Apps Challenge)",
         "showcase_journey": True,
@@ -770,12 +800,20 @@ async def health_check() -> dict[str, Any]:
         },
         "documentation_routes": [
             "/project",
+            "/for-judges",
+            "/for-judges/evaluation-kit.txt",
+            "/scenarios",
+            "/data",
+            "/guides",
             "/video",
             "/story",
             "/demo/",
+            "/feed.xml",
+            "/sitemap.xml",
             "/llms.txt",
             "/llms-full.txt",
             "/api/verification-report",
+            "/api/mcp/",
             "/docs",
         ],
         "connected_edge_endpoints": [
@@ -1383,9 +1421,19 @@ async def robots() -> FileResponse:
     return FileResponse(STATIC_DIR / "robots.txt", media_type="text/plain")
 
 
-@app.get("/sitemap.xml", include_in_schema=False)
-async def sitemap() -> FileResponse:
-    return FileResponse(STATIC_DIR / "sitemap.xml", media_type="application/xml")
+app.include_router(
+    build_seo_router(
+        mission_scenarios=MISSION_SCENARIOS,
+        telemetry_input_cls=TelemetryInput,
+        evaluate_fn=evaluate_astronaut_state,
+        verification_fn=verification_report,
+        osdr_empirical=OSDR_OSD571_EMPIRICAL,
+        empirical_supplements=EMPIRICAL_SUPPLEMENTS,
+        knowledge_bundle=KNOWLEDGE_BUNDLE,
+        aura_corpus=AURA_CORPUS,
+        aura_index=AURA_INDEX,
+    )
+)
 
 
 @app.get("/llms.txt", include_in_schema=False)
