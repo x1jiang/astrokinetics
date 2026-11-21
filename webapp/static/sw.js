@@ -1,4 +1,4 @@
-const CACHE_NAME = "astrokinetics-astra-v5.2.1";
+const CACHE_NAME = "astrokinetics-astra-v5.2.2";
 const PRECACHE_URLS = [
   "/",
   "/studio",

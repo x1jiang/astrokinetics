@@ -12,7 +12,7 @@
 > **Challenge:** *Create Health Monitoring Software for Astronauts on Space Missions*  
 > **Live Unified Showcase & Cloud Run Portal:** https://astrokinetics-space-health-765428358644.us-central1.run.app  
 > **Project Overview & Verification:** https://astrokinetics-space-health-765428358644.us-central1.run.app/project · [Live Verification JSON](https://astrokinetics-space-health-765428358644.us-central1.run.app/api/verification-report) · [AI Dossier (`llms.txt`)](https://astrokinetics-space-health-765428358644.us-central1.run.app/llms.txt)  
-> **29-second demo:** [Watch on YouTube](https://www.youtube.com/watch?v=X_X6ETl6_Fw) · [Portal video and transcript](https://astrokinetics-space-health-765428358644.us-central1.run.app/video)\
+> **29-second demo:** [Watch on YouTube](https://www.youtube.com/watch?v=RVlS16JRnv4) · [Portal video and transcript](https://astrokinetics-space-health-765428358644.us-central1.run.app/video)\
 > **Direct Routes:** `/` *(Live 3D Twin workstation)* · `/project` *(overview & verification)* · `/?tab=demo` *(14-step Watch + iPhone companion)* · `/?tab=triage` *(3D Crew Body Map, red-flag triage, episodes, LiDAR)* · `/?tab=evidence` *(cited evidence engine)* · `/story` *(orbital story)* · `/video` *(demo video)*
 
 [Prototype verification](#prototype-verification) documents the `v5.2.0` post-submission verification build (updated November 21, 2026), including offline scoring parity, offline privacy redaction, NASA HUNCH safety rules, ASTRA episode governance, LiDAR tetrahedral volumetry, telemetry isolation, and bundled NASA data integrity checks.
