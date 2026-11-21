@@ -52,6 +52,12 @@
   a:focus-visible { outline: 2px solid #9adff7; outline-offset: 4px; }
   a.primary { background: #38bdf8; color: #04101f; border-color: #38bdf8; }
   .grid-two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .qr-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+  .qr-box { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: #0c1424; border: 1px solid #1e293b; text-decoration: none; color: #f1f5f9; }
+  .qr-box:hover { border-color: #38bdf8; background: #101b30; }
+  .qr-box img { display: block; background: #ffffff; border-radius: 6px; padding: 4px; flex-shrink: 0; }
+  .qr-box span { display: grid; gap: 2px; font-size: 0.86rem; }
+  .qr-box small { color: #94a3b8; font-weight: 400; font-size: 0.78rem; }
   section { background: #0c1424; border: 1px solid #1e293b; border-radius: 12px; padding: 18px 20px; }
   @media (max-width: 760px) { .grid-two { grid-template-columns: 1fr; } }
 </style>
@@ -66,7 +72,8 @@
   <p><strong>Team AI-MED 01 · Houston, Texas · 2026 NASA International Space Apps Challenge</strong> (<em>Create Health Monitoring Software for Astronauts on Space Missions</em>). Recorded November 15, 2026 from the live workstation using simulated wearable readings and an illustrative gravity fluid-shift animation on BodyParts3D 4.0 anatomy (CC BY 4.0).</p>
   <nav aria-label="Project links">
     <a class="primary" href="/project#verification">Read the software verification</a>
-    <a href="https://www.youtube.com/watch?v=X_X6ETl6_Fw">Watch on YouTube</a>
+    <a href="https://www.youtube.com/watch?v=X_X6ETl6_Fw" target="_blank" rel="noopener">Watch on YouTube</a>
+    <a href="https://github.com/x1jiang/astrokinetics" target="_blank" rel="noopener">GitHub (MIT)</a>
     <a href="/">Open the workstation</a>
     <a href="/?tab=triage">3D Crew Body Map</a>
     <a href="/?tab=demo">Watch + iPhone</a>
@@ -94,6 +101,20 @@
         <li><strong>00:24–00:28:</strong> “AstroKinetics and ASTRA. Crew health that works without Earth.”</li>
       </ol>
     </section>
+  </div>
+  <div class="qr-row" aria-label="Scan 2D QR codes">
+    <a class="qr-box" href="/">
+      <img src="/static/qr/qr-live-app.svg" width="84" height="84" alt="QR code for live workstation">
+      <span><strong>Live Workstation</strong><small>Scan to open live app</small></span>
+    </a>
+    <a class="qr-box" href="https://www.youtube.com/watch?v=X_X6ETl6_Fw" target="_blank" rel="noopener">
+      <img src="/static/qr/qr-youtube-demo.svg" width="84" height="84" alt="QR code for YouTube demo">
+      <span><strong>YouTube 29s Demo</strong><small>Scan to watch on YouTube</small></span>
+    </a>
+    <a class="qr-box" href="https://github.com/x1jiang/astrokinetics" target="_blank" rel="noopener">
+      <img src="/static/qr/qr-github.svg" width="84" height="84" alt="QR code for GitHub repository">
+      <span><strong>GitHub (MIT)</strong><small>Scan to view source code</small></span>
+    </a>
   </div>
 </main>
 </body>

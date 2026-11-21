@@ -67,6 +67,32 @@ thead { background: #132134; }
 .source-list > div:last-child { border-bottom: none; }
 .source-list dt { font-weight: 700; }
 .source-list dd { margin-top: 5px; max-width: 86ch; }
+.qr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.qr-tile {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 16px;
+  background: #111b2b;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-decoration: none;
+}
+.qr-tile:hover { border-color: #91dff4; }
+.qr-tile img {
+  display: block;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 6px;
+}
+.qr-tile strong { color: #edf4ff; font-size: 0.96rem; margin-top: 4px; }
+.qr-tile span { color: var(--muted); font-size: 0.8rem; word-break: break-word; }
 .site-footer { border-top: 1px solid var(--line); padding-block: 20px 32px; }
 
 @media (max-width: 760px) {

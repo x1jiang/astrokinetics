@@ -18,7 +18,7 @@
   <meta property="og:image:alt" content="AstroKinetics · ASTRA crew health workstation in the November 15, 2026 demo">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/static/showcase/brand/ai-med.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/static/project.css?v=5.2.0">
+  <link rel="stylesheet" href="/static/project.css?v=5.2.1">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -30,7 +30,7 @@
           "alternateName": "Team AI-MED 01 Autonomous 3D Crew Health Workstation",
           "url": "https://astrokinetics-space-health-765428358644.us-central1.run.app/",
           "mainEntityOfPage": "https://astrokinetics-space-health-765428358644.us-central1.run.app/project",
-          "softwareVersion": "5.2.0",
+          "softwareVersion": "5.2.1",
           "datePublished": "2026-11-15",
           "dateModified": "2026-11-21",
           "description": "Offline-first browser research prototype built in Houston, Texas by Team AI-MED 01 for the 2026 NASA International Space Apps Challenge ('Create Health Monitoring Software for Astronauts on Space Missions'). Combines on-device 3D MediaPipe biomechanics and contactless rPPG, 8-DOF Mahalanobis whitening with Python/browser offline parity, NASA HUNCH 8-red-flag safety gate, ASTRA longitudinal episode governance, closed-mesh LiDAR tetrahedral volumetry, 3-tier crew privacy redaction, and a 673-document offline NASA space-medicine evidence engine.",
@@ -41,6 +41,7 @@
           "codeRepository": "https://github.com/x1jiang/astrokinetics",
           "sameAs": [
             "https://github.com/x1jiang/astrokinetics",
+            "https://www.youtube.com/watch?v=X_X6ETl6_Fw",
             "https://www.spaceappschallenge.org/2026/find-a-team/ai-med-01/?tab=project"
           ],
           "author": {
@@ -124,7 +125,9 @@
       <a href="#architecture">Architecture</a>
       <a href="#verification">Verification</a>
       <a href="#sources">NASA data</a>
+      <a href="#qr-share">2D QR codes</a>
       <a href="/video">29s demo</a>
+      <a href="https://github.com/x1jiang/astrokinetics">GitHub</a>
       <a href="/llms.txt">llms.txt</a>
     </nav>
   </header>
@@ -302,11 +305,39 @@
         </div>
       </dl>
     </section>
+
+    <section id="qr-share" class="evidence" aria-labelledby="qr-title">
+      <h2 id="qr-title">Scan 2D QR codes for quick access on mobile or projector</h2>
+      <p><strong>Scan any code below to open the live workstation, this verification page, the 29-second YouTube demo, or the open-source MIT GitHub repository.</strong> All QR codes are bundled locally as offline-ready vector SVGs.</p>
+      <div class="qr-grid">
+        <a class="qr-tile" href="/">
+          <img src="/static/qr/qr-live-app.svg" width="148" height="148" alt="2D QR code for the live AstroKinetics · ASTRA workstation" loading="lazy">
+          <strong>Live Workstation</strong>
+          <span>astrokinetics-space-health</span>
+        </a>
+        <a class="qr-tile" href="/project">
+          <img src="/static/qr/qr-project.svg" width="148" height="148" alt="2D QR code for the project overview and verification page" loading="lazy">
+          <strong>Overview &amp; Verification</strong>
+          <span>/project</span>
+        </a>
+        <a class="qr-tile" href="https://www.youtube.com/watch?v=X_X6ETl6_Fw">
+          <img src="/static/qr/qr-youtube-demo.svg" width="148" height="148" alt="2D QR code for the 29-second YouTube demo video" loading="lazy">
+          <strong>YouTube 29s Demo</strong>
+          <span>watch?v=X_X6ETl6_Fw</span>
+        </a>
+        <a class="qr-tile" href="https://github.com/x1jiang/astrokinetics">
+          <img src="/static/qr/qr-github.svg" width="148" height="148" alt="2D QR code for the open-source MIT GitHub repository" loading="lazy">
+          <strong>GitHub Repository (MIT)</strong>
+          <span>github.com/x1jiang/astrokinetics</span>
+        </a>
+      </div>
+    </section>
   </main>
 
   <footer class="page-width site-footer">
     <a href="/">Open the workstation</a>
     <a href="/video">Watch 29s demo &amp; transcript</a>
+    <a href="https://www.youtube.com/watch?v=X_X6ETl6_Fw">Watch on YouTube</a>
     <a href="/api/verification-report">Live verification JSON</a>
     <a href="/llms.txt">AI dossier (llms.txt)</a>
     <a href="/llms-full.txt">Full technical spec</a>
