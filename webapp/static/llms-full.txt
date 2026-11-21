@@ -1,0 +1,107 @@
+# AstroKinetics · ASTRA — Full Technical & Judging Verification Dossier
+
+- **Project Name:** AstroKinetics · ASTRA: Autonomous 3D Crew Health Workstation with a Watch + iPhone Companion
+- **Team:** Team AI-MED 01 (Houston, Texas)
+- **Event:** 2026 NASA International Space Apps Challenge — Houston Local Event (November 14–15, 2026)
+- **Challenge:** Create Health Monitoring Software for Astronauts on Space Missions
+- **Live Portal:** https://astrokinetics-space-health-765428358644.us-central1.run.app/
+- **Overview & Verification Page:** https://astrokinetics-space-health-765428358644.us-central1.run.app/project
+- **Live Self-Verification Endpoint:** https://astrokinetics-space-health-765428358644.us-central1.run.app/api/verification-report
+- **Demo Video (29 s):** https://astrokinetics-space-health-765428358644.us-central1.run.app/video
+- **Open-Source Repository (MIT):** https://github.com/x1jiang/astrokinetics
+- **Official NASA Submission:** https://www.spaceappschallenge.org/2026/find-a-team/ai-med-01/?tab=project
+- **Software Version:** `5.2.0`
+- **Date Submitted:** `2026-11-15`
+- **Date Modified (Post-Submission Verification & Documentation):** `2026-11-21`
+
+---
+
+## 1. Impact — Why Deep-Space Crews (and Rural Clinics on Earth) Need This
+
+**Question: What operational problem does AstroKinetics · ASTRA solve?**
+**Direct answer:** NASA communications modeling places one-way Mars signal delays at up to 22 minutes (44 minutes round-trip), alongside multi-week solar-conjunction blackouts, making live flight-surgeon telemedicine from Houston Mission Control impossible ([NASA NTRS 20220013418](https://ntrs.nasa.gov/citations/20220013418)). AstroKinetics · ASTRA gives astronauts an offline-first workstation that gathers multimodal movement, wearable, and cabin readings, checks emergency red flags first, separates coupled environmental and physiological drift, and prepares privacy-governed store-and-forward packets (`< 2 KB`) when Earth contact returns.
+
+**Question: What is the Space-to-Earth dual-use impact?**
+**Direct answer:** The same browser-based on-device camera kinematics, contactless rPPG, smartwatch telemetry bus, and offline triage architecture works without broadband or cloud PHI transmission in rural Texas clinics, austere disaster-response sites, and home musculoskeletal or neurological tele-rehabilitation using commodity laptops, phones, and smartwatches.
+
+---
+
+## 2. Creativity — What Makes the Technical Architecture Novel
+
+**Question: How does AstroKinetics · ASTRA advance beyond standard vital-sign dashboards?**
+**Direct answer:** Rather than firing brittle single-threshold alarms on isolated numbers, AstroKinetics · ASTRA unifies six mechanisms in one offline-capable web workstation:
+
+1. **Personal Earth-to-Orbit Baseline Adaptation:** Learns a 14-day personal baseline (224 readings across 16 measures in the Watch + iPhone companion) and explicitly switches expected ranges when entering microgravity — demonstrated deterministically in `/api/hunch/triage`, where 5.9 h sleep triggers `MODERATE` under `earth_1g` but `LOW` under `mission_microgravity` using NASA's Barger et al. (2014) ISS actigraphy sleep norm (`6.09 ± 0.67 h`).
+2. **8-DOF Multivariate Mahalanobis Whitening ($\Sigma^{-1/2}$):** Evaluates `[ROM %, Bilateral Symmetry %, Trunk Lean °, Postural Sway mm/s, HR bpm, HRV RMSSD ms, Cognitive PVT ms, Cabin ppCO2 mmHg]` against a correlated covariance matrix $\Sigma$, decomposing exact squared whitened variance contributions (`% of D_M^2`) and exact $\chi^2_8$ survival $p$-values with zero discrepancy between the Python FastAPI backend (`scipy.stats.chi2`) and the cached offline JavaScript engine (`dsp.js`).
+3. **Deterministic Red-Flag-First Safety Gate with Principled Abstention:** Eight NASA HUNCH emergency red flags run in `< 1 ms` BEFORE sensor-quality checks, so life-threatening symptoms always return `EMERGENCY` even with disconnected wearables or poor capture, whereas degraded capture without red flags returns `INCOMPLETE_CHECK_REQUIRED` instead of imputing normal defaults — explicitly auditing disagreements against an educational statistical ML comparator.
+4. **ASTRA Non-Conflated Longitudinal Episode Governance:** Enforces strict state-machine invariants in SQLite: dismissing a notification never completes a task; bad capture moves tasks to `repeat_required` rather than normalizing missing values; store-and-forward sync is idempotent by `event_id` and never auto-sets `human_reviewed`; closing an episode requires both `human_reviewed == true` and a non-empty clinical `closure_reason`.
+5. **Closed-Mesh Signed Tetrahedral LiDAR Volumetry with Anti-Hallucination Gates:** Computes exact surface volume $V = \frac{1}{6}\left|\sum_i v_{0,i} \cdot (v_{1,i} \times v_{2,i})\right|$ for cephalad fluid-shift tracking, rejecting ARKit `personSegmentationWithDepth` (which hallucinates depth behind occluded limbs) and holding scans with `< 82%` observed `sceneDepth` coverage or `> 18%` inferred mesh area.
+6. **Zero-Cloud On-Device 3D Vision, 3D Crew Body Map & Human-vs-Rodent Evidence Guardrails:** Runs Google MediaPipe WebAssembly/WebGPU (`478-pt FaceMesh` Wang POS rPPG, `33-pt 3D WorldPose` 1-Euro filtered kinematics, `21-pt Hands` tremor) strictly locally, renders signals on an anatomical BodyParts3D 4.0 Crew Body Map (CC BY 4.0), enforces 3-tier crew privacy (`Astronaut Private` / `CMO Operational` / `Flight Surgeon Packet`) both online and offline, and flags rodent/cellular space-biology studies in AURA so animal findings are never misapplied as human clinical thresholds.
+
+---
+
+## 3. Relevance — Official NASA Datasets, Standards & Resources Integrated
+
+| NASA / Spaceflight Resource | Concrete Integration in AstroKinetics · ASTRA | Live API / Reference |
+| :--- | :--- | :--- |
+| **NASA OSDR `OSD-571` (`GLDS-563`) — SpaceX Inspiration4 Plasma Proteomics** | Bundles 14 longitudinal protein entries across 4 astronauts (`C001–C004`) and 6 timepoints (`L-92, L-44, L-3, R+1, R+45, R+82`) extracted from `GLDS-563_proteomics_EVPs_proteomics_preprocessed_data.txt` (1,443 screened), plus live metadata check against NASA OSDR REST API. Provides spaceflight biological context; the readiness scorer uses a separate fixed demo reference. | `/api/osdr-empirical` · https://osdr.nasa.gov/bio/repo/data/studies/OSD-571 |
+| **NASA OSDR RadLab — ISS DosTel1 & DosTel2 Radiation Sample** | Bundles 164 real ISS DosTel absorbed dose rate (`uGy/h`), flux, altitude, latitude, longitude, B-field, and L-shell observations (`2022-04-01 23:00` to `2022-04-02 01:05`, `DosTel1`: 77 rows mean 6.595 uGy/h, `DosTel2`: 87 rows mean 5.948 uGy/h). | `/api/aura/radlab` · https://osdr.nasa.gov/bio/ |
+| **`NASA-STD-3001` Vol. 2 Rev. F `[V2 6004]`** | Requirement V2 6004 establishes the 3 mmHg one-hour mean cabin ppCO2 limit. The workstation explicitly labels its single-reading review thresholds (2.4 / 2.85 / 3.5 mmHg) as prototype snapshot settings for environmental context. | `/api/scenarios` · https://standards.nasa.gov/node/237 |
+| **NASA Space Biology PMC Corpus & AURA Cited Library** | 673 offline-searchable items: 572 NASA PMC Space Biology publications, 70 reviewed operational/clinical sources, 16 bilingual space-medicine concepts, and 15 Apple Watch/iPhone biomarker validation studies. Deterministic BM25 search with `human_only=true` filtering and explicit rodent/cellular caveats. | `/api/aura/overview` · `/api/aura/search` · `/api/aura/ask` |
+| **NASA Spaceflight Sleep Study (Barger et al., *Lancet Neurology* 2014, PMC4188436)** | Bundled published aggregate Space Shuttle and ISS actigraphy/diary sleep tables across `SL-90`, `L-11`, `Inflight`, `R+7`, and `Night before EVA` (ISS inflight actigraphy `6.09 ± 0.67 h`), informing Earth-1g vs Mission-Microgravity sleep triage context. | `/api/aura/overview` · https://pmc.ncbi.nlm.nih.gov/articles/PMC4188436/ |
+| **NASA NLSP Historic Manifest (`AP005` & `DSO 484`)** | Cataloged metadata and explicit reuse-limitation notes for Apollo Crewmember Heart Rate (`AP005`) and Bright-Light Circadian Shifting (`DSO 484`), explicitly documenting why historic summary tables cannot train wearable classifiers. | https://nlsp.nasa.gov/search/data/details/IDP-LSDA_DATASET-0000000000000227?dataType=DATASETS |
+| **NASA HUNCH 8-Red-Flag Triage & HRP / ExMC Frameworks** | Deterministic emergency safety gate covering MI triad, thunderclap headache, meningitis pattern, meningococcemia, acute vision loss (severe SANS), new seizure, syncope, and hemoptysis; store-and-forward privacy governance aligned to ExMC operational constraints. | `/api/hunch/catalog` · `/api/hunch/triage` · https://humanresearchroadmap.nasa.gov/ |
+| **CSA / NASA ISS Bio-Monitor Wearable Reference** | Wearable channel schema (HR, HRV RMSSD, SpO2, respiratory rate, wrist tremor) aligned with the `POST /api/ingest/edge-telemetry` fusion API. | https://www.nasa.gov/mission/station/research-explorer/investigation/?#id=7392 |
+
+---
+
+## 4. Validity — Quantitative Software & Data Verification Results (`2026-11-21`)
+
+**Question: What has been quantitatively tested and verified?**
+**Direct answer:** Seven live read-only check groups run on every call to `GET /api/verification-report` (7/7 passing), and the local automated regression suite (`node scripts/verify_judging_workflow.mjs http://127.0.0.1:8080`) verifies 7 end-to-end suites across 45+ assertions:
+
+### Four Scripted Mission Scenarios (Server Python & Offline Browser Parity)
+
+| Mission Scenario | Crew & Sol | Alert Level | Demo Readiness Index | Mahalanobis $D_M$ | $\chi^2_8$ $p$-value | Server / Offline Match |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Nominal lunar orbit (`nominal_lunar`) | CDR Maya Lin · Sol 14 | Nominal | `99.2 / 100` | `0.73` | `0.999953` | Exact match |
+| Cabin CO₂ drift (`hypercapnia_drift`) | MS-1 Dr. Alex Rivera · Sol 88 | Watch | `78.3 / 100` | `3.85` | `0.062780` | Exact match |
+| Musculoskeletal asymmetry (`musculoskeletal_asymmetry`) | FE-2 Jordan Vance · Sol 142 | Alert | `44.7 / 100` | `6.99` | `0.000000` | Exact match |
+| Solar particle event blackout (`spe_blackout`) | CDR Maya Lin · Sol 210 | Alert | `12.0 / 100` | `14.81` | `0.000000` | Exact match |
+
+### Additional Automated Verification Checks
+
+1. **Statistical Parity (20 vectors):** All 4 mission scenarios + 16 domain boundary/stress vectors agree exactly between Python `scipy.stats.chi2` (`app.py`) and browser JS (`dsp.js`) on `readiness_score`, `mahalanobis_d`, `mahalanobis_d2`, `p_value`, and `top_attributions`.
+2. **Offline Reload & Privacy Redaction:** Service worker (`sw.js` `v5.2.0`) caches the workstation shell, `/project`, `/llms.txt`, and scenario/evidence assets. Both `app.py` (online) and `localClientEvaluate` (`app.js`, offline) redact `mood_score_10` and `private_journal_note` for `cmo_operational` and `flight_surgeon_packet` during non-alert states, escalating only an encrypted safety flag on `alert`.
+3. **NASA HUNCH 8-Red-Flag Safety Gate (8/8 + Abstention + Profile):** All 8 emergency patterns return `EMERGENCY` (`abstained: false`) even when `signal_quality: "insufficient"` and watch is disconnected. Degraded capture without red flags returns `INCOMPLETE_CHECK_REQUIRED` (`abstained: true`) and logs disagreement with the naive ML comparator. At 5.9 h sleep, `earth_1g` returns `MODERATE` while `mission_microgravity` returns `LOW`.
+4. **ASTRA Longitudinal Episode State Machine (6/6 invariants):** Verified `DISMISS` preserves `task.state == "pending"`, `BAD_CAPTURE` sets `repeat_required`, premature `CLOSE` fails with HTTP `409`, offline `SYNC` queues until online, online `SYNC` sets `remote_received: true` without setting `human_reviewed`, duplicate `SYNC` deduplicates idempotently, empty closure reason fails with HTTP `422`, and clinician-reviewed `CLOSE` succeeds.
+5. **iPhone LiDAR Closed-Mesh Signed Tetrahedral Volumetry (3/3):** A closed 10×10×10 cm cube mesh evaluates to `1000.0 mL` (`0.00%` analytical error, `PASS`); `< 82%` observed coverage triggers `QUALITY_HOLD`; `personSegmentationWithDepth` triggers `QUALITY_HOLD`.
+6. **Crew/Sol Telemetry API Isolation (5/5):** Synthetic Watch and Mobile packets merge only within the same `(crew_member, mission_sol)`, keep other crew and days isolated, report `received_channels` vs `demo_default_channels`, return `WKHapticType` cues, and reject out-of-range inputs (`HR = 500`) with HTTP `422`.
+7. **Bundled NASA Data & AURA Guardrail Integrity (5/5):** Verified 14 OSD-571 proteins × 4 crew × 6 timepoints (including independent fold-change verification against raw `log10_intensities`), 164 RadLab ISS DosTel rows (`DosTel1`: 77, `DosTel2`: 87), 673 AURA indexed documents, and strict exclusion of non-human/rodent studies when `human_only=true`.
+
+### Scope & Unverified Limitations (Honest Disclosure)
+
+- **Not clinically validated:** Readiness indices, thresholds, and follow-up prompts are software prototype outputs using simulated inputs and a fixed demonstration covariance reference; clinical diagnostic accuracy and medical efficacy are unverified.
+- **Not flight-qualified:** Performance on representative in-flight astronaut cohorts has not been evaluated.
+- **Native Apple hardware simulated:** watchOS `HealthKit`/`CMMotionManager` and iOS `ARKit` LiDAR capture are simulated via the browser UI and REST telemetry sandbox; native iOS/watchOS binaries are not included.
+- **Connectivity boundaries:** Cached scoring, the 3D twin, and precached views run in the browser offline after one online load; server persistence, REST telemetry receipts, and optional xAI Grok Voice cloud TTS/chat require network connectivity.
+- **Timeline transparency:** The official Space Apps submission closed November 15, 2026; offline-parity fixes, crew/sol telemetry isolation, offline privacy redaction parity, the expanded verification suite, and `/project` + `/llms.txt` documentation are dated post-submission (`2026-11-21`).
+
+---
+
+## 5. Presentation — Demo Video Transcript (`0:29`, Recorded November 15, 2026)
+
+- **00:00–00:06:** "Far from Earth, the crew is the clinic. AstroKinetics reads every movement from a camera, in 3D."
+- **00:06–00:10:** "A watch and a phone learn one astronaut's normal, then move it into orbit."
+- **00:10–00:16:** "Every signal lands on one living body map. Take gravity away, and fluid shifts toward the head."
+- **00:17–00:19:** "Red flags are checked first."
+- **00:20–00:23:** "And every answer shows its evidence."
+- **00:24–00:28:** "AstroKinetics and ASTRA. Crew health that works without Earth."
+
+---
+
+## 6. Open-Source License & AI Transparency
+
+- **License:** MIT License (https://spdx.org/licenses/MIT.html · https://github.com/x1jiang/astrokinetics/blob/main/LICENSE).
+- **3D Anatomy Attribution:** BodyParts3D 4.0, © The Database Center for Life Science (CC BY 4.0), via Human Atlas (MIT). Pulse-wave and gravity fluid-shift animations are visual illustrations on reference anatomy, not biomechanical simulations.
+- **AI Transparency:** Deterministic mathematical algorithms (Mahalanobis whitening, $\chi^2_8$ survival, 1-Euro filter, Wang POS rPPG, signed tetrahedral volumetry, HUNCH rule gate, BM25 evidence retrieval) perform all triage and scoring. On-device vision uses open-source Google `@mediapipe/tasks-vision` locally in WebAssembly/WebGPU. Optional "Ask ASTRA" voice copilot uses xAI Grok via ClawAgents to explain findings and navigate views; it never overrides deterministic safety triage. AI coding/documentation assistance was used under human engineering supervision and disclosed on the official NASA Space Apps portal.

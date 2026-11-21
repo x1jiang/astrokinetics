@@ -1,0 +1,39 @@
+# AstroKinetics · ASTRA (Team AI-MED 01 — Houston, TX)
+
+> Offline-first astronaut health monitoring workstation built in Houston, Texas by **Team AI-MED 01** for the **2026 NASA International Space Apps Challenge** (*Create Health Monitoring Software for Astronauts on Space Missions*). Combines markerless 3D camera kinematics and contactless rPPG, an 8-DOF multivariate Mahalanobis ($\Sigma^{-1/2}$) scorer with exact Python/browser offline parity, a deterministic NASA HUNCH 8-red-flag safety gate with missing-data abstention, an ASTRA longitudinal episode state machine, closed-mesh iPhone LiDAR tetrahedral volumetry, 3-tier crew privacy redaction, and a 673-document offline NASA space-medicine evidence engine.
+
+- **Canonical Portal:** https://astrokinetics-space-health-765428358644.us-central1.run.app/
+- **Project Overview & Verification:** https://astrokinetics-space-health-765428358644.us-central1.run.app/project
+- **Live Read-Only Verification API (JSON):** https://astrokinetics-space-health-765428358644.us-central1.run.app/api/verification-report
+- **29-Second Demo Video & Transcript:** https://astrokinetics-space-health-765428358644.us-central1.run.app/video
+- **OpenAPI / Swagger Specification:** https://astrokinetics-space-health-765428358644.us-central1.run.app/docs
+- **Full Technical & Verification Dossier:** https://astrokinetics-space-health-765428358644.us-central1.run.app/llms-full.txt
+- **Open-Source Repository (MIT):** https://github.com/x1jiang/astrokinetics
+- **Official NASA Space Apps Submission:** https://www.spaceappschallenge.org/2026/find-a-team/ai-med-01/?tab=project
+- **Location & Event:** Houston, Texas · 2026 NASA International Space Apps Challenge (Houston Local Event)
+- **Software Version:** `5.2.0` · **Submitted:** `2026-11-15` · **Post-Submission Verification Updated:** `2026-11-21`
+
+## Primary Pages
+
+- [Live 3D Twin Workstation](https://astrokinetics-space-health-765428358644.us-central1.run.app/): Interactive workstation with 4 scripted mission scenarios, 3D biomechanics, contactless POS-rPPG, 8-DOF Mahalanobis covariance radar, and offline Service Worker scoring.
+- [Project Overview & Verification](https://astrokinetics-space-health-765428358644.us-central1.run.app/project): Non-JavaScript HTML dossier answering the 5 NASA Space Apps judging criteria (Impact, Creativity, Validity, Relevance, Presentation) with verified test results, NASA sources, and scope limits.
+- [29-Second Demo Video & Transcript](https://astrokinetics-space-health-765428358644.us-central1.run.app/video): Recorded November 15, 2026 demonstration of the live workstation with captions and full text transcript.
+- [3D Crew Body Map & HUNCH Triage](https://astrokinetics-space-health-765428358644.us-central1.run.app/?tab=triage): Anatomical BodyParts3D 4.0 view, 8-red-flag safety gate, ASTRA episode governance, and LiDAR tetrahedral volumetry.
+- [14-Step Watch + iPhone Companion](https://astrokinetics-space-health-765428358644.us-central1.run.app/?tab=demo): Guided walkthrough of Earth-to-Orbit personal baseline adaptation across 16 daily measures.
+- [Cited Evidence Engine (AURA)](https://astrokinetics-space-health-765428358644.us-central1.run.app/?tab=evidence): Offline BM25 search across 673 space-medicine documents with human-vs-model-organism separation guardrails.
+- [Orbital Story](https://astrokinetics-space-health-765428358644.us-central1.run.app/story): Visual narrative explaining why Earth reference ranges shift in microgravity.
+
+## Read-Only Verification & NASA Data APIs
+
+- [Live Verification Report](https://astrokinetics-space-health-765428358644.us-central1.run.app/api/verification-report): Runs 7 deterministic read-only test groups (scenarios, 3-tier privacy redaction, all 8 HUNCH red flags, missing-data abstention, Barger 2014 Earth-vs-Orbit sleep profile, 1000.0 mL LiDAR analytical mesh + 82% coverage gate, and bundled NASA data integrity).
+- [Mission Scenarios & NASA Catalog](https://astrokinetics-space-health-765428358644.us-central1.run.app/api/scenarios): Four reproducible mission telemetry scenarios (`nominal_lunar` 99.2, `hypercapnia_drift` 78.3, `musculoskeletal_asymmetry` 44.7, `spe_blackout` 12.0) and NASA dataset catalog.
+- [NASA OSDR OSD-571 Empirical Asset](https://astrokinetics-space-health-765428358644.us-central1.run.app/api/osdr-empirical): 14 longitudinal SpaceX Inspiration4 plasma proteomics entries across 4 astronauts (`C001–C004`) and 6 timepoints (`L-92` to `R+82`).
+- [NASA OSDR RadLab ISS DosTel Sample](https://astrokinetics-space-health-765428358644.us-central1.run.app/api/aura/radlab): 164 real ISS DosTel1/DosTel2 absorbed dose rate and orbital pass rows (`2022-04-01` to `2022-04-02`).
+- [AURA Corpus Overview](https://astrokinetics-space-health-765428358644.us-central1.run.app/api/aura/overview): Counts and population breakdown for 673 indexed items (572 NASA PMC Space Biology papers, 70 reviewed sources, 16 bilingual concepts, 15 Apple biomarker studies) plus Barger 2014 sleep tables.
+- [HUNCH Safety Catalog](https://astrokinetics-space-health-765428358644.us-central1.run.app/api/hunch/catalog): Deterministic 8-red-flag rules and 4 clinical safety vignettes.
+- [ASTRA Governance Contracts](https://astrokinetics-space-health-765428358644.us-central1.run.app/api/astra/contracts): Non-conflated episode/task/sync/human-review state-machine invariants and LiDAR quality gates.
+
+## Scope & Limitations (Disclosed Explicitly)
+
+- **Verified (software & math):** Offline/online 8-DOF Mahalanobis ($\Sigma^{-1/2}$) and $\chi^2_8$ parity across 20 vectors, 3-tier privacy redaction online and offline, all 8 HUNCH red flags overriding poor capture, principled missing-data abstention, Barger 2014 Earth-1g vs Mission-Microgravity profile adaptation, exact 1000.0 mL closed-mesh LiDAR tetrahedral volume (0.00% analytical error) plus 82% coverage and `personSegmentationWithDepth` rejection gates, stateful ASTRA episode governance invariants, crew/sol telemetry isolation, and bundled NASA dataset integrity.
+- **Unverified (out of scope for a 48-hour web prototype):** Clinical diagnostic accuracy, flight qualification, validation on representative in-flight wearable cohorts, and native watchOS HealthKit / iOS ARKit hardware capture. Post-submission software verification and documentation updates are dated `2026-11-21` and clearly distinguished from the `2026-11-15` submission.

@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Allow: /project
+Allow: /video
+Allow: /story
+Allow: /demo/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /api/verification-report
+Allow: /api/scenarios
+Allow: /api/osdr-empirical
+Allow: /api/hunch/catalog
+Allow: /api/aura/overview
+Disallow: /api/ingest/
+Disallow: /api/sessions
+Disallow: /api/voice/
+
+Sitemap: https://astrokinetics-space-health-765428358644.us-central1.run.app/sitemap.xml

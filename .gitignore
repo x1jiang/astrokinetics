@@ -24,3 +24,6 @@ submission_package/email_final_followup.txt
 
 # Local agent scratch memory
 .clawagents/
+
+# Convenience copy of the files to submit (originals live in submission_package/)
+FINAL_SUBMISSION/

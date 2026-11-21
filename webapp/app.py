@@ -15,7 +15,9 @@ import json
 import math
 import os
 import sqlite3
+from collections import OrderedDict, deque
 from datetime import datetime, timezone
+from itertools import count
 from pathlib import Path
 from typing import Any, Literal
 
@@ -36,20 +38,27 @@ DB_PATH = Path(os.environ.get("ASTROKINETICS_DB", "/tmp/astrokinetics_sessions_v
 
 from astra_companion import (
     AURA_CORPUS,
+    AURA_INDEX,
     EMPIRICAL_SUPPLEMENTS,
     KNOWLEDGE_BUNDLE,
+    HunchTriageRequest,
+    LidarVolumeRequest,
     astra_router,
+    evaluate_hunch_triage,
+    evaluate_lidar_volume,
     init_astra_db,
 )
 from grok_claw_voice import voice_router
 
 app = FastAPI(
-    title="AstroKinetics · ASTRA v5.0 — Autonomous Astronaut Health Showcase, Watch/iPhone Demo & Grok Voice Suite",
-    version="5.0.0",
+    title="AstroKinetics · ASTRA v5.2 — Autonomous Astronaut Health Workstation, Watch + iPhone Companion & Evidence Engine",
+    version="5.2.0",
     description=(
-        "Unified NASA Space Apps 2026 Showcase portal combining the 3D Orbital Showcase Journey, "
-        "14-step Apple Watch + iPhone Guided Demo, ClawAgents + xAI Grok Voice AI multilingual copilot, "
-        "3D MediaPipe biomechanics, 8-DOF Mahalanobis anomaly detection, NASA HUNCH triage, and AURA evidence engine."
+        "Team AI-MED 01 (Houston, TX) — 2026 NASA International Space Apps Challenge "
+        "('Create Health Monitoring Software for Astronauts on Space Missions'). "
+        "Offline-first crew health workstation combining 3D MediaPipe biomechanics, contactless rPPG, "
+        "8-DOF Mahalanobis whitening, NASA HUNCH 8-red-flag safety gate, ASTRA episode governance, "
+        "iPhone LiDAR tetrahedral volumetry, and AURA cited space-medicine evidence."
     ),
 )
 
@@ -65,7 +74,22 @@ app.add_middleware(
 async def revalidate_static_and_shell(request: Request, call_next: Any) -> Response:
     response = await call_next(request)
     p = request.url.path
-    if p in ("/", "/story", "/demo", "/studio", "/sw.js", "/manifest.webmanifest") or p.startswith(("/static/", "/demo/")):
+    if p.startswith("/api/ingest/"):
+        response.headers["Cache-Control"] = "no-store"
+    elif p in (
+        "/",
+        "/project",
+        "/video",
+        "/story",
+        "/demo",
+        "/studio",
+        "/sw.js",
+        "/manifest.webmanifest",
+        "/llms.txt",
+        "/llms-full.txt",
+        "/robots.txt",
+        "/sitemap.xml",
+    ) or p.startswith(("/static/", "/demo/")):
         response.headers["Cache-Control"] = "no-cache, must-revalidate"
     return response
 
@@ -135,8 +159,8 @@ NASA_DATASETS_CATALOG: list[dict[str, Any]] = [
     {
         "id": "NASA-STD-3001",
         "source": "NASA Spaceflight Human-System Standard Vol. 1 & Vol. 2",
-        "title": "Crew Health, Cabin ppCO2 (<2.0 mmHg nominal), Ionizing Radiation & Countermeasure Thresholds",
-        "url": "https://www.nasa.gov/ochmo/health-and-medical-systems/nasa-std-3001/",
+        "title": "Cabin ppCO2: 3 mmHg one-hour mean limit (Vol. 2 Rev. F [V2 6004])",
+        "url": "https://standards.nasa.gov/node/237",
         "api_url": None,
     },
     {
@@ -148,10 +172,24 @@ NASA_DATASETS_CATALOG: list[dict[str, Any]] = [
     },
     {
         "id": "CSA-BIOMONITOR",
-        "source": "Canadian Space Agency ISS Wearable Telemetry + Markerless 3D Kinematics",
-        "title": "Astroskin 7-Channel Wearable Telemetry + Vicon-Calibrated Markerless Joint Goniometry (±0.6° ROM)",
-        "url": "https://www.asc-csa.gc.ca/eng/sciences/bio-monitor.asp",
+        "source": "Canadian Space Agency / NASA ISS Space Station Research Explorer",
+        "title": "ISS Bio-Monitor Wearable Telemetry Schema + Markerless 3D Joint Kinematics Reference",
+        "url": "https://www.nasa.gov/mission/station/research-explorer/investigation/?#id=7392",
         "api_url": None,
+    },
+    {
+        "id": "NASA-RADLAB-DOSTEL",
+        "source": "NASA OSDR RadLab — Bundled ISS DosTel1 & DosTel2 Empirical Sample",
+        "title": "164 ISS DosTel Absorbed Dose Rate & Orbital Pass Observations (2022-04-01/02)",
+        "url": "https://osdr.nasa.gov/bio/",
+        "api_url": "/api/aura/radlab",
+    },
+    {
+        "id": "BARGER-2014-ISS-SLEEP",
+        "source": "NASA Spaceflight Sleep Study (Barger et al., Lancet Neurology 2014, PMC4188436)",
+        "title": "Published Aggregate Space Shuttle & ISS Actigraphy Sleep Tables (SL-90, L-11, Inflight, R+7, Pre-EVA)",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4188436/",
+        "api_url": "/api/aura/overview",
     },
 ]
 
@@ -305,9 +343,9 @@ BASELINE_CORR = np.array(
 )
 BASELINE_COV = np.outer(BASELINE_SD, BASELINE_SD) * BASELINE_CORR
 BASELINE_COV_INV = np.linalg.inv(BASELINE_COV)
-# Symmetric inverse square root W = Sigma^(-1/2) for exact orthogonal attribution of D_M^2 = ||W(x - mu)||^2
+# Symmetric inverse square root W = Sigma^(-1/2) for squared whitened component contributions.
 _eigvals, _eigvecs = np.linalg.eigh(BASELINE_COV_INV)
-WHITENING_MATRIX = (_eigvecs * np.sqrt(np.maximum(_eigvals, 1e-9))) @ _eigvecs.T
+WHITENING_MATRIX = np.einsum("ik,k,jk->ij", _eigvecs, np.sqrt(_eigvals), _eigvecs)
 
 
 class TelemetryInput(BaseModel):
@@ -478,42 +516,39 @@ def evaluate_astronaut_state(data: TelemetryInput) -> dict[str, Any]:
             "domain": "Habitat & Radiation Exposure",
             "status": env_status,
             "headline": f"ppCO2 {data.cabin_co2_mmhg:.2f} mmHg · Radiation {data.radiation_msv_day:.2f} mSv/day",
-            "metric_detail": "NASA-STD-3001 nominal ppCO2 < 2.0 mmHg; SPE surge >= 1.5 mSv/day",
+            "metric_detail": "Prototype snapshot thresholds. NASA-STD-3001 Vol. 2 [V2 6004] sets a 3 mmHg one-hour mean limit.",
         }
     )
 
     if data.cabin_co2_mmhg >= 2.8 and data.pvt_reaction_ms >= 315:
         findings.append(
-            f"Covariant hypercapnia signature: PVT slowing ({data.pvt_reaction_ms:.0f} ms) and tachypnea "
-            f"({data.resp_rate_brpm:.1f} brpm) co-vary with cabin ppCO2 ({data.cabin_co2_mmhg:.2f} mmHg > NASA-STD-3001 limit)."
+            f"Cabin ppCO2 snapshot ({data.cabin_co2_mmhg:.2f} mmHg) and reaction time "
+            f"({data.pvt_reaction_ms:.0f} ms) crossed prototype review thresholds together. Check the cabin trend and repeat the task."
         )
         countermeasures.append(
             {
                 "priority": "HIGH" if data.cabin_co2_mmhg >= 3.5 else "MODERATE",
-                "title": "CDRA CO2 Scrubber Purge & High-Flow Bay Mixing",
+                "title": "Verify cabin CO₂ and repeat the reaction-time check",
                 "protocol": (
-                    "Switch CDRA desiccant bed, engage inter-module duct fan high-flow mixing until ppCO2 < 2.0 mmHg, "
-                    "hydrate 500 mL electrolyte solution, and repeat 3-trial PVT + finger-tap check in 30 min."
+                    "Check the cabin CO₂ trend against the mission checklist and repeat the reaction-time check "
+                    "to document whether the drift persists."
                 ),
-                "reference": "NASA-STD-3001 Vol. 2 Atmosphere Standards",
+                "reference": "NASA-STD-3001 Vol. 2 [V2 6004] (environmental context)",
                 "_domain_order": 0,
             }
         )
 
     if data.radiation_msv_day >= 1.5:
         findings.append(
-            f"Solar Particle Event radiation surge ({data.radiation_msv_day:.2f} mSv/day) exceeds GCR baseline; "
-            "matches NASA OSDR OSD-571 oxidative/hemolysis watch profile (PRDX2 5.09x, CAT 5.24x, HBA1 4.36x reference shift)."
+            f"Radiation reading ({data.radiation_msv_day:.2f} mSv/day) crossed the prototype alert threshold. "
+            "OSD-571 provides separate post-flight proteomics context."
         )
         countermeasures.append(
             {
                 "priority": "CRITICAL",
-                "title": "Storm-Shelter Mass Shielding & OSD-571 Oxidative/Hematologic Protocol",
-                "protocol": (
-                    "Maintain crew in water-wall storm shelter; log nausea/tremor every 2h; administer oral ondansetron + "
-                    "antioxidant/isotonic support if prodrome develops; run +24h point-of-care hemoglobin/WBC panel."
-                ),
-                "reference": "NASA OSDR OSD-571 (GLDS-563 Inspiration4 Empirical Panel) + HRP Acute Radiation Risk",
+                "title": "Review the mission radiation contingency checklist",
+                "protocol": "Verify the dosimeter reading and flag it for review against the mission's radiation contingency checklist.",
+                "reference": "NASA HRP Acute Radiation Risk (background)",
             }
         )
 
@@ -563,7 +598,7 @@ def evaluate_astronaut_state(data: TelemetryInput) -> dict[str, Any]:
             "domain": "Cognitive & Behavioral Readiness",
             "status": cog_status,
             "headline": f"PVT {data.pvt_reaction_ms:.0f} ms · Sleep {data.sleep_hours:.1f} h · {mood_display}",
-            "metric_detail": "OSD-571 PVT nominal < 300 ms; NASA-STD-3001 sleep target >= 7.5 h",
+            "metric_detail": "PVT and sleep thresholds are prototype settings.",
         }
     )
 
@@ -717,13 +752,15 @@ def evaluate_astronaut_state(data: TelemetryInput) -> dict[str, Any]:
 async def health_check() -> dict[str, Any]:
     return {
         "status": "ok",
-        "version": "5.0.0",
-        "service": "AstroKinetics · ASTRA v5.0 Unified Showcase, Watch/iPhone Demo, ClawAgents Grok Voice & 3D Crew Health Suite",
+        "version": "5.2.0",
+        "service": "AstroKinetics · ASTRA v5.2 — Autonomous Astronaut Health Workstation, Watch + iPhone Companion & Cited Evidence Suite",
+        "team": "Team AI-MED 01 (Houston, TX)",
+        "challenge": "Create Health Monitoring Software for Astronauts on Space Missions (2026 NASA International Space Apps Challenge)",
         "showcase_journey": True,
         "voice_engine": "clawagents_py + xai-grok-voice",
         "empirical_osd571_biomarkers": len(OSDR_OSD571_EMPIRICAL.get("biomarkers", [])),
         "reference_mocap_frames": REFERENCE_3D_KEYPOINTS.get("num_frames", 0),
-        "statistical_engine": "8-DOF Multivariate Mahalanobis + Chi-Square Survival (scipy.stats.chi2)",
+        "statistical_engine": "8-DOF Multivariate Mahalanobis + Chi-Square Survival (scipy.stats.chi2 & exact browser parity)",
         "astra_aura_corpus": {
             "bilingual_concepts": len(KNOWLEDGE_BUNDLE.get("concepts", [])),
             "reviewed_sources": len(KNOWLEDGE_BUNDLE.get("sources", [])),
@@ -731,18 +768,288 @@ async def health_check() -> dict[str, Any]:
             "nasa_pmc_publications": AURA_CORPUS.get("total_publications", 0),
             "radlab_dostel_rows": EMPIRICAL_SUPPLEMENTS["radlab_iss_sample"]["row_count"],
         },
+        "documentation_routes": [
+            "/project",
+            "/video",
+            "/story",
+            "/demo/",
+            "/llms.txt",
+            "/llms-full.txt",
+            "/api/verification-report",
+            "/docs",
+        ],
         "connected_edge_endpoints": [
+            "/api/verification-report",
+            "/api/scenarios",
+            "/api/evaluate",
+            "/api/osdr-empirical",
             "/api/voice/status",
             "/api/voice/chat",
             "/api/voice/tts",
             "/api/ingest/edge-telemetry",
             "/api/ingest/recent",
             "/api/kinematic-sample",
+            "/api/hunch/catalog",
             "/api/hunch/triage",
+            "/api/astra/contracts",
             "/api/astra/episodes",
             "/api/astra/lidar-volume",
+            "/api/aura/overview",
+            "/api/aura/search",
             "/api/aura/ask",
+            "/api/aura/radlab",
             "/docs",
+        ],
+    }
+
+
+@app.get("/api/verification-report")
+async def verification_report() -> dict[str, Any]:
+    """
+    Deterministic, read-only self-verification report exercising the statistical scorer,
+    privacy redaction gate, NASA HUNCH 8-red-flag safety gate, Barger 2014 mission-profile
+    adaptation, LiDAR signed tetrahedral volumetry, and bundled NASA empirical assets.
+    Writes no records to SQLite or in-memory telemetry buffers.
+    """
+    checks: list[dict[str, Any]] = []
+
+    # 1. Four scripted mission scenarios
+    expected_scenarios = {
+        "nominal_lunar": ("nominal", 99.2),
+        "hypercapnia_drift": ("watch", 78.3),
+        "musculoskeletal_asymmetry": ("alert", 44.7),
+        "spe_blackout": ("alert", 12.0),
+    }
+    scenario_results: dict[str, dict[str, Any]] = {}
+    scenarios_ok = True
+    for sid, (exp_status, exp_score) in expected_scenarios.items():
+        res = evaluate_astronaut_state(TelemetryInput(**MISSION_SCENARIOS[sid]["telemetry"]))
+        ok = res["overall_status"] == exp_status and res["readiness_score"] == exp_score
+        scenarios_ok = scenarios_ok and ok
+        scenario_results[sid] = {
+            "overall_status": res["overall_status"],
+            "readiness_score": res["readiness_score"],
+            "mahalanobis_d": res["multivariate_stats"]["mahalanobis_d"],
+            "p_value": res["multivariate_stats"]["p_value"],
+            "passed": ok,
+        }
+    checks.append({
+        "id": "mission_scenarios_4",
+        "name": "Four scripted mission scenarios (8-DOF Mahalanobis + Chi-Square)",
+        "passed": scenarios_ok,
+        "details": scenario_results,
+    })
+
+    # 2. Three-tier crew privacy redaction gate
+    nom_t = MISSION_SCENARIOS["nominal_lunar"]["telemetry"]
+    priv_self = evaluate_astronaut_state(TelemetryInput(**nom_t, privacy_tier="astronaut_private"))
+    priv_cmo = evaluate_astronaut_state(TelemetryInput(**nom_t, privacy_tier="cmo_operational"))
+    priv_fs = evaluate_astronaut_state(TelemetryInput(**nom_t, privacy_tier="flight_surgeon_packet"))
+    alert_cmo = evaluate_astronaut_state(
+        TelemetryInput(**MISSION_SCENARIOS["spe_blackout"]["telemetry"], privacy_tier="cmo_operational")
+    )
+    privacy_ok = (
+        priv_self["downlink_packet"]["behavioral_privacy_payload"]["raw_mood_score"] == nom_t["mood_score_10"]
+        and priv_cmo["downlink_packet"]["behavioral_privacy_payload"]["raw_mood_score"] == "REDACTED_BY_CREW_PRIVACY_LOCK"
+        and "REDACTED" in priv_cmo["downlink_packet"]["behavioral_privacy_payload"]["journal_note"]
+        and priv_fs["downlink_packet"]["behavioral_privacy_payload"]["raw_mood_score"] == "REDACTED_BY_CREW_PRIVACY_LOCK"
+        and "SAFETY THRESHOLD ESCALATION" in alert_cmo["downlink_packet"]["behavioral_privacy_payload"]["journal_note"]
+    )
+    checks.append({
+        "id": "privacy_redaction_gate",
+        "name": "Three-tier crew privacy redaction (Private / CMO / Flight Surgeon)",
+        "passed": privacy_ok,
+        "details": {
+            "cmo_nominal_mood": priv_cmo["downlink_packet"]["behavioral_privacy_payload"]["raw_mood_score"],
+            "cmo_alert_journal": alert_cmo["downlink_packet"]["behavioral_privacy_payload"]["journal_note"],
+        },
+    })
+
+    # 3. NASA HUNCH 8-red-flag safety gate (all 8 flags override poor capture)
+    red_flag_cases = [
+        ("mi_triad", {"chest_pain": True, "sob": True, "diaphoresis": True}),
+        ("thunderclap_headache", {"thunderclap_headache": True}),
+        ("meningitis_pattern", {"confusion": True, "fever": True}),
+        ("meningococcemia", {"non_blanching_rash": True, "fever": True}),
+        ("acute_vision_loss", {"acute_vision_loss": True}),
+        ("new_seizure", {"new_seizure": True}),
+        ("syncope", {"syncope": True}),
+        ("hemoptysis", {"hemoptysis": True}),
+    ]
+    rf_passed = 0
+    for expected_id, flags in red_flag_cases:
+        out = evaluate_hunch_triage(
+            HunchTriageRequest(
+                signal_quality="insufficient",
+                watch_connected=False,
+                hr=None,
+                spo2=None,
+                sleep_hours=None,
+                hrv_sdnn=None,
+                require_complete_context=True,
+                **flags,
+            )
+        )
+        if (
+            out["triage_level"] == "EMERGENCY"
+            and out["abstained"] is False
+            and any(f["id"] == expected_id for f in out["triggered_red_flags"])
+        ):
+            rf_passed += 1
+    checks.append({
+        "id": "hunch_8_red_flags_override_poor_capture",
+        "name": "NASA HUNCH 8-red-flag safety gate overrides poor/missing capture",
+        "passed": rf_passed == len(red_flag_cases),
+        "details": {"passed_flags": rf_passed, "total_flags": len(red_flag_cases)},
+    })
+
+    # 4. Principled missing-data abstention & dual-engine disagreement audit
+    degraded = evaluate_hunch_triage(
+        HunchTriageRequest(
+            fatigue=True,
+            dizziness=True,
+            severity=4,
+            hr=None,
+            sbp=None,
+            spo2=None,
+            temp_c=36.7,
+            sleep_hours=None,
+            hrv_sdnn=None,
+            signal_quality="insufficient",
+            watch_connected=False,
+            require_complete_context=True,
+        )
+    )
+    abstention_ok = (
+        degraded["triage_level"] == "INCOMPLETE_CHECK_REQUIRED"
+        and degraded["abstained"] is True
+        and degraded["ml_comparator"]["agrees_with_rule"] is False
+    )
+    checks.append({
+        "id": "hunch_principled_abstention",
+        "name": "Degraded capture with missing watch readings triggers principled abstention",
+        "passed": abstention_ok,
+        "details": {
+            "rule_decision": degraded["triage_level"],
+            "ml_comparator_guess": degraded["ml_comparator"]["prediction"],
+            "abstained": degraded["abstained"],
+        },
+    })
+
+    # 5. Earth-1g vs Mission-Microgravity Barger 2014 sleep profile adaptation
+    sleep_base = dict(fatigue=True, severity=3, hr=69, sbp=116, spo2=98, temp_c=36.7, sleep_hours=5.9, hrv_sdnn=42, signal_quality="good", watch_connected=True)
+    sleep_earth = evaluate_hunch_triage(HunchTriageRequest(**sleep_base, active_profile="earth_1g"))
+    sleep_orbit = evaluate_hunch_triage(HunchTriageRequest(**sleep_base, active_profile="mission_microgravity"))
+    profile_ok = sleep_earth["triage_level"] == "MODERATE" and sleep_orbit["triage_level"] == "LOW"
+    checks.append({
+        "id": "barger_2014_earth_vs_orbit_profile",
+        "name": "Earth-1g vs Mission-Microgravity profile adaptation (5.9h sleep, Barger 2014 ISS context)",
+        "passed": profile_ok,
+        "details": {
+            "earth_1g_triage": sleep_earth["triage_level"],
+            "mission_microgravity_triage": sleep_orbit["triage_level"],
+        },
+    })
+
+    # 6. iPhone LiDAR closed-mesh signed tetrahedral volumetry (analytical 10x10x10 cm = 1000.0 mL cube + quality gates)
+    cube_verts = [
+        [0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0],
+        [0, 0, 10], [10, 0, 10], [10, 10, 10], [0, 10, 10],
+    ]
+    cube_faces = [
+        [0, 2, 1], [0, 3, 2],
+        [4, 5, 6], [4, 6, 7],
+        [0, 1, 5], [0, 5, 4],
+        [2, 3, 7], [2, 7, 6],
+        [0, 4, 7], [0, 7, 3],
+        [1, 2, 6], [1, 6, 5],
+    ]
+    cube_pass = evaluate_lidar_volume(
+        LidarVolumeRequest(
+            vertices=cube_verts,
+            faces=cube_faces,
+            baseline_volume_ml=1000.0,
+            observed_coverage_pct=92.0,
+            occluded_pct=4.0,
+            inferred_pct=4.0,
+            capture_mode="raw_sceneDepth",
+        )
+    )
+    low_cov = evaluate_lidar_volume(
+        LidarVolumeRequest(observed_coverage_pct=70.0, occluded_pct=20.0, inferred_pct=10.0, capture_mode="raw_sceneDepth")
+    )
+    bad_mode = evaluate_lidar_volume(
+        LidarVolumeRequest(observed_coverage_pct=90.0, occluded_pct=5.0, inferred_pct=5.0, capture_mode="personSegmentationWithDepth")
+    )
+    lidar_ok = (
+        cube_pass["computed_volume_ml"] == 1000.0
+        and cube_pass["quality_gate_status"] == "PASS"
+        and low_cov["quality_gate_status"] == "QUALITY_HOLD"
+        and bad_mode["quality_gate_status"] == "QUALITY_HOLD"
+    )
+    checks.append({
+        "id": "lidar_tetrahedral_volumetry_and_gates",
+        "name": "Closed-mesh signed tetrahedral volume (10cm cube = 1000.0 mL) + 82% coverage & sceneDepth gates",
+        "passed": lidar_ok,
+        "details": {
+            "analytical_cube_ml": cube_pass["computed_volume_ml"],
+            "analytical_error_pct": 0.0 if cube_pass["computed_volume_ml"] == 1000.0 else round(abs(cube_pass["computed_volume_ml"] - 1000.0) / 10.0, 4),
+            "low_coverage_gate": low_cov["quality_gate_status"],
+            "person_segmentation_gate": bad_mode["quality_gate_status"],
+        },
+    })
+
+    # 7. Real bundled NASA empirical datasets & AURA model-organism guardrail
+    osd_biomarkers = OSDR_OSD571_EMPIRICAL.get("biomarkers", [])
+    osd_timepoints = OSDR_OSD571_EMPIRICAL.get("timepoints", [])
+    radlab_rows = EMPIRICAL_SUPPLEMENTS["radlab_iss_sample"]["row_count"]
+    aura_human_hits = AURA_INDEX.search("radiation", human_only=True, limit=10)
+    aura_all_hits = AURA_INDEX.search("mouse radiation", human_only=False, limit=10)
+    nasa_data_ok = (
+        len(osd_biomarkers) == 14
+        and len(osd_timepoints) == 6
+        and radlab_rows == 164
+        and len(AURA_CORPUS.get("publications", [])) == 572
+        and len(aura_human_hits) > 0
+        and all(h["is_human_applicable"] for h in aura_human_hits)
+        and any(not h["is_human_applicable"] for h in aura_all_hits)
+    )
+    checks.append({
+        "id": "bundled_nasa_datasets_and_aura_guardrail",
+        "name": "Bundled NASA datasets (OSD-571, RadLab ISS DosTel, 572 PMC corpus) & human-vs-model-organism guardrail",
+        "passed": nasa_data_ok,
+        "details": {
+            "osd571_proteins": len(osd_biomarkers),
+            "osd571_timepoints": len(osd_timepoints),
+            "radlab_iss_dostel_rows": radlab_rows,
+            "aura_total_indexed_docs": len(AURA_INDEX.docs),
+            "aura_nasa_pmc_papers": len(AURA_CORPUS.get("publications", [])),
+            "human_only_filter_strict": all(h["is_human_applicable"] for h in aura_human_hits),
+        },
+    })
+
+    passed_count = sum(1 for c in checks if c["passed"])
+    return {
+        "schema_version": "astrokinetics-verification-1.0",
+        "software_version": "5.2.0",
+        "post_submission_verification_date": "2026-11-21",
+        "team": "Team AI-MED 01 (Houston, TX)",
+        "summary": {
+            "passed": passed_count,
+            "total": len(checks),
+            "all_passed": passed_count == len(checks),
+        },
+        "checks": checks,
+        "additional_cli_checks": (
+            "Run `node scripts/verify_judging_workflow.mjs http://127.0.0.1:8080` locally to also verify "
+            "Python-vs-JavaScript Mahalanobis parity across 20 vectors, stateful ASTRA episode governance "
+            "transitions, and crew/sol telemetry API isolation."
+        ),
+        "unverified_scope": [
+            "Clinical diagnostic accuracy and medical efficacy are unverified.",
+            "Flight qualification and performance on representative in-flight wearable cohorts are unverified.",
+            "Native watchOS HealthKit / CoreMotion and iOS ARKit LiDAR hardware capture are simulated in the web prototype.",
+            "Offline service-worker scoring runs in the browser after one online load; server APIs and cloud voice require connectivity.",
         ],
     }
 
@@ -750,8 +1057,10 @@ async def health_check() -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 # Connected Crew Edge Mesh API (Apple Watch HealthKit/CoreMotion + Mobile Kinematics App)
 # ---------------------------------------------------------------------------
-EDGE_PACKET_RING: list[dict[str, Any]] = []
-LIVE_CREW_STATE: dict[str, Any] = dict(MISSION_SCENARIOS["musculoskeletal_asymmetry"]["telemetry"])
+EDGE_HISTORY_LIMIT = 25
+EDGE_PACKET_RING: deque[dict[str, Any]] = deque(maxlen=EDGE_HISTORY_LIMIT)
+EDGE_PACKET_SEQUENCE = count(1001)
+EDGE_RECEIVED_BY_CREW_SOL: OrderedDict[tuple[str, int], dict[str, float]] = OrderedDict()
 
 
 class EdgeTelemetryPacket(BaseModel):
@@ -762,7 +1071,7 @@ class EdgeTelemetryPacket(BaseModel):
         "habitat_eclss_bus",
     ] = "apple_watch_ultra_healthkit"
     device_model: str = "Apple Watch Ultra 2 (watchOS 11 · HealthKit + CMMotionManager)"
-    crew_member: str = "FE-2 Jordan Vance (OSDR C003 Baseline)"
+    crew_member: str = Field("FE-2 Jordan Vance (OSDR C003 Baseline)", min_length=1, max_length=120)
     mission_sol: int = 142
     comm_mode: Literal["iss_live", "lunar_farside", "mars_transit", "solar_blackout"] = "mars_transit"
     protocol: Literal["ared_squat", "eva_upper_reach", "vestibular_sway", "fine_motor_hand"] = "ared_squat"
@@ -789,40 +1098,26 @@ class EdgeTelemetryPacket(BaseModel):
     radiation_msv_day: float | None = Field(default=None, ge=0.05, le=25.0)
 
 
+EDGE_SENSOR_CHANNELS = {
+    name for name, field in EdgeTelemetryPacket.model_fields.items() if field.default is None
+}
+EDGE_EVALUATION_CHANNELS = EDGE_SENSOR_CHANNELS | {"systolic_bp_mmhg", "mood_score_10"}
+EDGE_DEMO_DEFAULTS = TelemetryInput().model_dump(include=EDGE_EVALUATION_CHANNELS)
+EDGE_DEMO_SCENARIOS = {
+    (case["crew_member"], case["mission_sol"]): {
+        key: value for key, value in case["telemetry"].items() if key in EDGE_EVALUATION_CHANNELS
+    }
+    for case in MISSION_SCENARIOS.values()
+}
+
+
 @app.post("/api/ingest/edge-telemetry")
 async def ingest_edge_telemetry(packet: EdgeTelemetryPacket) -> dict[str, Any]:
-    """
-    Unified ingestion endpoint for Apple Watch (HealthKit + CoreMotion IMU),
-    iOS/Android Mobile Kinematics Extraction Apps, and Spacecraft ECLSS buses.
-    Fuses incoming partial sensor channels into the crew member's active state twin,
-    runs 8-DOF Mahalanobis + Chi-Square anomaly triage, and returns closed-loop
-    Watch haptic & Neuro-Acoustic Music Therapy directives.
-    """
-    t0 = datetime.now(timezone.utc)
-    updatable_keys = [
-        "heart_rate_bpm",
-        "hrv_rmssd_ms",
-        "spo2_pct",
-        "resp_rate_brpm",
-        "sleep_hours",
-        "tremor_rms_mm",
-        "hand_tap_hz",
-        "joint_rom_deg",
-        "target_rom_deg",
-        "bilateral_symmetry_pct",
-        "trunk_lean_deg",
-        "postural_sway_mms",
-        "cadence_rpm",
-        "pvt_reaction_ms",
-        "cabin_co2_mmhg",
-        "radiation_msv_day",
-    ]
-    updated_channels: list[str] = []
-    pkt_dict = packet.model_dump()
-    for k in updatable_keys:
-        if pkt_dict.get(k) is not None:
-            LIVE_CREW_STATE[k] = pkt_dict[k]
-            updated_channels.append(k)
+    """Merge demo sensor packets within one crew member and mission day."""
+    crew_sol = (packet.crew_member, packet.mission_sol)
+    updates = packet.model_dump(include=EDGE_SENSOR_CHANNELS, exclude_none=True)
+    received = {**EDGE_RECEIVED_BY_CREW_SOL.get(crew_sol, {}), **updates}
+    fused = {**EDGE_DEMO_DEFAULTS, **EDGE_DEMO_SCENARIOS.get(crew_sol, {}), **received}
 
     fused_input = TelemetryInput(
         crew_member=packet.crew_member,
@@ -831,7 +1126,7 @@ async def ingest_edge_telemetry(packet: EdgeTelemetryPacket) -> dict[str, Any]:
         vision_source=f"edge_mesh:{packet.source_device}",
         comm_mode=packet.comm_mode,
         privacy_tier="astronaut_private",
-        **LIVE_CREW_STATE,
+        **fused,
     )
     eval_res = evaluate_astronaut_state(fused_input)
     stats = eval_res["multivariate_stats"]
@@ -852,37 +1147,55 @@ async def ingest_edge_telemetry(packet: EdgeTelemetryPacket) -> dict[str, Any]:
     }
 
     record = {
-        "packet_id": f"PKT-{len(EDGE_PACKET_RING) + 1001}",
-        "ingested_at_utc": t0.isoformat(),
+        "packet_id": f"PKT-{next(EDGE_PACKET_SEQUENCE)}",
+        "ingested_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_device": packet.source_device,
         "device_model": packet.device_model,
         "crew_member": packet.crew_member,
         "mission_sol": packet.mission_sol,
-        "updated_channels": updated_channels,
+        "updated_channels": sorted(updates),
+        "received_channels": sorted(received),
+        "demo_default_channels": sorted(fused.keys() - received.keys()),
         "overall_status": eval_res["overall_status"],
         "readiness_score": eval_res["readiness_score"],
         "mahalanobis_d": stats["mahalanobis_d"],
         "p_value": stats["p_value"],
         "watch_and_mobile_directive": watch_directive,
     }
+    EDGE_RECEIVED_BY_CREW_SOL[crew_sol] = received
+    EDGE_RECEIVED_BY_CREW_SOL.move_to_end(crew_sol)
+    if len(EDGE_RECEIVED_BY_CREW_SOL) > EDGE_HISTORY_LIMIT:
+        EDGE_RECEIVED_BY_CREW_SOL.popitem(last=False)
     EDGE_PACKET_RING.append(record)
-    if len(EDGE_PACKET_RING) > 25:
-        EDGE_PACKET_RING.pop(0)
 
     return {
         "ingested": True,
         "packet_record": record,
-        "fused_telemetry_state": dict(LIVE_CREW_STATE),
+        "fused_telemetry_state": fused,
         "evaluation": eval_res,
     }
 
 
 @app.get("/api/ingest/recent")
-async def get_recent_edge_packets() -> dict[str, Any]:
+async def get_recent_edge_packets(
+    crew_member: str | None = Query(default=None, min_length=1, max_length=120),
+    mission_sol: int | None = None,
+) -> dict[str, Any]:
+    """List recent demo packets, optionally filtered by crew member and mission day."""
+    packets = [
+        record for record in reversed(EDGE_PACKET_RING)
+        if (crew_member is None or record["crew_member"] == crew_member)
+        and (mission_sol is None or record["mission_sol"] == mission_sol)
+    ]
+    fused = {}
+    if packets:
+        latest = packets[0]
+        crew_sol = (latest["crew_member"], latest["mission_sol"])
+        fused = {**EDGE_DEMO_DEFAULTS, **EDGE_DEMO_SCENARIOS.get(crew_sol, {}), **EDGE_RECEIVED_BY_CREW_SOL.get(crew_sol, {})}
     return {
-        "count": len(EDGE_PACKET_RING),
-        "packets": list(reversed(EDGE_PACKET_RING[-12:])),
-        "fused_telemetry_state": dict(LIVE_CREW_STATE),
+        "count": len(packets),
+        "packets": packets[:12],
+        "fused_telemetry_state": fused,
     }
 
 
@@ -1058,6 +1371,39 @@ async def demo_video() -> Response:
     if page.exists():
         return FileResponse(page)
     return RedirectResponse(url="/", status_code=307)
+
+
+@app.get("/project", include_in_schema=False)
+async def project_overview() -> FileResponse:
+    return FileResponse(STATIC_DIR / "project.html")
+
+
+@app.get("/robots.txt", include_in_schema=False)
+async def robots() -> FileResponse:
+    return FileResponse(STATIC_DIR / "robots.txt", media_type="text/plain")
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap() -> FileResponse:
+    return FileResponse(STATIC_DIR / "sitemap.xml", media_type="application/xml")
+
+
+@app.get("/llms.txt", include_in_schema=False)
+async def llms_txt() -> FileResponse:
+    return FileResponse(
+        STATIC_DIR / "llms.txt",
+        media_type="text/markdown; charset=utf-8",
+        headers={"X-Robots-Tag": "index, follow"},
+    )
+
+
+@app.get("/llms-full.txt", include_in_schema=False)
+async def llms_full_txt() -> FileResponse:
+    return FileResponse(
+        STATIC_DIR / "llms-full.txt",
+        media_type="text/markdown; charset=utf-8",
+        headers={"X-Robots-Tag": "index, follow"},
+    )
 
 
 @app.get("/story")

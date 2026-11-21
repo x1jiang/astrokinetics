@@ -8,11 +8,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-fbbf24?style=for-the-badge)](./LICENSE)
 [![NASA Data: OSD-571](https://img.shields.io/badge/NASA_OSDR-OSD--571_%2F_GLDS--563-7c3aed?style=for-the-badge)](https://osdr.nasa.gov/bio/repo/data/studies/OSD-571)
 
-> **2026 NASA International Space Apps Challenge (Houston Local Event — Team AI-MED 01)**  
+> **2026 NASA International Space Apps Challenge (Houston, TX Local Event — Team AI-MED 01)**  
 > **Challenge:** *Create Health Monitoring Software for Astronauts on Space Missions*  
 > **Live Unified Showcase & Cloud Run Portal:** https://astrokinetics-space-health-765428358644.us-central1.run.app  
-> **30-second demo video:** https://astrokinetics-space-health-765428358644.us-central1.run.app/video  
-> **Direct Routes:** `/` *(Live 3D Twin workstation)* · `/?tab=demo` *(14-step Watch + iPhone companion)* · `/?tab=triage` *(3D Crew Body Map, red-flag triage, episodes, LiDAR)* · `/?tab=evidence` *(cited evidence engine)* · `/story` *(orbital story)* · `/video` *(demo video)*
+> **Project Overview & Verification:** https://astrokinetics-space-health-765428358644.us-central1.run.app/project · [Live Verification JSON](https://astrokinetics-space-health-765428358644.us-central1.run.app/api/verification-report) · [AI Dossier (`llms.txt`)](https://astrokinetics-space-health-765428358644.us-central1.run.app/llms.txt)  
+> **29-second demo video & transcript:** https://astrokinetics-space-health-765428358644.us-central1.run.app/video  
+> **Direct Routes:** `/` *(Live 3D Twin workstation)* · `/project` *(overview & verification)* · `/?tab=demo` *(14-step Watch + iPhone companion)* · `/?tab=triage` *(3D Crew Body Map, red-flag triage, episodes, LiDAR)* · `/?tab=evidence` *(cited evidence engine)* · `/story` *(orbital story)* · `/video` *(demo video)*
+
+[Prototype verification](#prototype-verification) documents the `v5.2.0` post-submission verification build (updated November 21, 2026), including offline scoring parity, offline privacy redaction, NASA HUNCH safety rules, ASTRA episode governance, LiDAR tetrahedral volumetry, telemetry isolation, and bundled NASA data integrity checks.
 
 **What is new in `v5.1`:** the workstation is the front door and the Watch + iPhone companion is one of its tabs; the Triage tab opens with a 3D anatomical **Crew Body Map** (skeleton, heart, arteries, muscles) carrying live sensor callouts, a heartbeat-synced pulse wave and an Earth / Orbit gravity fluid-shift view; the Evidence tab draws the corpus as a constellation that lights up the sources behind each answer; the voice assistant picks a working microphone and speaker and takes turns hands-free. The pulse wave and gravity view are illustrations on real anatomy, not simulations.
 
@@ -37,9 +40,9 @@ During Artemis lunar surface operations, Mars transit (**up to 22-minute one-way
 
 ```mermaid
 flowchart LR
-  subgraph Edge["On-Device & Cabin Sensors (Zero Cloud Dependency)"]
+  subgraph Edge["Browser Inputs & Telemetry API"]
     CAM["Cabin Camera WebGPU/WASM\n478-pt FaceMesh rPPG + 33-pt Pose + 21-pt Hand"]
-    WATCH["Apple Watch Ultra + Mobile App\nPOST /api/ingest/edge-telemetry"]
+    WATCH["Synthetic Watch + Mobile Packet\nPOST /api/ingest/edge-telemetry"]
     ECLSS["Habitat ECLSS & Crew Assays\nppCO2 · Radiation mSv/d · 3-Trial PVT · Vocal DSP"]
   end
 
@@ -49,7 +52,7 @@ flowchart LR
   end
 
   subgraph Act["Autonomous Crew Action & Governance"]
-    CM["Priority-Sorted Directives\nNASA-STD-3001 & HRP Protocols"]
+    CM["Prototype Follow-Up Prompts"]
     NEURO["Closed-Loop Neuro-Acoustic Engine\nBinaural + 3D ROM Filter + Watch Haptics"]
     PRIV["3-Tier Crew Privacy & Store-and-Forward\n<2 KB Flight Surgeon Burst Downlink"]
   end
@@ -57,7 +60,7 @@ flowchart LR
   CAM --> MAH
   WATCH --> MAH
   ECLSS --> MAH
-  OSDR --> MAH
+  OSDR --> EVIDENCE["Evidence Viewer"]
   MAH --> CM
   MAH --> NEURO
   MAH --> PRIV
@@ -69,10 +72,12 @@ flowchart LR
 
 | Official Resource | Integration in AstroKinetics |
 | :--- | :--- |
-| **NASA OSDR `OSD-571` (`GLDS-563`)** | Downloaded SpaceX Inspiration4 astronaut longitudinal plasma proteomics (`CAT 5.24x`, `PRDX2 5.09x`, `HBA1 4.36x`, `TLN1 2.36x`, `C3 0.67x`, `FN1 0.17x`) across `L-92` to `R+82` + live `/api/nasa-osdr` REST verifier. |
-| **`NASA-STD-3001` Vol. 1 & Vol. 2** | Habitat `ppCO2 < 2.0 mmHg` threshold, sleep/circadian target (`>= 7.5 h`), cognitive PVT latency gates, and countermeasure checklists. |
-| **NASA HRP / HRR Evidence Books** | Sensorimotor, Musculoskeletal (ARED loading), Acute Radiation (SPE water-wall shelter), and Behavioral Medicine risk models. |
-| **CSA Bio-Monitor Wearable Schema** | Continuous wearable HR, HRV (RMSSD), SpO2, respiratory rate, and wrist tremor telemetry schema. |
+| **NASA OSDR `OSD-571` (`GLDS-563`)** | The [Inspiration4 plasma study](https://osdr.nasa.gov/bio/repo/data/studies/OSD-571) provides research context. The bundled evidence asset serves 14 protein entries across 4 crew (`C001–C004`) and 6 timepoints (`L-92` to `R+82`) through `/api/osdr-empirical`. The scoring model uses a fixed demo reference. |
+| **NASA OSDR RadLab (ISS DosTel)** | 164 bundled empirical ISS DosTel1/DosTel2 absorbed dose-rate and orbital pass observations (`2022-04-01` to `2022-04-02`) served through `/api/aura/radlab`. |
+| **[`NASA-STD-3001` Vol. 2 Rev. F](https://standards.nasa.gov/node/237)** | Requirement V2 6004 sets a 3 mmHg one-hour mean cabin CO₂ limit. The prototype evaluates snapshot values using its own review thresholds. |
+| **NASA PMC Space Biology Corpus & AURA** | 673 offline-searchable evidence items (572 NASA PMC publications, 70 reviewed sources, 16 bilingual concepts, 15 Apple biomarker studies) via `/api/aura/overview` and `/api/aura/search`, with strict `human_only=true` filtering separating rodent/cellular studies from human guidance. |
+| **Barger et al. (2014) & NASA NLSP** | Published Shuttle/ISS actigraphy sleep tables ([PMC4188436](https://pmc.ncbi.nlm.nih.gov/articles/PMC4188436/)) informing Earth-1g vs. microgravity sleep triage context, plus NASA NLSP `AP005` & `DSO 484` metadata manifests. |
+| **NASA HRP / HUNCH & CSA Bio-Monitor** | Deterministic 8-red-flag safety gate (`/api/hunch/catalog`), ExMC store-and-forward privacy model, and [ISS Bio-Monitor](https://www.nasa.gov/mission/station/research-explorer/investigation/?#id=7392) wearable schema. |
 
 ---
 
@@ -85,14 +90,44 @@ pip install -r requirements.txt
 uvicorn app:app --host 0.0.0.0 --port 8080
 ```
 
-Then open `http://localhost:8080` (and `http://localhost:8080/docs` for interactive OpenAPI documentation). After initial load, the Service Worker (`sw.js`) caches all application assets and empirical NASA `OSD-571` data for 100% offline operation.
+Then open `http://localhost:8080` (and `http://localhost:8080/docs` for interactive OpenAPI documentation). After an online visit and service worker activation, the workstation can reload its cached shell and run the scripted scenario scorer in the browser. Server APIs and cloud voice depend on their respective services.
+
+### Prototype verification
+
+**Post-submission software verification, updated November 21, 2026 (`v5.2.0`).** In the cabin-drift scenario, the crew sees a 2.85 mmHg CO₂ snapshot and a 322 ms reaction-time result. The prototype flags the combination for review and prompts the crew to verify the cabin trend and repeat the task. Live read-only checks are exposed at `GET /api/verification-report` (7/7 check groups passing), and the local CLI suite exercises 7 end-to-end suites:
+
+| Scripted mission case | Server and cached offline browser | Mahalanobis $D_M$ |
+| :--- | :--- | :--- |
+| Nominal lunar orbit (`nominal_lunar`) | Nominal · 99.2/100 | 0.73 |
+| Cabin CO₂ drift (`hypercapnia_drift`) | Watch · 78.3/100 | 3.85 |
+| Musculoskeletal asymmetry (`musculoskeletal_asymmetry`) | Alert · 44.7/100 | 6.99 |
+| Solar particle event blackout (`spe_blackout`) | Alert · 12.0/100 | 14.81 |
+
+Automated regression checks (`node scripts/verify_judging_workflow.mjs http://127.0.0.1:8080`) verified 7/7 suites:
+1. **Statistical parity (20/20):** All 4 mission scenarios plus 16 domain-boundary vectors match exactly between Python (`scipy.stats.chi2`) and browser JS (`static/dsp.js`) on `readiness_score`, `mahalanobis_d`, `mahalanobis_d2`, `p_value`, and `top_attributions`.
+2. **Crew privacy redaction (4/4):** `cmo_operational` and `flight_surgeon_packet` redact `mood_score_10` and `private_journal_note` during non-alert states and escalate only an encrypted safety flag on `alert` (online and offline).
+3. **NASA HUNCH safety gate (10/10):** All 8 emergency red flags return `EMERGENCY` even under poor/missing capture; degraded non-red-flag capture abstains (`INCOMPLETE_CHECK_REQUIRED`) and audits ML comparator disagreement; 5.9 h sleep shifts from `MODERATE` (`earth_1g`) to `LOW` (`mission_microgravity`) per Barger et al. (2014).
+4. **ASTRA episode state machine (6/6):** Notification dismissal preserves `pending`; bad capture sets `repeat_required`; premature closure returns HTTP `409`; offline sync queues and online sync separates `remote_received` from `human_reviewed` idempotently; empty closure rationale returns HTTP `422`.
+5. **LiDAR tetrahedral volumetry (3/3):** A closed 10×10×10 cm cube evaluates to `1000.0 mL` (0.00% analytical error, `PASS`); `<82%` coverage and ARKit `personSegmentationWithDepth` both trigger `QUALITY_HOLD`.
+6. **Crew/Sol telemetry API isolation (5/5):** Synthetic Watch and Mobile packets merge only within the same `(crew_member, mission_sol)`, isolate other crew and days, report `received_channels` vs `demo_default_channels`, return `WKHapticType` cues, and reject out-of-range inputs (`HR = 500`) with HTTP `422`.
+7. **Bundled NASA data, AURA guardrails & SEO/GEO routes (5/5):** Verified all 14 OSD-571 protein fold-changes against raw `log10` intensities, 164 RadLab ISS DosTel rows, 7 Barger sleep tables, 673 AURA indexed documents, strict `human_only=true` filtering, `/api/verification-report`, `/project`, `/video`, `/llms.txt`, `/llms-full.txt`, `/robots.txt`, and `/sitemap.xml`.
+
+With a fresh local server running, run this command from `webapp` using Node.js 24:
+
+```bash
+node scripts/verify_judging_workflow.mjs http://127.0.0.1:8080
+```
+
+To reproduce the offline check, load `/?scenario=hypercapnia_drift`, wait for the service worker (`v5.2.0`) to activate, switch Chrome DevTools to Offline, and reload. The trajectory should display “Offline edge triage” with the same Watch status and 78.3 readiness index.
+
+The scores are prototype indices derived from a fixed reference and simulated inputs. Clinical accuracy, flight readiness, performance on representative in-flight data, and native iOS/watchOS capture remain unverified.
 
 ---
 
 ## 5. License & AI / Open-Source Transparency
 
 - Released under the OSI-approved **MIT License** ([`LICENSE`](./LICENSE)).
-- Client-side neural landmark detection uses open-source Google `@mediapipe/tasks-vision` (`FaceLandmarker`, `PoseLandmarker`, `HandLandmarker`) executing locally in WebAssembly/WebGPU; statistical scoring (`SciPy` / JS Cholesky Mahalanobis), 1-Euro filtering, Wang POS-rPPG, Boersma vocal DSP, and WebAudio neuro-acoustic synthesis are deterministic mathematical implementations. AI coding/documentation assistance and presentation media tools (Gemini / Claude Code / Veo 3.1 / Grok Voice TTS) are transparently disclosed on the Space Apps submission portal.
+- Client-side neural landmark detection uses open-source Google `@mediapipe/tasks-vision` (`FaceLandmarker`, `PoseLandmarker`, `HandLandmarker`) executing locally in WebAssembly/WebGPU. The Python and browser scorers use the same covariance whitening transform. AI coding/documentation assistance and presentation media tools (Gemini / Claude Code / Veo 3.1 / Grok Voice TTS) are disclosed on the Space Apps submission portal.
 
 ---
 

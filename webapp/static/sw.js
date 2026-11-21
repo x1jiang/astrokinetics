@@ -1,12 +1,26 @@
-const CACHE_NAME = "astrokinetics-astra-v5.0.0-showcase";
+const CACHE_NAME = "astrokinetics-astra-v5.2.0";
 const PRECACHE_URLS = [
+  "/",
   "/studio",
-  "/static/styles.css?v=5.0.0",
+  "/project",
+  "/llms.txt",
+  "/static/app.js?v=5.2.0",
+  "/static/dsp.js?v=5.2.0",
+  "/static/audio_engine.js?v=4.0.0",
+  "/static/biomech3d.js?v=4.0.0",
+  "/static/styles.css?v=5.2.0",
+  "/static/project.css?v=5.2.0",
+  "/static/astra_companion.js?v=5.1.2",
   "/static/grok_voice_widget.css?v=5.0.0",
-  "/static/grok_voice_widget.js?v=5.0.0",
+  "/static/grok_voice_widget.js?v=5.1.4",
+  "/static/showcase/brand/ai-med.svg",
   "/manifest.webmanifest",
   "/api/scenarios",
-  "/api/voice/status",
+  "/api/osdr-empirical",
+  "/api/hunch/catalog",
+  "/api/aura/overview",
+  "/api/aura/radlab",
+  "/api/verification-report",
 ];
 
 self.addEventListener("install", (event) => {
@@ -30,7 +44,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const reqUrl = new URL(event.request.url);
-  if (reqUrl.pathname.startsWith("/api/voice/")) return;
+  if (reqUrl.pathname.startsWith("/api/voice/") || reqUrl.pathname.startsWith("/api/ingest/")) return;
   event.respondWith(
     fetch(event.request, { cache: "no-store" })
       .then((resp) => {
@@ -40,6 +54,19 @@ self.addEventListener("fetch", (event) => {
         }
         return resp;
       })
-      .catch(() => caches.match(event.request))
+      .catch(async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const cached = await cache.match(event.request);
+        if (cached) return cached;
+        if (
+          event.request.mode === "navigate" &&
+          reqUrl.origin === self.location.origin &&
+          ["/", "/studio", "/project"].includes(reqUrl.pathname)
+        ) {
+          const shell = await cache.match(reqUrl.pathname);
+          if (shell) return shell;
+        }
+        return Response.error();
+      })
   );
 });

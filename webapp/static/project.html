@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AstroKinetics · ASTRA (Team AI-MED 01, Houston) | NASA Space Apps 2026 Astronaut Health Prototype</title>
+  <meta name="description" content="Team AI-MED 01 (Houston, TX) prototype for the 2026 NASA Space Apps Challenge: Create Health Monitoring Software for Astronauts on Space Missions. Verified offline 8-DOF Mahalanobis scoring, NASA HUNCH 8-red-flag safety gate, LiDAR tetrahedral volumetry, and bundled NASA OSDR OSD-571 and RadLab ISS datasets.">
+  <meta property="article:published_time" content="2026-11-15T23:59:00Z">
+  <meta property="article:modified_time" content="2026-11-21T16:45:00Z">
+  <link rel="canonical" href="https://astrokinetics-space-health-765428358644.us-central1.run.app/project">
+  <link rel="alternate" type="text/markdown" href="/llms.txt" title="AI-readable project summary (llms.txt)">
+  <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="Full technical and verification dossier (llms-full.txt)">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AstroKinetics · ASTRA (Team AI-MED 01, Houston) | NASA Space Apps 2026">
+  <meta property="og:description" content="Offline-first astronaut health monitoring workstation built in Houston, TX for NASA Space Apps 2026. Inspect verified tests, bundled NASA OSDR OSD-571 &amp; RadLab data, and scope limits.">
+  <meta property="og:url" content="https://astrokinetics-space-health-765428358644.us-central1.run.app/project">
+  <meta property="og:image" content="https://astrokinetics-space-health-765428358644.us-central1.run.app/static/final/demo-poster.jpg">
+  <meta property="og:image:alt" content="AstroKinetics · ASTRA crew health workstation in the November 15, 2026 demo">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/static/showcase/brand/ai-med.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/project.css?v=5.2.0">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://astrokinetics-space-health-765428358644.us-central1.run.app/#software",
+          "name": "AstroKinetics · ASTRA",
+          "alternateName": "Team AI-MED 01 Autonomous 3D Crew Health Workstation",
+          "url": "https://astrokinetics-space-health-765428358644.us-central1.run.app/",
+          "mainEntityOfPage": "https://astrokinetics-space-health-765428358644.us-central1.run.app/project",
+          "softwareVersion": "5.2.0",
+          "datePublished": "2026-11-15",
+          "dateModified": "2026-11-21",
+          "description": "Offline-first browser research prototype built in Houston, Texas by Team AI-MED 01 for the 2026 NASA International Space Apps Challenge ('Create Health Monitoring Software for Astronauts on Space Missions'). Combines on-device 3D MediaPipe biomechanics and contactless rPPG, 8-DOF Mahalanobis whitening with Python/browser offline parity, NASA HUNCH 8-red-flag safety gate, ASTRA longitudinal episode governance, closed-mesh LiDAR tetrahedral volumetry, 3-tier crew privacy redaction, and a 673-document offline NASA space-medicine evidence engine.",
+          "applicationCategory": "HealthApplication",
+          "operatingSystem": "Any operating system with a modern web browser",
+          "inLanguage": ["en", "es", "fr", "ja", "zh", "de"],
+          "license": "https://spdx.org/licenses/MIT.html",
+          "codeRepository": "https://github.com/x1jiang/astrokinetics",
+          "sameAs": [
+            "https://github.com/x1jiang/astrokinetics",
+            "https://www.spaceappschallenge.org/2026/find-a-team/ai-med-01/?tab=project"
+          ],
+          "author": {
+            "@type": "Organization",
+            "name": "Team AI-MED 01",
+            "location": {
+              "@type": "Place",
+              "name": "Houston, Texas",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Houston",
+                "addressRegion": "TX",
+                "addressCountry": "US"
+              }
+            }
+          },
+          "isBasedOn": [
+            "https://osdr.nasa.gov/bio/repo/data/studies/OSD-571",
+            "https://osdr.nasa.gov/bio/",
+            "https://standards.nasa.gov/node/237",
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC4188436/",
+            "https://humanresearchroadmap.nasa.gov/"
+          ]
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://astrokinetics-space-health-765428358644.us-central1.run.app/project",
+          "url": "https://astrokinetics-space-health-765428358644.us-central1.run.app/project",
+          "name": "AstroKinetics · ASTRA (Team AI-MED 01, Houston) — Project Overview & Software Verification",
+          "datePublished": "2026-11-15",
+          "dateModified": "2026-11-21",
+          "inLanguage": "en",
+          "about": { "@id": "https://astrokinetics-space-health-765428358644.us-central1.run.app/#software" }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Does AstroKinetics · ASTRA work offline during a 44-minute Mars communication blackout?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. After one online visit and service-worker activation, the browser caches the workstation shell and runs the exact 8-DOF Mahalanobis covariance-whitening scorer locally, matching the Python FastAPI server across all four mission scenarios (99.2, 78.3, 44.7, and 12.0/100), 16 additional boundary checks, and 3-tier crew privacy redaction. Server-side persistence, REST telemetry receipts, and optional cloud voice require connectivity."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Which official NASA datasets and standards are integrated in AstroKinetics · ASTRA?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "AstroKinetics · ASTRA bundles eight NASA and spaceflight resources: NASA OSDR OSD-571 (14 SpaceX Inspiration4 plasma proteomics entries across 4 astronauts and 6 timepoints), NASA OSDR RadLab ISS DosTel (164 real orbital dose-rate observations), NASA-STD-3001 Vol. 2 Rev. F [V2 6004] (3 mmHg one-hour mean cabin CO2 limit), a 673-item offline AURA evidence library (including 572 NASA PMC Space Biology papers with human-vs-model-organism guardrails), Barger et al. 2014 ISS/Shuttle actigraphy sleep tables, NASA NLSP AP005 and DSO 484 manifests, NASA HUNCH 8-red-flag safety rules, and the CSA/NASA ISS Bio-Monitor wearable schema."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does the prototype prevent unsafe triage when wearable sensors disconnect or capture poorly?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Deterministic safety rules run first: all 8 NASA HUNCH emergency red flags return EMERGENCY even with insufficient signal quality and disconnected sensors. When no red flag is present and capture quality is poor or required watch readings are missing, the triage engine abstains with INCOMPLETE_CHECK_REQUIRED instead of imputing normal defaults, and the ASTRA episode state machine blocks closure until human medical review and a non-empty clinical rationale are recorded."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What has been verified, and what remains unverified?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Software parity, 3-tier privacy redaction, all 8 HUNCH red flags, missing-data abstention, Earth-1g vs Mission-Microgravity sleep profile adaptation, 0.00% analytical error on a 1000.0 mL closed-mesh LiDAR tetrahedral cube plus 82% coverage and depth-hallucination gates, ASTRA episode governance invariants, crew/sol telemetry isolation, and bundled NASA dataset integrity are verified via live /api/verification-report and the CLI test suite. Clinical diagnostic accuracy, flight readiness, validation on representative in-flight cohorts, and native watchOS/iOS hardware capture remain unverified."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+</head>
+<body>
+  <header class="site-header page-width">
+    <a class="brand" href="/"><img src="/static/showcase/brand/ai-med.svg" width="36" height="30" alt="">AstroKinetics · ASTRA</a>
+    <nav aria-label="Project navigation">
+      <a href="#impact">Impact</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#verification">Verification</a>
+      <a href="#sources">NASA data</a>
+      <a href="/video">29s demo</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </header>
+
+  <main class="page-width">
+    <section class="hero" aria-labelledby="project-title">
+      <div>
+        <p class="eyebrow">Team AI-MED 01 · Houston, Texas · 2026 NASA International Space Apps Challenge</p>
+        <h1 id="project-title">Offline-first astronaut health monitoring when Houston is 44 minutes away</h1>
+        <p class="summary"><strong>AstroKinetics · ASTRA</strong> is an open-source (MIT) web research prototype built in Houston for the NASA Space Apps challenge <em>Create Health Monitoring Software for Astronauts on Space Missions</em>. It gathers movement, wearable, and habitat signals locally, checks eight emergency red flags first, separates coupled environmental and physiological drift offline, and links every output to cited NASA sources.</p>
+        <div class="actions">
+          <a class="button primary" href="/?scenario=hypercapnia_drift">Run the cabin CO₂ case</a>
+          <a class="button" href="/api/verification-report">Inspect live verification JSON</a>
+          <a class="button" href="/video">Watch 29s demo</a>
+        </div>
+        <p class="meta-line">Submitted <time datetime="2026-11-15">November 15, 2026</time> · Post-submission software verification updated <time datetime="2026-11-21">November 21, 2026</time> · Version 5.2.0</p>
+      </div>
+      <figure class="demo-frame">
+        <a href="/video" aria-label="Watch the AstroKinetics · ASTRA 29-second project demo">
+          <img src="/static/final/demo-poster.jpg" width="1200" height="675" alt="The AstroKinetics · ASTRA crew health workstation showing the 3D biomechanics twin and readiness radar in the recorded demo" fetchpriority="high">
+        </a>
+        <figcaption>Recorded live workstation demo · November 15, 2026 (<a href="/video#transcript">full transcript</a>)</figcaption>
+      </figure>
+    </section>
+
+    <div class="pair" id="impact">
+      <section aria-labelledby="mission-title">
+        <h2 id="mission-title">Why can’t deep-space crews rely on real-time Houston Mission Control?</h2>
+        <p><strong>One-way Mars communications delays reach up to 22 minutes (44 minutes round-trip)</strong>, and solar conjunctions cut Earth contact altogether. When overlapping symptoms such as slower reaction time, tremor, or fatigue appear during a blackout, astronauts need autonomous onboard software that separates cabin environmental drift from physiological deconditioning and queues compact (&lt;2 KB) store-and-forward packets for flight surgeons.</p>
+        <p><strong>Space-to-Earth dual-use impact:</strong> The exact same zero-cloud camera kinematics, contactless rPPG, smartwatch telemetry bus, and offline triage workflow runs on commodity hardware for rural Texas clinics, austere disaster response, and home neuro-musculoskeletal tele-rehabilitation without broadband or cloud PHI exposure.</p>
+        <a href="https://ntrs.nasa.gov/citations/20220013418">NASA NTRS 20220013418 · Mars communications delay analysis</a>
+      </section>
+      <section id="architecture" aria-labelledby="workflow-title">
+        <h2 id="workflow-title">How does AstroKinetics · ASTRA go beyond a basic vitals dashboard?</h2>
+        <p><strong>It unifies six deterministic, inspectable mechanisms in one offline-capable workstation:</strong></p>
+        <ul class="tight-list">
+          <li><strong>Gather locally (zero cloud video):</strong> Browser WebAssembly/WebGPU MediaPipe (478-pt FaceMesh Wang POS rPPG, 33-pt 3D WorldPose with 1-Euro filtering, 21-pt Hands tremor) plus a crew-isolated REST telemetry sandbox.</li>
+          <li><strong>Earth-to-Orbit baseline adaptation:</strong> A 14-day personal baseline (224 readings across 16 measures) shifts expected ranges when entering microgravity, grounded in NASA’s Barger et al. (2014) ISS sleep norm (6.09 ± 0.67 h).</li>
+          <li><strong>8-DOF Mahalanobis whitening (Σ<sup>−1/2</sup>):</strong> Decomposes coupled multi-sensor drift into exact variance shares (% of D<sub>M</sub><sup>2</sup>) and χ<sup>2</sup><sub>8</sub> survival p-values with identical Python and offline JavaScript math.</li>
+          <li><strong>Red-flag-first safety &amp; abstention:</strong> Eight NASA HUNCH emergency rules run in &lt;1 ms before quality gates; poor capture abstains (<code>INCOMPLETE_CHECK_REQUIRED</code>) instead of imputing normal defaults.</li>
+          <li><strong>ASTRA episode governance &amp; LiDAR volumetry:</strong> Enforces clinician-gated episode closure and computes exact closed-mesh signed tetrahedral limb volume while rejecting depth-hallucinating capture modes.</li>
+          <li><strong>3-tier crew privacy &amp; 3D Crew Body Map:</strong> Redacts personal mood/journal logs for CMO and Flight Surgeon views both online and offline, and renders signals on BodyParts3D 4.0 anatomy (CC BY 4.0).</li>
+        </ul>
+        <a href="/?tab=triage">Open the 3D Crew Body Map, HUNCH gate, episodes &amp; LiDAR workspace</a>
+      </section>
+    </div>
+
+    <section id="verification" class="evidence" aria-labelledby="verification-title">
+      <p class="eyebrow">Post-submission software verification · Updated November 21, 2026</p>
+      <h2 id="verification-title">Does AstroKinetics · ASTRA pass reproducible offline, safety, privacy, and math checks?</h2>
+      <p><strong>Yes — 7 of 7 live read-only check groups pass on <a href="/api/verification-report"><code>GET /api/verification-report</code></a>, and 7 end-to-end local regression suites pass via <code>node scripts/verify_judging_workflow.mjs</code>.</strong> In the cabin CO₂ case, a simulated <strong>2.85 mmHg CO₂ snapshot</strong> and <strong>322 ms reaction time</strong> trigger Watch status (78.3/100) and prompt the crew to verify the cabin trend and repeat the task. All four scripted cases plus 16 boundary/stress vectors match exactly between the Python server (<code>scipy.stats.chi2</code>) and the cached offline browser scorer (<code>static/dsp.js</code>).</p>
+
+      <div class="table-wrap">
+        <table>
+          <caption>Table 1 · Four scripted mission scenarios (identical online and after offline reload in Chrome)</caption>
+          <thead>
+            <tr>
+              <th scope="col">Mission case</th>
+              <th scope="col">Alert level</th>
+              <th scope="col">Demo index</th>
+              <th scope="col">Mahalanobis D<sub>M</sub></th>
+              <th scope="col">Server / Offline parity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row"><a href="/?scenario=nominal_lunar">Sol 14 · Nominal lunar orbit</a></th><td>Nominal</td><td>99.2 / 100</td><td>0.73</td><td>Exact match</td></tr>
+            <tr><th scope="row"><a href="/?scenario=hypercapnia_drift">Sol 88 · Cabin CO₂ drift</a></th><td>Watch</td><td>78.3 / 100</td><td>3.85</td><td>Exact match</td></tr>
+            <tr><th scope="row"><a href="/?scenario=musculoskeletal_asymmetry">Sol 142 · Musculoskeletal asymmetry</a></th><td>Alert</td><td>44.7 / 100</td><td>6.99</td><td>Exact match</td></tr>
+            <tr><th scope="row"><a href="/?scenario=spe_blackout">Sol 210 · Solar particle event blackout</a></th><td>Alert</td><td>12.0 / 100</td><td>14.81</td><td>Exact match</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <caption>Table 2 · Automated software, safety, governance, and NASA-data verification matrix</caption>
+          <thead>
+            <tr>
+              <th scope="col">Verification suite</th>
+              <th scope="col">Result</th>
+              <th scope="col">What was tested</th>
+              <th scope="col">Inspect live</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Server / Offline statistical parity</th>
+              <td><strong>20 / 20 pass</strong></td>
+              <td>4 mission scenarios + 16 domain-boundary vectors match exactly on D<sub>M</sub>, D<sub>M</sub><sup>2</sup>, χ<sup>2</sup><sub>8</sub> p-value, readiness index, and top attributions between Python and offline JS.</td>
+              <td><a href="/api/scenarios">/api/scenarios</a></td>
+            </tr>
+            <tr>
+              <th scope="row">3-tier crew privacy redaction</th>
+              <td><strong>4 / 4 pass</strong></td>
+              <td><code>cmo_operational</code> and <code>flight_surgeon_packet</code> redact mood and private journal logs in non-alert states and escalate only an encrypted flag on alert (both online and offline).</td>
+              <td><a href="/api/verification-report">/api/verification-report</a></td>
+            </tr>
+            <tr>
+              <th scope="row">NASA HUNCH 8-red-flag safety gate</th>
+              <td><strong>10 / 10 pass</strong></td>
+              <td>All 8 emergency red flags return <code>EMERGENCY</code> even under insufficient capture &amp; disconnected watch; degraded non-red-flag capture abstains (<code>INCOMPLETE_CHECK_REQUIRED</code>) and audits ML disagreement; 5.9 h sleep shifts from <code>MODERATE</code> (Earth-1g) to <code>LOW</code> (Mission-Microgravity).</td>
+              <td><a href="/api/hunch/catalog">/api/hunch/catalog</a></td>
+            </tr>
+            <tr>
+              <th scope="row">ASTRA episode state-machine governance</th>
+              <td><strong>6 / 6 pass</strong></td>
+              <td>Notification dismissal preserves <code>pending</code>; bad capture sets <code>repeat_required</code>; premature closure fails HTTP 409; offline sync queues and online sync separates <code>remote_received</code> from <code>human_reviewed</code> idempotently; empty closure rationale fails HTTP 422.</td>
+              <td><a href="/api/astra/contracts">/api/astra/contracts</a></td>
+            </tr>
+            <tr>
+              <th scope="row">LiDAR signed tetrahedral volumetry</th>
+              <td><strong>3 / 3 pass</strong></td>
+              <td>Closed 10×10×10 cm analytical cube evaluates to exactly <code>1000.0 mL</code> (0.00% error, <code>PASS</code>); &lt;82% coverage and ARKit <code>personSegmentationWithDepth</code> both trigger <code>QUALITY_HOLD</code>.</td>
+              <td><a href="/api/verification-report">/api/verification-report</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Crew / Sol telemetry API isolation</th>
+              <td><strong>5 / 5 pass</strong></td>
+              <td>Synthetic watch and phone packets merge only for matching <code>(crew_member, mission_sol)</code>, isolate other crew/days, report <code>received_channels</code> vs <code>demo_default_channels</code>, return <code>WKHapticType</code> cues, and reject HR=500 with HTTP 422.</td>
+              <td><a href="/?tab=api">Telemetry sandbox</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Bundled NASA data &amp; AURA guardrails</th>
+              <td><strong>5 / 5 pass</strong></td>
+              <td>Verified 14 OSD-571 proteins × 4 crew × 6 timepoints (including raw log<sub>10</sub> fold-change check), 164 RadLab ISS DosTel rows, 673 AURA indexed items, and strict exclusion of rodent/cellular papers when <code>human_only=true</code>.</td>
+              <td><a href="/api/aura/overview">/api/aura/overview</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="checks">
+        <p><strong>Reproduce the offline test in Chrome:</strong> Open <a href="/?scenario=hypercapnia_drift">the cabin CO₂ case</a> once online, wait for the service worker (<code>v5.2.0</code>) to activate, switch DevTools Network to <strong>Offline</strong>, and reload. Confirm “Offline edge triage”, Watch status, and a 78.3/100 demo index.</p>
+        <p><strong>Reproduce the full CLI regression suite locally:</strong> Run <code>node scripts/verify_judging_workflow.mjs http://127.0.0.1:8080</code> against a fresh local server from <code>webapp/</code> using Node.js 24, or inspect the read-only live report at <a href="/api/verification-report"><code>/api/verification-report</code></a>.</p>
+      </div>
+
+      <p class="scope"><strong>Explicit scope and unverified limits:</strong> All verification results above are <em>post-submission software and mathematical checks</em> (dated November 21, 2026) using simulated crew telemetry and fixed prototype references. <strong>Clinical diagnostic accuracy, medical efficacy, flight qualification, validation on representative in-flight wearable cohorts, and native watchOS HealthKit / iOS ARKit hardware capture remain unverified.</strong> Cached scoring runs offline in the browser after one online load; server SQLite persistence, REST telemetry receipts, and optional xAI Grok Voice cloud TTS/chat require connectivity.</p>
+    </section>
+
+    <section id="sources" class="evidence" aria-labelledby="source-title">
+      <h2 id="source-title">Which official NASA datasets and space-medicine standards power AstroKinetics · ASTRA?</h2>
+      <p><strong>Eight NASA and spaceflight resources are directly bundled or cited across the Evidence, Triage, and Workstation APIs — with explicit separation between human clinical guidance and model-organism research.</strong></p>
+      <dl class="source-list">
+        <div>
+          <dt><a href="https://osdr.nasa.gov/bio/repo/data/studies/OSD-571">NASA OSDR OSD-571 (GLDS-563) · SpaceX Inspiration4 Plasma Proteomics</a></dt>
+          <dd>Bundled longitudinal measurements for 14 selected proteins across 4 crew members (C001–C004) and 6 timepoints (L-92, L-44, L-3, R+1, R+45, R+82) from 1,443 screened proteins, plus live REST metadata checks. Supplies spaceflight biological context; the readiness scorer uses a separate fixed demo reference. <a href="/api/osdr-empirical">Inspect JSON (/api/osdr-empirical)</a>.</dd>
+        </div>
+        <div>
+          <dt><a href="https://osdr.nasa.gov/bio/">NASA OSDR RadLab · Bundled ISS DosTel1 &amp; DosTel2 Radiation Sample</a></dt>
+          <dd>164 empirical ISS DosTel absorbed dose-rate (µGy/h), flux, orbital altitude, latitude/longitude, and L-shell observations captured from NASA’s RadLab sample window (2022-04-01 to 2022-04-02; DosTel1: 77 rows mean 6.595 µGy/h, DosTel2: 87 rows mean 5.948 µGy/h). <a href="/api/aura/radlab">Inspect JSON (/api/aura/radlab)</a>.</dd>
+        </div>
+        <div>
+          <dt><a href="https://standards.nasa.gov/node/237">NASA-STD-3001, Volume 2, Revision F [V2 6004]</a></dt>
+          <dd>Requirement V2 6004 establishes the 3 mmHg one-hour mean habitat cabin CO₂ limit. The app explicitly labels its single-reading review thresholds (2.4 / 2.85 / 3.5 mmHg) as prototype snapshot settings.</dd>
+        </div>
+        <div>
+          <dt><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4188436/">Barger et al. (2014) NASA Space Shuttle &amp; ISS Actigraphy Sleep Study (PMC4188436)</a></dt>
+          <dd>Published aggregate sleep-duration tables across SL-90, L-11, Inflight (ISS actigraphy 6.09 ± 0.67 h), R+7, and Night-before-EVA inform the Earth-1g vs. Mission-Microgravity sleep profile comparison in the HUNCH triage engine.</dd>
+        </div>
+        <div>
+          <dt><a href="https://humanresearchroadmap.nasa.gov/">NASA Space Biology PMC Corpus (572 papers) &amp; AURA Cited Library (673 total items)</a></dt>
+          <dd>Offline BM25 evidence engine indexing 572 NASA PMC publications, 70 reviewed space-medicine sources, 16 bilingual concepts, and 15 Apple Watch/iPhone clinical validation studies. Enforces <code>human_only=true</code> filtering and explicit caveats so rodent or cellular findings are never conflated with human clinical cutoffs. <a href="/?tab=evidence">Search the Evidence tab</a> · <a href="/api/aura/overview">Corpus stats</a>.</dd>
+        </div>
+        <div>
+          <dt><a href="https://nlsp.nasa.gov/search/data/details/IDP-LSDA_DATASET-0000000000000227?dataType=DATASETS">NASA NLSP Historic Manifest (AP005 Apollo HR &amp; DSO 484 Circadian Shifting)</a></dt>
+          <dd>Cataloged with explicit reuse-limitation statements documenting why summarized historic tables provide physiological context rather than raw smartwatch training time series.</dd>
+        </div>
+        <div>
+          <dt><a href="https://www.nasa.gov/mission/station/research-explorer/investigation/?#id=7392">CSA / NASA ISS Bio-Monitor &amp; NASA HUNCH Triage Frameworks</a></dt>
+          <dd>Informs the multi-channel wearable schema (HR, HRV RMSSD, SpO₂, respiration, wrist tremor) and the deterministic 8-red-flag safety gate. <a href="/api/hunch/catalog">Inspect HUNCH catalog</a>.</dd>
+        </div>
+        <div>
+          <dt><a href="https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/">2026 NASA Space Apps Challenge · Create Health Monitoring Software for Astronauts on Space Missions</a></dt>
+          <dd>Built in Houston, Texas following the challenge’s Gather, Evaluate, and Act workflow with open-source MIT licensing, 6-language UI support (EN, ES, FR, JA, ZH, DE), and full AI-assistance transparency.</dd>
+        </div>
+      </dl>
+    </section>
+  </main>
+
+  <footer class="page-width site-footer">
+    <a href="/">Open the workstation</a>
+    <a href="/video">Watch 29s demo &amp; transcript</a>
+    <a href="/api/verification-report">Live verification JSON</a>
+    <a href="/llms.txt">AI dossier (llms.txt)</a>
+    <a href="/llms-full.txt">Full technical spec</a>
+    <a href="/docs">OpenAPI docs</a>
+    <a href="https://github.com/x1jiang/astrokinetics">GitHub repository (MIT)</a>
+    <a href="https://www.spaceappschallenge.org/2026/find-a-team/ai-med-01/?tab=project">Official NASA Space Apps page</a>
+  </footer>
+</body>
+</html>

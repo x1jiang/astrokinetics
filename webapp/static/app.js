@@ -17,7 +17,7 @@ import {
   HandDexterityTracker,
   PosRppgProcessor,
   computeClientMahalanobis,
-} from "./dsp.js?v=4.0.0";
+} from "./dsp.js?v=5.2.0";
 import { NeuroAcousticEngine, NEURO_PROTOCOLS } from "./audio_engine.js?v=4.0.0";
 import { Biomech3DStage } from "./biomech3d.js?v=4.0.0";
 
@@ -263,7 +263,6 @@ const state = {
   activeSdkLang: "swift",
   edgeStreamTimer: null,
   edgeStreamTick: 0,
-  ingestedPacketsCount: 0,
 
   pvtState: "idle",
   pvtTrials: [],
@@ -468,9 +467,9 @@ function localClientEvaluate(p) {
   const stats = computeClientMahalanobis(p);
   const romRatio = p.joint_rom_deg / Math.max(p.target_rom_deg, 1);
   const kinStatus =
-    p.bilateral_symmetry_pct < 85 || p.trunk_lean_deg > 12 || romRatio < 0.83 || p.tremor_rms_mm >= 1.8
+    p.bilateral_symmetry_pct < 85 || p.trunk_lean_deg > 12 || romRatio < 0.83 || p.postural_sway_mms > 19 || p.tremor_rms_mm >= 1.8
       ? "alert"
-      : p.bilateral_symmetry_pct < 92 || p.trunk_lean_deg > 7 || romRatio < 0.91 || p.tremor_rms_mm >= 1.1
+      : p.bilateral_symmetry_pct < 92 || p.trunk_lean_deg > 7 || romRatio < 0.91 || p.postural_sway_mms > 12 || p.tremor_rms_mm >= 1.1
         ? "watch"
         : "nominal";
   const envStatus =
@@ -480,15 +479,15 @@ function localClientEvaluate(p) {
         ? "watch"
         : "nominal";
   const cvStatus =
-    p.heart_rate_bpm >= 85 || p.hrv_rmssd_ms <= 33
+    p.heart_rate_bpm >= 85 || p.hrv_rmssd_ms <= 33 || p.spo2_pct < 95.5 || p.systolic_bp_mmhg >= 135
       ? "alert"
-      : p.heart_rate_bpm >= 73 || p.hrv_rmssd_ms <= 45
+      : p.heart_rate_bpm >= 73 || p.hrv_rmssd_ms <= 45 || p.spo2_pct < 96.8 || p.systolic_bp_mmhg >= 126
         ? "watch"
         : "nominal";
   const cogStatus =
-    p.pvt_reaction_ms >= 355 || p.sleep_hours < 5.2
+    p.pvt_reaction_ms >= 355 || p.sleep_hours < 5.2 || p.mood_score_10 <= 4.5
       ? "alert"
-      : p.pvt_reaction_ms >= 310 || p.sleep_hours < 6.4
+      : p.pvt_reaction_ms >= 310 || p.sleep_hours < 6.4 || p.mood_score_10 <= 6
         ? "watch"
         : "nominal";
 
@@ -526,6 +525,95 @@ function localClientEvaluate(p) {
     recTempoBpm = Math.max(56, Math.min(96, Math.round((p.cadence_rpm + 2) * 4)));
   }
 
+  const rawVisible = p.privacy_tier === "astronaut_private";
+  const escalate = overall === "alert";
+  const moodDisplay = rawVisible
+    ? `Mood ${p.mood_score_10.toFixed(1)}/10`
+    : cogStatus === "alert"
+      ? "Mood Protected [Threshold Triggered]"
+      : "Mood Protected [Locked]";
+
+  const romDeficitDeg = Number(Math.max(0, p.target_rom_deg - p.joint_rom_deg).toFixed(1));
+  const hrZ = ((p.heart_rate_bpm - 60) / 5.8).toFixed(1);
+  const hrvZ = ((p.hrv_rmssd_ms - 60) / 7.8).toFixed(1);
+  const findings = [
+    `Client-side 8-DOF Mahalanobis D_M = ${stats.mahalanobis_d.toFixed(2)} (Chi-Square ${formatPValue(stats.p_value)}); top contributors: ${topStr}.`,
+  ];
+  const countermeasures = [];
+
+  if (kinStatus !== "nominal") {
+    findings.push(
+      `3D pose/hand kinematics flagged a ${romDeficitDeg}° ROM deficit, ${p.bilateral_symmetry_pct.toFixed(1)}% bilateral symmetry, ${p.trunk_lean_deg.toFixed(1)}° trunk-lean compensation, and ${p.tremor_rms_mm.toFixed(2)} mm postural/hand tremor.`
+    );
+    countermeasures.push({
+      priority: kinStatus === "alert" ? "HIGH" : "MODERATE",
+      title: "Recalibrate Unilateral ARED Load & Closed-Loop RAS Cueing",
+      protocol: `Reduce unilateral ARED load by 15%, activate 1-Euro stabilized visual plumb feedback + Rhythmic Auditory Stimulation (RAS) at ${Math.max(12, Math.min(20, Math.round(p.cadence_rpm + 2)))} RPM, and complete 60-sec single-limb proprioceptive hold.`,
+      reference: "NASA HRP Sensorimotor/Musculoskeletal Risk & Thaut Rhythmic Auditory Entrainment",
+      _domainOrder: 1,
+    });
+  }
+  if (p.cabin_co2_mmhg >= 2.8 && p.pvt_reaction_ms >= 315) {
+    findings.push(
+      `Cabin ppCO2 snapshot (${p.cabin_co2_mmhg.toFixed(2)} mmHg) and reaction time (${p.pvt_reaction_ms.toFixed(0)} ms) crossed prototype review thresholds together. Check the cabin trend and repeat the task.`
+    );
+    countermeasures.push({
+      priority: p.cabin_co2_mmhg >= 3.5 ? "HIGH" : "MODERATE",
+      title: "Verify cabin CO₂ and repeat the reaction-time check",
+      protocol: "Check the cabin CO₂ trend against the mission checklist and repeat the reaction-time check to document whether the drift persists.",
+      reference: "NASA-STD-3001 Vol. 2 [V2 6004] (environmental context)",
+      _domainOrder: 0,
+    });
+  }
+  if (p.radiation_msv_day >= 1.5) {
+    findings.push(
+      `Radiation reading (${p.radiation_msv_day.toFixed(2)} mSv/day) crossed the prototype alert threshold. OSD-571 provides separate post-flight proteomics context.`
+    );
+    countermeasures.push({
+      priority: "CRITICAL",
+      title: "Review the mission radiation contingency checklist",
+      protocol: "Verify the dosimeter reading and flag it for review against the mission's radiation contingency checklist.",
+      reference: "NASA HRP Acute Radiation Risk (background)",
+      _domainOrder: 1,
+    });
+  }
+  if (cvStatus !== "nominal" && p.radiation_msv_day < 1.5) {
+    findings.push(
+      `Autonomic deviation from pre-flight covariance baseline: HR z=${Number(hrZ) >= 0 ? "+" : ""}${hrZ}, HRV RMSSD ${p.hrv_rmssd_ms.toFixed(0)} ms (z=${Number(hrvZ) >= 0 ? "+" : ""}${hrvZ}).`
+    );
+    countermeasures.push({
+      priority: cvStatus === "watch" ? "MODERATE" : "HIGH",
+      title: "0.1 Hz Resonant Paced Breathing & Isotonic Fluid Loading",
+      protocol: "Run 6-minute 6-breaths/min RAS vagal pacing + 400 mL isotonic fluid bolus prior to orthostatic/EVA load.",
+      reference: "POS-rPPG (Wang et al., IEEE TBME 2017) & Lehrer 0.1 Hz HRV Baroreflex Protocol",
+      _domainOrder: 1,
+    });
+  }
+  if (cogStatus !== "nominal") {
+    findings.push(
+      `Cognitive/circadian fatigue detected: Sleep ${p.sleep_hours.toFixed(1)} h with PVT reflex latency ${p.pvt_reaction_ms.toFixed(0)} ms.`
+    );
+    countermeasures.push({
+      priority: cogStatus === "watch" ? "MODERATE" : "HIGH",
+      title: "480 nm Blue-Depleted Circadian Lighting & Protected Rest Window",
+      protocol: "Shift cabin LED spectrum to warm <3000K 90 min pre-sleep and protect an uninterrupted 8-hour rest block.",
+      reference: "NASA HRP Behavioral Medicine Evidence Book",
+      _domainOrder: 1,
+    });
+  }
+  if (countermeasures.length === 0) {
+    countermeasures.push({
+      priority: "ROUTINE",
+      title: overall === "nominal" ? "Maintain Nominal ARED & Microgravity Countermeasure Schedule" : "Review flagged readings",
+      protocol: "All channels within 95% prototype covariance ellipsoid (p > 0.05). Continue scheduled ARED & aerobic blocks.",
+      reference: "NASA-STD-3001 Nominal Operations",
+      _domainOrder: 1,
+    });
+  }
+  const prioRank = { CRITICAL: 0, HIGH: 1, MODERATE: 2, ROUTINE: 3 };
+  countermeasures.sort((a, b) => (prioRank[a.priority] ?? 4) - (prioRank[b.priority] ?? 4) || (a._domainOrder ?? 1) - (b._domainOrder ?? 1));
+  countermeasures.forEach((c) => { delete c._domainOrder; });
+
   return {
     overall_status: overall,
     readiness_score: stats.readiness_score,
@@ -539,72 +627,71 @@ function localClientEvaluate(p) {
     },
     domains: [
       {
-        domain: "3D Musculoskeletal & Hand Dexterity",
+        domain: "3D Kinematics & Hand Dexterity",
         status: kinStatus,
         headline: `ROM ${p.joint_rom_deg.toFixed(1)}°/${p.target_rom_deg.toFixed(0)}° · Sym ${p.bilateral_symmetry_pct.toFixed(1)}% · Lean ${p.trunk_lean_deg.toFixed(1)}°`,
-        metric_detail: `Sway ${p.postural_sway_mms.toFixed(1)} mm/s · Tap ${p.hand_tap_hz.toFixed(1)} Hz · Tremor ${p.tremor_rms_mm.toFixed(2)} mm`,
+        metric_detail: `Sway ${p.postural_sway_mms.toFixed(1)} mm/s · Finger-Tap ${p.hand_tap_hz.toFixed(1)} Hz · Tremor ${p.tremor_rms_mm.toFixed(2)} mm`,
       },
       {
         domain: "Habitat & Radiation Exposure",
         status: envStatus,
         headline: `ppCO2 ${p.cabin_co2_mmhg.toFixed(2)} mmHg · Radiation ${p.radiation_msv_day.toFixed(2)} mSv/day`,
-        metric_detail: "NASA-STD-3001 ppCO2 < 2.0 mmHg",
+        metric_detail: "Prototype snapshot thresholds. NASA-STD-3001 Vol. 2 [V2 6004] sets a 3 mmHg one-hour mean limit.",
       },
       {
         domain: "Cardiovascular · rPPG",
         status: cvStatus,
-        headline: `HR ${p.heart_rate_bpm.toFixed(0)} bpm · HRV ${p.hrv_rmssd_ms.toFixed(0)} ms · SpO2 ${p.spo2_pct.toFixed(1)}%`,
-        metric_detail: `Resp ${p.resp_rate_brpm.toFixed(1)} brpm`,
+        headline: `HR ${p.heart_rate_bpm.toFixed(0)} bpm (z=${Number(hrZ) >= 0 ? "+" : ""}${hrZ}) · HRV ${p.hrv_rmssd_ms.toFixed(0)} ms · SpO2 ${p.spo2_pct.toFixed(1)}%`,
+        metric_detail: `Est. SBP ${p.systolic_bp_mmhg.toFixed(0)} mmHg · Resp ${p.resp_rate_brpm.toFixed(1)} brpm`,
       },
       {
         domain: "Cognitive & Behavioral Readiness",
         status: cogStatus,
-        headline: `PVT ${p.pvt_reaction_ms.toFixed(0)} ms · Sleep ${p.sleep_hours.toFixed(1)} h`,
-        metric_detail: "OSD-571 PVT nominal < 300 ms",
+        headline: `PVT ${p.pvt_reaction_ms.toFixed(0)} ms · Sleep ${p.sleep_hours.toFixed(1)} h · ${moodDisplay}`,
+        metric_detail: "PVT and sleep thresholds are prototype settings.",
       },
     ],
-    explainable_findings: [
-      `Client-side 8-DOF Mahalanobis D_M = ${stats.mahalanobis_d.toFixed(2)} (Chi-Square ${formatPValue(stats.p_value)}); top contributors: ${topStr}.`,
-    ],
-    countermeasures: [
-      p.radiation_msv_day >= 1.5
-        ? {
-            priority: "CRITICAL",
-            title: "Storm-Shelter Mass Shielding & OSD-571 Oxidative/Hematologic Protocol",
-            protocol:
-              "Maintain crew in water-wall storm shelter; log nausea/tremor every 2h; run +24h point-of-care hemoglobin/WBC panel.",
-            reference: "NASA OSDR OSD-571 + HRP Acute Radiation Risk",
-          }
-        : p.cabin_co2_mmhg >= 2.8 && p.pvt_reaction_ms >= 315
-          ? {
-              priority: p.cabin_co2_mmhg >= 3.5 ? "HIGH" : "MODERATE",
-              title: "CDRA CO2 Scrubber Purge & High-Flow Bay Mixing",
-              protocol:
-                "Switch CDRA desiccant bed, engage inter-module duct fan high-flow mixing until ppCO2 < 2.0 mmHg, and repeat 3-trial PVT in 30 min.",
-              reference: "NASA-STD-3001 Vol. 2 Atmosphere Standards",
-            }
-          : kinStatus !== "nominal"
-            ? {
-                priority: kinStatus === "alert" ? "HIGH" : "MODERATE",
-                title: "Recalibrate Unilateral ARED Load & Closed-Loop RAS Cueing",
-                protocol:
-                  "Reduce unilateral ARED load by 15%, activate 1-Euro visual plumb feedback + Rhythmic Auditory Stimulation, and hold 60s proprioceptive stance.",
-                reference: "NASA HRP Sensorimotor/Musculoskeletal Risk",
-              }
-            : {
-                priority: "ROUTINE",
-                title: "Maintain Nominal ARED & Microgravity Countermeasure Schedule",
-                protocol:
-                  "All channels within 95% individualized pre-flight covariance ellipsoid (p > 0.05). Continue scheduled ARED & aerobic blocks.",
-                reference: "NASA-STD-3001 Nominal Operations",
-              },
-    ],
+    explainable_findings: findings,
+    countermeasures,
     downlink_packet: {
-      packet_schema: "NASA-ExMC-AstroKinetics-v3.2-OfflineEdge",
+      packet_schema: "NASA-ExMC-AstroKinetics-v5.2-OfflineEdge",
+      timestamp_utc: new Date().toISOString(),
       mission_sol: p.mission_sol,
+      vision_source: p.vision_source,
+      comm_mode: p.comm_mode,
+      crew_member: p.crew_member,
+      privacy_tier_applied: p.privacy_tier,
       overall_status: overall.toUpperCase(),
+      readiness_score: stats.readiness_score,
       multivariate_statistics: stats,
-      telemetry: p,
+      kinematic_3d_biomarkers: {
+        protocol: p.protocol,
+        joint_rom_deg: p.joint_rom_deg,
+        target_rom_deg: p.target_rom_deg,
+        bilateral_symmetry_pct: p.bilateral_symmetry_pct,
+        trunk_lean_deg: p.trunk_lean_deg,
+        postural_sway_mms: p.postural_sway_mms,
+        hand_tap_hz: p.hand_tap_hz,
+        tremor_rms_mm: p.tremor_rms_mm,
+      },
+      physiological_and_habitat_summary: {
+        hr_bpm: p.heart_rate_bpm,
+        hrv_rmssd_ms: p.hrv_rmssd_ms,
+        spo2_pct: p.spo2_pct,
+        pvt_reaction_ms: p.pvt_reaction_ms,
+        cabin_ppco2_mmhg: p.cabin_co2_mmhg,
+        radiation_msv_day: p.radiation_msv_day,
+      },
+      behavioral_privacy_payload: {
+        raw_mood_score: rawVisible || escalate ? p.mood_score_10 : "REDACTED_BY_CREW_PRIVACY_LOCK",
+        journal_note: rawVisible
+          ? p.private_journal_note
+          : escalate
+            ? "[SAFETY THRESHOLD ESCALATION: Encrypted for Flight Surgeon key only]"
+            : "[REDACTED — Owned exclusively by astronaut on local tablet]",
+      },
+      prescribed_countermeasures: countermeasures.map((c) => c.title),
+      nasa_citations: ["OSD-571 (GLDS-563)", "OSD-570", "NASA-STD-3001", "HRP-HSRB-2026", "CSA-BIOMONITOR"],
     },
   };
 }
@@ -1101,6 +1188,15 @@ function applyScenario(scenarioId, userClickedCard = false) {
   };
   syncSlidersFromTelemetry();
   applyApiPreset(state.activeApiPreset);
+  renderEdgePacketTable([], 0);
+  const apiResponse = document.getElementById("apiResponsePre");
+  if (apiResponse) apiResponse.textContent = "Send a test packet to inspect the server response.";
+  const apiBadge = document.getElementById("apiResponseBadge");
+  if (apiBadge) {
+    apiBadge.className = "status-pill status-nominal mono";
+    apiBadge.textContent = "Ready";
+  }
+  void refreshEdgePacketTable();
   scheduleEvaluation();
 }
 
@@ -3652,7 +3748,7 @@ function syncConnectedMeshReadouts(res) {
       <div><span>Cabin ppCO2</span> <strong>${t.cabin_co2_mmhg.toFixed(2)} mmHg</strong></div>
       <div><span>Radiation</span> <strong>${t.radiation_msv_day.toFixed(2)} mSv/day</strong></div>
       <div><span>Comm Link</span> <strong>${escapeHtml(state.commMode)}</strong></div>
-      <div><span>NASA Limit</span> <strong>&lt;2.0 mmHg CO2</strong></div>
+      <div><span>NASA 1-hour CO₂ limit</span> <strong>3.0 mmHg</strong></div>
     `;
   }
 
@@ -3772,9 +3868,17 @@ function applyApiPreset(presetId) {
   }
 }
 
-function renderEdgePacketTable(packets) {
+function renderEdgePacketTable(packets, count) {
+  const pktCountEl = document.getElementById("fusedPacketCountVal");
+  if (pktCountEl) pktCountEl.textContent = `${count} packets`;
+  const tabBadge = document.getElementById("edgeTabPacketBadge");
+  if (tabBadge) tabBadge.textContent = `${count}`;
   const tbody = document.getElementById("edgePacketTableBody");
-  if (!tbody || !Array.isArray(packets) || packets.length === 0) return;
+  if (!tbody) return;
+  if (!packets.length) {
+    tbody.innerHTML = '<tr><td colspan="5">No recent packets for this crew member and mission day.</td></tr>';
+    return;
+  }
 
   const shortSource = {
     apple_watch_ultra_healthkit: "Apple Watch Ultra 2",
@@ -3792,11 +3896,26 @@ function renderEdgePacketTable(packets) {
         <td>${escapeHtml(shortSource[p.source_device] || p.source_device)}</td>
         <td class="mono">${p.updated_channels.length} ch (${escapeHtml(p.updated_channels.slice(0, 2).join(", "))})</td>
         <td class="mono">D<sub>M</sub>=${Number(p.mahalanobis_d).toFixed(2)} (${Number(p.readiness_score).toFixed(1)})</td>
-        <td class="mono">${escapeHtml(p.watch_and_mobile_directive?.wkhaptic_type || "WKHapticType.success")}</td>
+        <td class="mono">${escapeHtml(p.watch_and_mobile_directive?.wkhaptic_type || "—")}</td>
       </tr>
     `
     )
     .join("");
+}
+
+async function refreshEdgePacketTable() {
+  const { crewMember, missionSol } = state;
+  const query = new URLSearchParams({ crew_member: crewMember, mission_sol: missionSol });
+  try {
+    const response = await fetch(`/api/ingest/recent?${query}`, { cache: "no-store" });
+    if (!response.ok) return;
+    const recent = await response.json();
+    if (state.crewMember === crewMember && state.missionSol === missionSol) {
+      renderEdgePacketTable(recent.packets, recent.count);
+    }
+  } catch {
+    // The packet table only shows confirmed server receipts.
+  }
 }
 
 async function executeEdgeIngestPost(customPayloadObj = null) {
@@ -3821,6 +3940,7 @@ async function executeEdgeIngestPost(customPayloadObj = null) {
     editor.value = JSON.stringify(payloadObj, null, 2);
   }
 
+  const { crewMember, missionSol } = state;
   const t0 = performance.now();
   try {
     const resp = await fetch("/api/ingest/edge-telemetry", {
@@ -3830,6 +3950,7 @@ async function executeEdgeIngestPost(customPayloadObj = null) {
     });
     const rttMs = Math.round(performance.now() - t0);
     const data = await resp.json();
+    if (state.crewMember !== crewMember || state.missionSol !== missionSol) return;
 
     if (rttEl) rttEl.textContent = `RTT: ${rttMs} ms`;
     if (badge) {
@@ -3849,6 +3970,7 @@ async function executeEdgeIngestPost(customPayloadObj = null) {
       neuro_prescription: data.evaluation?.neuro_prescription,
     };
     if (respPre) respPre.textContent = JSON.stringify(compactResponse, null, 2);
+    if (data.packet_record?.crew_member !== crewMember || data.packet_record?.mission_sol !== missionSol) return;
 
     if (data.fused_telemetry_state) {
       state.telemetry = { ...state.telemetry, ...data.fused_telemetry_state };
@@ -3865,12 +3987,6 @@ async function executeEdgeIngestPost(customPayloadObj = null) {
       });
     }
 
-    state.ingestedPacketsCount += 1;
-    const pktCountEl = document.getElementById("fusedPacketCountVal");
-    if (pktCountEl) pktCountEl.textContent = `${state.ingestedPacketsCount} packets`;
-    const tabBadge = document.getElementById("edgeTabPacketBadge");
-    if (tabBadge) tabBadge.textContent = `${state.ingestedPacketsCount}`;
-
     syncSlidersFromTelemetry();
     syncKinematicStripFromTelemetry();
     if (data.evaluation) {
@@ -3878,21 +3994,18 @@ async function executeEdgeIngestPost(customPayloadObj = null) {
       renderEvaluation(data.evaluation);
     }
 
-    const recentResp = await fetch("/api/ingest/recent");
-    if (recentResp.ok) {
-      const recentData = await recentResp.json();
-      renderEdgePacketTable(recentData.packets);
-    }
+    void refreshEdgePacketTable();
   } catch {
+    if (state.crewMember !== crewMember || state.missionSol !== missionSol) return;
     if (badge) {
       badge.className = "status-pill status-watch mono";
-      badge.textContent = "Offline Edge Sim";
+      badge.textContent = "Receipt unconfirmed";
     }
     if (respPre) {
       respPre.textContent = JSON.stringify(
         {
-          ingested_locally: true,
-          note: "PWA offline edge fallback fused incoming wearable/mobile telemetry locally.",
+          receipt_confirmed: false,
+          note: "No server receipt. The packet was not queued for retry.",
           payload: payloadObj,
         },
         null,
@@ -3950,7 +4063,7 @@ function toggleLiveEdgeStream() {
     clearInterval(state.edgeStreamTimer);
     state.edgeStreamTimer = null;
     if (btn) btn.setAttribute("aria-pressed", "false");
-    if (lbl) lbl.textContent = "Start 1 Hz Live Stream";
+    if (lbl) lbl.textContent = "Start 1 Hz Test Stream";
     return;
   }
 
@@ -4451,25 +4564,6 @@ async function bootstrap() {
   });
 
   renderSdkCodeSnippet("swift");
-  applyApiPreset("watch_vitals");
-  const apiRespPre = document.getElementById("apiResponsePre");
-  if (apiRespPre) {
-    apiRespPre.textContent = JSON.stringify(
-      {
-        endpoint: "POST /api/ingest/edge-telemetry",
-        status: "ARMED_FOR_LIVE_INGEST",
-        supported_devices: [
-          "apple_watch_ultra_healthkit",
-          "mobile_kinematics_app",
-          "combined_ios_watch_bridge",
-          "habitat_eclss_bus",
-        ],
-        tip: "Click 'Execute Live POST /api/ingest/edge-telemetry' or 'Start 1 Hz Live Stream' to fuse real HTTP packets.",
-      },
-      null,
-      2
-    );
-  }
 
   configureRepSegmenterForMode();
   const urlParams = new URLSearchParams(window.location.search);
@@ -4489,29 +4583,6 @@ async function bootstrap() {
   }
   syncContextualModeBars();
   refreshSessionsList();
-
-  fetch("/api/ingest/recent")
-    .then((r) => (r.ok ? r.json() : null))
-    .then((recent) => {
-      if (!recent || !Array.isArray(recent.packets) || recent.packets.length === 0) return;
-      state.ingestedPacketsCount = recent.count || recent.packets.length;
-      const pktCountEl = document.getElementById("fusedPacketCountVal");
-      if (pktCountEl) pktCountEl.textContent = `${state.ingestedPacketsCount} packets`;
-      const tabBadge = document.getElementById("edgeTabPacketBadge");
-      if (tabBadge) tabBadge.textContent = `${state.ingestedPacketsCount}`;
-      renderEdgePacketTable(recent.packets);
-      if (apiRespPre) {
-        apiRespPre.textContent = JSON.stringify(
-          {
-            latest_ingested_packet: recent.packets[0],
-            active_hub_channels: Object.keys(recent.fused_telemetry_state || {}).length,
-          },
-          null,
-          2
-        );
-      }
-    })
-    .catch(() => {});
 
   window.AstroKineticsBridge = {
     getState: () => state,

@@ -510,12 +510,19 @@ export class PosRppgProcessor {
   }
 }
 
-/**
- * Client-Side 8-DOF Multivariate Mahalanobis Distance & Wilson-Hilferty Chi-Square Survival p-value
- * Ensures 100% mathematical parity with scipy.stats.chi2 during total Mars Solar Blackouts.
- */
+// Demo reference model used by app.py. The rows are the symmetric inverse
+// square root of BASELINE_COV, precomputed so the browser can score offline.
 const MU = [99.0, 96.5, 3.0, 6.0, 60.0, 60.0, 250.0, 1.6];
-const SD = [4.2, 2.6, 2.1, 2.8, 5.8, 7.8, 26.0, 0.38];
+const WHITENING_MATRIX = [
+  [0.260568167891, -0.056330429112, 0.043457771294, 0.014055823094, 0.001575934342, -0.004464147336, 0.003206581168, 0.002285136735],
+  [-0.056330429112, 0.447803618063, 0.090785937912, 0.035713860585, -0.001276409725, -0.002616154861, 0.000843842851, -0.003930234245],
+  [0.043457771294, 0.090785937912, 0.575452840855, -0.079822441687, -0.006720281227, 0.001614558938, -0.002253638630, 0.010126716659],
+  [0.014055823094, 0.035713860585, -0.079822441687, 0.416444681361, -0.008052980467, 0.010532685143, -0.010757822909, -0.044099051148],
+  [0.001575934342, -0.001276409725, -0.006720281227, -0.008052980467, 0.214241232039, 0.058003200135, -0.005719601729, -0.029495005942],
+  [-0.004464147336, -0.002616154861, 0.001614558938, 0.010532685143, 0.058003200135, 0.155479587984, 0.007202704353, 0.004371058473],
+  [0.003206581168, 0.000843842851, -0.002253638630, -0.010757822909, -0.005719601729, 0.007202704353, 0.039940752468, -0.016492800575],
+  [0.002285136735, -0.003930234245, 0.010126716659, -0.044099051148, -0.029495005942, 0.004371058473, -0.016492800575, 3.048746233132],
+];
 const LABELS = [
   "ROM Completeness (%)",
   "Bilateral Symmetry (%)",
@@ -527,20 +534,10 @@ const LABELS = [
   "Cabin ppCO2 (mmHg)",
 ];
 
-function normalSf(z) {
-  // Abramowitz & Stegun 7.1.26 complementary error function survival P(Z >= z)
-  const t = 1 / (1 + 0.2316419 * Math.abs(z));
-  const d = 0.3989422804 * Math.exp((-z * z) / 2);
-  const poly = t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
-  const p = d * poly;
-  return z >= 0 ? p : 1 - p;
-}
-
-export function chi2Survival(x, k = 8) {
-  if (x <= 0) return 1.0;
-  // Wilson-Hilferty cube-root normal transformation for Chi-Square(k)
-  const z = (Math.pow(x / k, 1 / 3) - (1 - 2 / (9 * k))) / Math.sqrt(2 / (9 * k));
-  return Math.max(0, Math.min(1, normalSf(z)));
+function chiSquareEightSurvival(x) {
+  // A chi-square with eight degrees of freedom is Gamma(shape=4, scale=2).
+  const t = x / 2;
+  return Math.min(1, Math.exp(-t) * (1 + t + t ** 2 / 2 + t ** 3 / 6));
 }
 
 export function computeClientMahalanobis(input) {
@@ -555,8 +552,11 @@ export function computeClientMahalanobis(input) {
     Math.max(input.pvt_reaction_ms, MU[6]),
     Math.max(input.cabin_co2_mmhg, MU[7]),
   ];
-  const zVec = x.map((v, i) => (v - MU[i]) / SD[i]);
-  const energies = zVec.map((z) => z * z);
+  const delta = x.map((value, i) => value - MU[i]);
+  const whitened = WHITENING_MATRIX.map((row) =>
+    row.reduce((sum, coefficient, i) => sum + coefficient * delta[i], 0)
+  );
+  const energies = whitened.map((value) => value ** 2);
   const labels = [...LABELS];
 
   const radEx = Math.max(0, (input.radiation_msv_day - 0.55) / 0.35);
@@ -572,10 +572,14 @@ export function computeClientMahalanobis(input) {
 
   const d2 = energies.reduce((a, b) => a + b, 0);
   const dm = Math.sqrt(d2);
-  const pVal = chi2Survival(d2, 8);
+  const pVal = chiSquareEightSurvival(d2);
   const denom = Math.max(d2, 1e-9);
   const attributions = labels
-    .map((feature, i) => ({ feature, share_pct: Number(((energies[i] / denom) * 100).toFixed(1)) }))
+    .map((feature, i) => ({
+      feature,
+      share_pct: Number(((energies[i] / denom) * 100).toFixed(1)),
+      energy: Number(energies[i].toFixed(2)),
+    }))
     .sort((a, b) => b.share_pct - a.share_pct)
     .slice(0, 5);
   const readiness = Number(Math.max(12, Math.min(99.2, 100 * Math.exp(-0.0165 * d2))).toFixed(1));
