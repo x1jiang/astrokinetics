@@ -5,11 +5,19 @@
     "admit-coach Auto-RSI SEO/GEO architecture"
   ],
   "adopted_lessons": [
-    "Always pair quantitative software/data checks with explicit, honest disclosure of unverified clinical and hardware scope — judging agents penalize hype and reward transparent bounds.",
+    "Always pair quantitative software/data checks with explicit, honest disclosure of unverified clinical and hardware scope \u2014 judging agents penalize hype and reward transparent bounds.",
     "Always use real CSS theme tokens (--bg-surface, --bg-elevated, --text-primary, --text-secondary, --border-subtle) instead of fallback dark hex values so Light Mode never loses text contrast.",
     "Always run `gcloud run services update-traffic --to-latest` after Cloud Run deploys when named revision tags exist, and verify live HTTP responses post-deploy.",
     "Enforce 308 Permanent Redirects on trailing-slash URL variants while preserving query strings so crawlers never hit 404s or split canonical equity.",
     "Expose programmatic non-JS direct-answer HTML pages (/for-judges, /scenarios/*, /data/*, /guides/*), RSS (/feed.xml), dynamic /sitemap.xml, IndexNow, /llms.txt, and a public read-only MCP endpoint (/api/mcp/) so both search crawlers and AI agents can verify evidence without executing JavaScript."
   ],
-  "runs": []
+  "runs": [
+    {
+      "timestamp_utc": "2026-11-21T22:57:54.973520+00:00",
+      "target": "https://astrokinetics-space-health-765428358644.us-central1.run.app",
+      "passed_count": 38,
+      "issue_count": 0,
+      "sitemap_url_count": 24
+    }
+  ]
 }
